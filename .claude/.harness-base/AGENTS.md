@@ -1,3 +1,5 @@
+<!-- templateCentral: nextjs@6.0.4 (Supabase variant — shared project, schema per kit) -->
+
 # AGENTS.md — stockkit
 
 > STOP — This project diverges from the stock templateCentral Next.js stack on
