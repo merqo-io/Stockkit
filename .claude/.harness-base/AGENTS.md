@@ -25,11 +25,7 @@ Next.js 16 · App Router · Turbopack · TypeScript strict · Tailwind v4 ·
 shadcn/ui (new-york) · React Hook Form · Zod · Supabase (`@supabase/ssr`) ·
 Vitest · pnpm · Node ≥24
 
-`@tanstack/react-query` is a dependency (inherited from the base scaffold) but
-**not wired in** — this app uses plain Server Components + Server Actions
-(the qkit pattern), not client-side query caching. Don't add TanStack Query
-usage without discussing it first; it'd be a second data-fetching pattern
-living alongside the real one.
+This app uses Server Components and Server Actions. The unused scaffold dependency `@tanstack/react-query` was removed after source, test and tooling reference checks.
 
 ## Commands
 
@@ -37,13 +33,16 @@ living alongside the real one.
 pnpm dev          # dev server — http://localhost:3000
 pnpm build        # production build
 pnpm test         # run test suite (vitest)
+pnpm test:e2e     # playwright public smoke + auth guard (no live database)
 pnpm typecheck    # tsc --noEmit
 pnpm lint         # eslint
 pnpm check        # prettier --check + eslint + tsc --noEmit + route-logging check
 pnpm format       # prettier --write
 ```
 
-No e2e suite. Component behavior (anything rendered with Testing Library +
+Playwright covers a public smoke only (`e2e/`: landing, login and the
+signed-out auth guard); there is no e2e coverage of signed-in flows.
+Component behavior (anything rendered with Testing Library +
 jsdom) is covered by `*.dom.test.tsx` files; plain logic/schema/lib tests
 use `*.test.ts`/`*.test.tsx` — same convention as qkit/loopkit. Auth,
 dashboard, and products all have real coverage now; it's not yet
@@ -84,8 +83,22 @@ supabase/migrations/              — SQL schema + RLS + record_stock_movement/s
   `stock_movements`. No public read of anything — unlike qkit's booths, none
   of this data ever needs to be public.
 - `stockkit.sync_vendor_profile` (SECURITY DEFINER) forwards a vendor's stall
-  name to the shared `merqo.upsert_vendor_profile` RPC on signup — best-effort,
+  name to the shared `merqo.patch_vendor_profile` RPC, preserving social links on signup — best-effort,
   never blocks or fails signup if it errors.
+- `admins`/`admin_audit` (`0013_stockkit_admin.sql`): platform-operator
+  allow-list and audit trail — one row per admin- or vendor-initiated action
+  worth reconstructing later (`setVendorPlan`, `setPricing`, a vendor's own
+  `delete_product` — see `recordAudit()` in `src/lib/audit.ts`, shared by
+  `src/app/admin/actions.ts` and `src/app/dashboard/products/actions.ts`).
+  RLS is admin-read-only; the service-role client can `select`/`insert` on
+  both `admin_audit` and `stock_movements` but not `update`/`delete`
+  (`0015_audit_immutability.sql`) — neither table is ever updated or deleted
+  by the app, so closing that off at the grant level costs nothing and means
+  a compromised service-role key still can't rewrite either trail.
+  **Retention: keep `admin_audit` and `stock_movements` rows for 5 years**,
+  matching IRAS's record-keeping norm for a small Singapore business; no
+  archival/purge job exists yet — this is the stated policy so retention
+  isn't decided ad hoc later.
 
 ## Rules (always)
 
@@ -111,13 +124,51 @@ supabase/migrations/              — SQL schema + RLS + record_stock_movement/s
   one deliberate typographic signature (a "ledger" motif). Don't drop it on
   new numeric displays.
 
+**templateCentral 6.0.4 review (2026-10-12):** `harness.json` moved 5.15.0 →
+6.0.4, porting the harness qkit adopted in its own 6.0.1 and 6.0.4 reviews
+(qkit's `AGENTS.md` holds the full reasoning). The scripts were 3-way merged
+against qkit's, so this repo's local lines are kept. Adopted:
+
+- Hook commands anchored on `${CLAUDE_PROJECT_DIR}`, each with a timeout. The
+  old relative paths resolved against the shell's current directory.
+- `stop-checks.sh` skips the test run on a clean tree; `subagent-stop.sh`
+  skips read-only agents; `post-edit-typecheck.sh` reports through
+  `additionalContext`.
+- The skill-usage matcher (`Skill__.*` never matched; now `Skill`), and
+  `NotebookEdit` on the `protect-files.sh` matcher.
+- The per-segment `block-no-verify.sh`: closes a hook-skipping flag on push,
+  `--force-with-lease`, `HEAD:main`, deleting a protected branch and
+  `bash -c` wrappers. A bare `git commit` / `git push` is judged by the
+  branch it can land on (the hook input's `cwd` plus every literal `cd`
+  target), so a worktree commit is no longer blocked by the main checkout
+  sitting on `main`. Anything the hook cannot resolve also judges the
+  project root: use a bare `git commit` or `git -C <literal path>`.
+- `protect-files.sh`: symlinked parents resolved, `notebook_path` read,
+  relative paths anchored on the project root.
+- `verify-harness.sh` fails on an unreadable or empty manifest.
+- The commit-msg gate accepts `type(scope)!:` and the messages git writes
+  itself (`Revert "…"`, `fixup!`, `squash!`, `amend!`).
+- The PR-only CI gates (changelog, readme, comment hygiene) fail when
+  `origin/<base>` is missing and read the base branch from `env`.
+- `post-tool-failure.sh` removed (the agent already sees tool errors).
+
+Not adopted, for qkit's reasons: exec-form hooks (`"command": "bash",
+"args": [...]`; a bare `bash` resolved without a shell on Windows can be
+the WSL launcher, so any hook that used that form here is now a shell
+string), the gitleaks command and allowlist syntax changes, the shared
+`.claude/ci-gates.sh`, `.claude/hooks/local/`, and every Azure DevOps and
+OpenCode item.
+
 ## AI Harness
 
-PreToolUse: blocks secret files (exit 2): `.env*` (except `.env.example`),
-cert files (`.pem`/`.key`/`.p12`/`.pfx`/`.secret`), `credentials.json`/`.netrc`/`.secrets`;
-and blocks `--no-verify`. App code, skills, specs, and `.github/workflows/`
-unrestricted.
-UserPromptSubmit: pattern-checks prompts for injection phrases; exit 2 blocks.
+PreToolUse(Read|Edit|Write): normalize Windows and relative paths; hard-block
+secret-file reads and writes (environment files except the blank templates,
+secret directories and certificate/credential files). Governance and CI/CD
+writes require human approval; their reads are allowed. Ordinary application
+code, skills and specifications remain unrestricted. The Bash guard continues
+to block hook bypasses, protected-branch force pushes and destructive guard edits.
+UserPromptSubmit: credential-shaped input is blocked; injection-phrase matches
+produce advisory context so quoted security research can proceed.
 PostToolUse: `tsc --noEmit --incremental` after every Edit/Write. Feedback-only.
 Stop: exits 0 when `stop_hook_active` (no re-entry loop); else runs the test
 suite, exit 2 feeds failures back, exit 0 on pass.
@@ -139,8 +190,9 @@ CI (GitHub Actions): hard gate on changed-line coverage (`diff-cover`
 ≥80%), lockfile-in-sync (`--frozen-lockfile`), a changelog-touched check, a
 readme-freshness check, harness integrity, a `db` job (pgTAP RLS suite), and
 (via `security.yml`) a full-history gitleaks scan + `pnpm audit` + a
-dormant self-skipping CodeQL job. No `mutation` job (no Stryker config) and
-no `e2e` job (no Playwright suite) — both out of scope for this pass.
+dormant self-skipping CodeQL job. An `e2e` job ("e2e (public smoke)") runs
+the Playwright specs in `e2e/`. No `mutation` job (no Stryker config), out of
+scope for this pass.
 RLS isolation: `supabase/tests/rls.test.sql` via `supabase test db`.
 Project skills (directory form, `<name>/SKILL.md`): `.claude/skills/` |
 Manifest: `.claude/harness.json`
@@ -153,7 +205,9 @@ Manifest: `.claude/harness.json`
   the app silently misbehaving. Every page under `/dashboard` sets
   `export const revalidate = 0` so Next never tries to statically prerender a
   page that needs a real session/DB round-trip.
-- The design accent is steel/cobalt blue (`oklch(0.45 0.09 250)`-ish),
-  deliberately distinct from qkit's warm ember and loopkit's gold. Green/
-  amber/red (`--stock-ok`/`--stock-low`/`--stock-out`) are reserved for
+- The design accent is "Reefer Frost" (as of 2026-08-19) — a chilled
+  cyan-teal (`oklch(0.496 0.075 207.4)`-ish, `#1f6e78`), replacing the
+  earlier steel/cobalt blue, deliberately distinct from qkit's warm
+  ember and loopkit's gold. Green/amber/red
+  (`--stock-ok`/`--stock-low`/`--stock-out`) are reserved for
   stock-level status only — never reused as the brand accent.

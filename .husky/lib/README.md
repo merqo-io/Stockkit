@@ -24,6 +24,8 @@ Script bodies `.husky/pre-commit` and `.husky/commit-msg` delegate to.
   `.husky/commit-msg` with the message-file path as `$1`; non-zero exit
   rejects the commit.
 
+`commit-msg-check.sh` also accepts a breaking-change subject (`type(scope)!:`) and the messages git writes itself (`Revert "…"`, `fixup!`, `squash!`, `amend!`).
+
 ## Parent
 
 [.husky](../README.md)

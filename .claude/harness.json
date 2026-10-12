@@ -1,34 +1,34 @@
 {
-  "templatecentral_version": "5.15.0",
+  "templatecentral_version": "6.0.4",
   "stack": "nextjs",
   "adapted": "Next 16 + Supabase (auth/db) — Supabase variant, based on qkit harness",
   "seeded_at": "2026-07-22",
-  "review_note": "First harness build for this repo — no prior .claude/ existed. Hooks/skills match qkit's pattern; git-hook layer (lefthook) matches loopkit's, this plan's chosen baseline. CI (ci.yml/security.yml/dependabot.yml) built from scratch, matching the qkit+loopkit union target state. Follow-up (2026-07-24): added the missing .claude/hooks/* Claude-Code-hook script layer (previously inline `node -e` one-liners in settings.json), fixed lefthook.yml's missing pre-commit exclude list and pnpm-workspace.yaml's `lefthook: false` typo; version marker bumped 5.7.0 -> 5.11.0 to match sibling repo loopkit's harness architecture. Follow-up (2026-08-01, undated separately): migrated the git-hook layer off lefthook to husky (unsigned lefthook.exe is blocked unconditionally by Windows Smart App Control) — see docs/superpowers/specs/2026-08-01-lefthook-to-husky-migration-design.md; verify-harness.sh/regen-harness.sh diverge from plugin canonical on purpose (hash the git-committed blob via `git show HEAD:$path`, not a raw disk read) to avoid a false-positive MODIFIED on Windows checkouts with core.autocrlf=true, which the plugin's canonical raw-disk-read version does not handle. Re-sync (2026-08-15) to plugin v5.15.0: cross-checked the 5.11.0->5.15.0 CHANGELOG against actual code rather than blindly overwriting seeded files (several, incl. AGENTS.md and verify/regen-harness.sh, are deliberately adapted past canonical and were left alone). Applied: settings.json hook commands moved from a shell-string `command` to the exec-form `command`+`args` pair (avoids shell-quoting, matches the plugin's own audit-driven fix — note the plugin's CHANGELOG shorthand `[\"bash\", \"...\"]` does not match this Claude Code version's actual schema, which wants a string `command` plus a separate `args` array); permissions.deny build-artifact reads gained the `./**/`-anchored form (`dist/**`, `.turbo/**` were previously unguarded) alongside the existing bare-form entries. Everything else (hook script bodies, comment-hygiene-patterns.txt, CI workflow, .gitleaks.toml, husky scripts) verified byte-identical in intent to 5.15.0 canonical already — no drift, nothing to pull forward. `.claude/.harness-base/` never existed for this repo (predates that mechanism); created in this pass from the post-resync seeded files.",
+  "review_note": "2026-10-12: templateCentral 5.15 to 6.0.4. Ported the harness qkit adopted in its 6.0.1 and 6.0.4 reviews by 3-way merge, keeping this repo's local lines: project-anchored hook commands with timeouts, clean-tree Stop skip, additionalContext typecheck feedback, the Skill matcher, the per-segment block-no-verify parser with cwd-aware branch detection, protect-files path resolution, a verifier that fails on an unreadable manifest, a wider commit-msg gate, fail-closed PR doc gates in CI. Removed post-tool-failure.sh. Not adopted: exec-form hooks, the gitleaks syntax changes, ci-gates.sh, hooks/local, Azure DevOps and OpenCode items. Reasoning is in the AGENTS.md entry of the same date. Hashes below were recomputed from the LF-normalised blobs. First harness build for this repo — no prior .claude/ existed. Hooks/skills match qkit's pattern; git-hook layer (lefthook) matches loopkit's, this plan's chosen baseline. CI (ci.yml/security.yml/dependabot.yml) built from scratch, matching the qkit+loopkit union target state. Follow-up (2026-07-24): added the missing .claude/hooks/* Claude-Code-hook script layer (previously inline `node -e` one-liners in settings.json), fixed lefthook.yml's missing pre-commit exclude list and pnpm-workspace.yaml's `lefthook: false` typo; version marker bumped 5.7.0 -> 5.11.0 to match sibling repo loopkit's harness architecture. Follow-up (2026-08-01, undated separately): migrated the git-hook layer off lefthook to husky (unsigned lefthook.exe is blocked unconditionally by Windows Smart App Control) — see docs/superpowers/specs/2026-08-01-lefthook-to-husky-migration-design.md; verify-harness.sh/regen-harness.sh diverge from plugin canonical on purpose (hash the git-committed blob via `git show HEAD:$path`, not a raw disk read) to avoid a false-positive MODIFIED on Windows checkouts with core.autocrlf=true, which the plugin's canonical raw-disk-read version does not handle. Re-sync (2026-08-15) to plugin v5.15.0: cross-checked the 5.11.0->5.15.0 CHANGELOG against actual code rather than blindly overwriting seeded files (several, incl. AGENTS.md and verify/regen-harness.sh, are deliberately adapted past canonical and were left alone). Applied: settings.json hook commands moved from a shell-string `command` to the exec-form `command`+`args` pair (avoids shell-quoting, matches the plugin's own audit-driven fix — note the plugin's CHANGELOG shorthand `[\"bash\", \"...\"]` does not match this Claude Code version's actual schema, which wants a string `command` plus a separate `args` array); permissions.deny build-artifact reads gained the `./**/`-anchored form (`dist/**`, `.turbo/**` were previously unguarded) alongside the existing bare-form entries. Everything else (hook script bodies, comment-hygiene-patterns.txt, CI workflow, .gitleaks.toml, husky scripts) verified byte-identical in intent to 5.15.0 canonical already — no drift, nothing to pull forward. `.claude/.harness-base/` never existed for this repo (predates that mechanism); created in this pass from the post-resync seeded files.",
   "adoWiki": false,
   "richReadme": true,
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "8607f0789b3c05b0f91c7a0c6e5e640d8904b1f48d8955f8f25e87a0924a9725",
+      "origin_hash": "c8d3a511a1997e683733e13f5a8e29cf98789b5762a165ec629a79eaf88a5a43",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
-      "origin_hash": "aa31f919c9446afb5d5f410e15333b5fbac8cfb2d9425081ed8a6659209d0fe6",
+      "origin_hash": "b6b7b60b6f4315311f8d3278c9187dbb15ce6e08eb6ba92eb31a0a087fd09562",
       "path": ".claude/settings.json"
     },
     ".claude/hooks/block-no-verify.sh": {
-      "origin_hash": "45af03be5659cab3d2a5770fabe489863f7d68294971272601450f1029126008",
+      "origin_hash": "e780da8322bc56be0eb517637aa4593257ef9b8c02e98e3c4d8c60f689544a1b",
       "path": ".claude/hooks/block-no-verify.sh"
     },
     ".claude/hooks/protect-files.sh": {
-      "origin_hash": "281dabc9d452a8d00d0749d698a764fec355641723abd47ba6860f3941305048",
+      "origin_hash": "3b828581fc1123e27d325401212f295cfbfc6cde34c7f06e36a2dc3f7955e382",
       "path": ".claude/hooks/protect-files.sh"
     },
     ".claude/hooks/user-prompt-guard.cjs": {
-      "origin_hash": "534a7cb2b825a73d23a8687bbd14c9e9161b24ac3c61ae3df2fcfca8fbddccfd",
+      "origin_hash": "c2caf4b848a00e182e3f4c70517cc774e9c873d346a01e5311ea87eb2872b803",
       "path": ".claude/hooks/user-prompt-guard.cjs"
     },
     ".claude/hooks/post-edit-comment-check.sh": {
-      "origin_hash": "3da3f519d08b40a006017f4dc450dd88fe13c21ebfcc5411ac658f2f390d4cc3",
+      "origin_hash": "506aa92359903beb7bf7c8d35636f0150d4f4939c25b680821ae662ab5324275",
       "path": ".claude/hooks/post-edit-comment-check.sh"
     },
     ".claude/comment-hygiene-patterns.txt": {
@@ -40,27 +40,23 @@
       "path": ".husky/lib/comment-hygiene.sh"
     },
     ".claude/hooks/post-edit-typecheck.sh": {
-      "origin_hash": "f17a4f6cb67b023f1058acb542b43ccf294de612e5d15352776ffbb50366b509",
+      "origin_hash": "c69f6097a629aa85f321c8c08b61d6dee62d75b82f8647e7034fd0cc08a8172e",
       "path": ".claude/hooks/post-edit-typecheck.sh"
     },
-    ".claude/hooks/post-tool-failure.sh": {
-      "origin_hash": "31af87da10f31b5ead1d5fa455ffeb8903956ed2dacb5ef7319b1e8a2822efcd",
-      "path": ".claude/hooks/post-tool-failure.sh"
-    },
     ".claude/hooks/session-context.sh": {
-      "origin_hash": "c58648fa84222405871adfcd503f64450dac2d9c3a99e6382df682b06295860b",
+      "origin_hash": "60bb5fa58eef8caaccd4b4cc7e8a5ca6b4e9600a6092bc92c49e198e65118dea",
       "path": ".claude/hooks/session-context.sh"
     },
     ".claude/hooks/skill-usage-log.sh": {
-      "origin_hash": "5405cf6e00bfee4c2f0bf7f90285215825f9671376383154b2a7aff2dd6db74f",
+      "origin_hash": "db8271e45ac10d7e77fe25eddae497f967a78a483f935c824a34f7f61be0ebdf",
       "path": ".claude/hooks/skill-usage-log.sh"
     },
     ".claude/hooks/stop-checks.sh": {
-      "origin_hash": "6c1142a9207b1ff1f055596875eb962d6ef3da8dd1c7d97c5c9f35fcad973b2e",
+      "origin_hash": "a6ab4ee64c6a3b533ed5f1cda6122a46e2009bc4a17c159605e29d1317cd7415",
       "path": ".claude/hooks/stop-checks.sh"
     },
     ".claude/hooks/subagent-stop.sh": {
-      "origin_hash": "8107bdb11b7dbe71121d24e1e585284f430503f96713b5bcc646308a9c777da5",
+      "origin_hash": "48d0784d1cca1174cb9877d7b9d8579f3585ca53dc927d3e463ca1fdde24922d",
       "path": ".claude/hooks/subagent-stop.sh"
     },
     ".claude/skills/next-verify/SKILL.md": {
@@ -88,7 +84,7 @@
       "path": ".husky/lib/readme-coupling.sh"
     },
     ".husky/lib/commit-msg-check.sh": {
-      "origin_hash": "f5347b89ef6d530b5ae388cc4dea3bfce10898c89e5218dcfd908876ccc0659e",
+      "origin_hash": "7e90a71545213bdfd63ac45bfad3ef25c06a7ad96d6bbd4a4833c8664bf5bc23",
       "path": ".husky/lib/commit-msg-check.sh"
     },
     ".husky/lib/pre-commit.sh": {
@@ -104,11 +100,11 @@
       "path": ".gitleaks.toml"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "95be2f4a327e7e6910ebca50c25e524f60ea1f62e757efdf07cabfba7cbc565d",
+      "origin_hash": "b04ce8837a32acf0eb7649b2f07d2734dd4fe6bff9968f95404b302f4117efc3",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/verify-harness.sh": {
-      "origin_hash": "54a5f6b03db4e1925a74ecc4dd69d37c265ffbdf594db1978b4599a94adfcaf0",
+      "origin_hash": "33b1c81e067a2a18a1635c753f921c7143cc658a246c5b8b2e54828137cb4918",
       "path": ".claude/verify-harness.sh"
     },
     ".claude/regen-harness.sh": {

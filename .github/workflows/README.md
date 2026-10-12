@@ -53,3 +53,5 @@ step (`.husky/lib/pre-commit.sh`) mirrors locally, minus CodeQL/audit.
 ## Parent
 
 [.github](../README.md)
+
+The three PR-only gates in `ci.yml` (changelog, README freshness, comment hygiene) fail when `origin/<base>` is missing, and read the base branch from `env`.
