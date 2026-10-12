@@ -32,6 +32,8 @@ accidental reverts. `skills/` holds project skills invoked on-demand;
 `skill-usage-log.sh` appends a line to `.claude/skill-usage.log` on every
 skill invocation.
 
+`.harness-base/` mirrors the seeded harness files and holds no READMEs; the CI README-freshness gate skips it.
+
 ## Parent
 
 [stockkit](../README.md)
