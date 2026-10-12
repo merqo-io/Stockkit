@@ -22,8 +22,6 @@ harness.
   `../comment-hygiene-patterns.txt`, e.g. a comment starting "Changed" or
   "Added") and oversized comment blocks (>5 consecutive `//` lines) via
   `hookSpecificOutput.additionalContext`; feedback-only, never blocks.
-- `post-tool-failure.sh` — PostToolUseFailure: writes the failed tool's
-  name/error to stderr so the model can self-correct; always exits 0.
 - `protect-files.sh` — PreToolUse(Read|Edit|Write): normalizes Windows paths and
   denies reads/writes of secret environment files (except blank templates),
   secret directories and credentials. Governance and CI/CD writes require
@@ -32,7 +30,7 @@ harness.
   re-injects the first 30 lines of `AGENTS.md` and a fixed list of
   always-on invariants (secrets guard, quality gate, feature-branch rule,
   protected files, architecture boundaries).
-- `skill-usage-log.sh` — PostToolUse(`Skill__.*`): appends a
+- `skill-usage-log.sh` — PostToolUse(`Skill`): appends a
   `timestamp\tskill-name` line to `.claude/skill-usage.log`; always exits 0;
   the data source for a future skill-usage audit.
 - `stop-checks.sh` — Stop: runs `pnpm test`; on failure, tails the last 20
