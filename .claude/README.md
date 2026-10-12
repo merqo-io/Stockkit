@@ -34,6 +34,8 @@ skill invocation.
 
 `.harness-base/` mirrors the seeded harness files and holds no READMEs; the CI README-freshness gate skips it.
 
+The `templatecentral_version` in `harness.json` matches the marker on line 1 of `AGENTS.md`; bump both together.
+
 ## Parent
 
 [stockkit](../README.md)
