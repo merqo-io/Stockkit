@@ -50,6 +50,8 @@ every file in `supabase/migrations/` applying cleanly and on
 see `.claude/README.md`. `security.yml` is what husky's `pre-commit` gitleaks
 step (`.husky/lib/pre-commit.sh`) mirrors locally, minus CodeQL/audit.
 
+The `readme-freshness` gate skips `.claude/.harness-base/`, a snapshot of seeded harness files with no READMEs of its own.
+
 ## Parent
 
 [.github](../README.md)
