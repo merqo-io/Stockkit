@@ -24,6 +24,8 @@
 
 ### Fixed
 
+- Restore the table grants on `vendors`, `products` and `stock_movements` (migration `0022`). Production never received them, so service-role reads failed with `permission denied for table vendors` and Merqo's admin console showed stockkit as down.
+
 - Improve small brand-text and input-boundary contrast in both themes while preserving primary button fills and decorative separators.
 
 - Desktop vendors can open the product creation form when their inventory is empty.
