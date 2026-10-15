@@ -10,7 +10,7 @@ is ever edited after landing — a later migration corrects an earlier one.
 
 ## Contents
 
-21 files, `0000` through `0020`. Descriptions below preserve each historical migration's original behavior; the current write boundary is defined by `0019` and helper scoping by `0020`.
+23 files, `0000` through `0022`. Descriptions below preserve each historical migration's original behavior; the current write boundary is defined by `0019` and helper scoping by `0020`.
 
 - **`0000_create_stockkit_schema.sql`** creates the `stockkit` schema and
   grants `USAGE` to `anon`/`authenticated`/`service_role`.
@@ -229,6 +229,10 @@ already exist in the shared project (they're owned by the sibling `merqo`
 repo, not this one) — applying stockkit's migrations to a fresh database
 that lacks the `merqo` schema will fail on `0003` alone; `0000`-`0002` are
 self-contained.
+
+## Restored core table grants
+
+`0021_audit_truncate_privileges.sql` revokes `TRUNCATE` on `admin_audit` and `stock_movements` from the service role. `0022_restore_core_table_grants.sql` restates the net grants on `vendors`, `products` and `stock_movements`. Production ran `0001` before its table grants were added to that file, so neither `service_role` nor `authenticated` held them there. The migration grants only what `0001` intended after `0010`, `0015`, `0019` and `0021` narrowed it; `core-table-grants.test.sql` checks the result.
 
 ## Parent
 
