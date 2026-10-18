@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Pin `@merqo/ui` to commit `7b386558af36a1cbf008a9b4c4073c07ffc105ba` (tag `v0.34.2`) with matching build permission. From this revision the shared `useAsyncAction` and `AccountMenu` treat a Next.js `redirect()` from an action as navigation, so a redirecting sign-out no longer flashes "NEXT_REDIRECT" under the menu item. This app signs out on the client and navigates with the router, so sign-out was not affected and nothing changes for vendors. `v0.33.0` and `v0.34.0` only add `DataCollectionNotice`, which this app does not render.
 - Internal: the AI harness follows templateCentral 6.0.4. Hook commands no
   longer depend on the shell's current directory, the end-of-turn test run
   is skipped when nothing changed, the guard against skipping git hooks
