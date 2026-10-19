@@ -1,4 +1,5 @@
 import { readAllRows } from '@/lib/read-all-rows';
+import { ElevatedCard, StatTile } from '@merqo/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -73,28 +74,27 @@ export default async function DashboardOverviewPage() {
       <p className="text-muted-foreground mt-2">An overview of your stock.</p>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card data-tour="inventory-value">
-          <CardHeader>
-            <CardDescription>Inventory value</CardDescription>
-            <CardTitle className={LEDGER_LG_CLASS}>{formatPrice(totalValueCents)}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>Low stock</CardDescription>
-            <CardTitle className={cn(LEDGER_LG_CLASS, 'text-stock-low')}>
-              {lowStock.length}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>Out of stock</CardDescription>
-            <CardTitle className={cn(LEDGER_LG_CLASS, 'text-stock-out')}>
-              {outOfStock.length}
-            </CardTitle>
-          </CardHeader>
-        </Card>
+        <ElevatedCard className="p-5" data-tour="inventory-value">
+          <StatTile
+            label="Inventory value"
+            value={formatPrice(totalValueCents)}
+            valueClassName={LEDGER_LG_CLASS}
+          />
+        </ElevatedCard>
+        <ElevatedCard className="p-5">
+          <StatTile
+            label="Low stock"
+            value={String(lowStock.length)}
+            valueClassName={cn(LEDGER_LG_CLASS, 'text-stock-low')}
+          />
+        </ElevatedCard>
+        <ElevatedCard className="p-5">
+          <StatTile
+            label="Out of stock"
+            value={String(outOfStock.length)}
+            valueClassName={cn(LEDGER_LG_CLASS, 'text-stock-out')}
+          />
+        </ElevatedCard>
       </div>
 
       {urgent.length > 0 && (

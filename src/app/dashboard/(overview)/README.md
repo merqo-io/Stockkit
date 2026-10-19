@@ -18,8 +18,10 @@ unit_cost_cents`, summed, formatted via `formatPrice`), low-stock and
   populated and empty-state "Inventory value"/first-product cards carry
   `data-tour="inventory-value"` — step 1's anchor for the dashboard
   onboarding tour (`@/components/dashboard-tour`), since this is the
-  first page a vendor lands on. The three stat tiles use `@/lib/utils`'s
-  shared `LEDGER_LG_CLASS` type scale instead of each hardcoding its own
+  first page a vendor lands on. The three stat tiles are `@merqo/ui`'s
+  shared `StatTile` inside an `ElevatedCard` (the same pairing as
+  `admin/stat.tsx` and loopkit's stats page), with `@/lib/utils`'s
+  shared `LEDGER_LG_CLASS` type scale on the value instead of each hardcoding its own
   `font-mono text-3xl tabular-nums`, matching `products/product-detail.tsx`
   and `products/product-row.tsx`. The "Needs attention" list's stock-status
   indicator is also the shared `StockStatusIndicator` (`@/components`),

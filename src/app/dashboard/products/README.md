@@ -22,16 +22,20 @@ product's movement history.
   only ever moves through `StockLogForm`. The unit field is a shadcn
   `Command`+`Popover` combobox (free text plus `UNIT_PRESETS`
   suggestions), replacing a raw `<input list>`/`<datalist>` for
-  consistent cross-browser rendering. The unit-cost field is free
-  text (`inputMode="decimal"`, no native numeric validation), so an
-  unparseable value gets its own `aria-invalid`/inline error, same
-  pattern as `profile-form.tsx`. Its save/archive handlers wrap their
+  consistent cross-browser rendering. The unit-cost field is
+  `@merqo/ui`'s `MoneyInput` (the same one qkit's menu prices use): it
+  only commits a parseable, non-negative amount and snaps back to the
+  last valid value on blur, so there is no separate inline cost error.
+  The low-stock threshold carries a tap `InfoTooltip` explaining when a
+  product counts as low. Its save/archive handlers wrap their
   server-action call in `try/catch` — a thrown rejection still shows a
   generic toast instead of failing silently. Tested in
   `product-form.dom.test.tsx`.
 - `stock-log-form.tsx` — records a stock movement (restock/waste/
-  adjustment) for one product. Same unit-cost inline-error treatment and
-  `try/catch` handling as `product-form.tsx`. Tested in
+  adjustment) for one product. Same `MoneyInput` unit-cost field and
+  `try/catch` handling as `product-form.tsx`; the restock cost's
+  `InfoTooltip` notes it is stored on the ledger row only and does not
+  change the product's unit cost. Tested in
   `stock-log-form.dom.test.tsx`.
 - `movement-history.tsx` — read-only ledger view for a product. Tested in
   `movement-history.dom.test.tsx` (loading/empty/error/populated states,
