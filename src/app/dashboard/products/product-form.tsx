@@ -1,5 +1,6 @@
 'use client';
 
+import { InfoTooltip, MoneyInput } from '@merqo/ui';
 import { Archive, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -29,9 +30,9 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { useAsyncAction } from '@/hooks';
-import { centsToDollarString, parseDollarsToCents, productFormSchema } from '@/lib/schemas';
+import { productFormSchema } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { cn, FORM_ERROR_CLASS } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { archiveProduct, saveProduct } from './actions';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];
@@ -55,31 +56,24 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
   const [name, setName] = useState(product?.name ?? '');
   const [unit, setUnit] = useState(product?.unit ?? 'unit');
   const [unitOpen, setUnitOpen] = useState(false);
-  const [unitCostDollars, setUnitCostDollars] = useState(
-    centsToDollarString(product?.unit_cost_cents ?? 0)
+  const [unitCostCents, setUnitCostCents] = useState<number | undefined>(
+    product?.unit_cost_cents ?? 0
   );
   const [onHand, setOnHand] = useState(String(product?.on_hand ?? 0));
   const [lowStockThreshold, setLowStockThreshold] = useState(
     String(product?.low_stock_threshold ?? 0)
   );
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
-  const [costError, setCostError] = useState<string | null>(null);
   const { pending: saving, run: runSave } = useAsyncAction();
   const { pending: archiving, run: runArchive } = useAsyncAction();
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const costParsed = parseDollarsToCents(unitCostDollars);
-    if (!costParsed.ok) {
-      setCostError('Enter a valid unit cost');
-      return;
-    }
-    setCostError(null);
     const candidate = {
       id: product?.id,
       name,
       unit,
-      unit_cost_cents: costParsed.cents ?? 0,
+      unit_cost_cents: unitCostCents ?? 0,
       on_hand: Number(onHand),
       low_stock_threshold: Number(lowStockThreshold),
       is_active: isActive,
@@ -207,20 +201,12 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="product-cost">Unit cost ($)</Label>
-          <Input
+          <MoneyInput
             id="product-cost"
-            inputMode="decimal"
             className="font-mono"
-            value={unitCostDollars}
-            onChange={(e) => setUnitCostDollars(e.target.value)}
-            aria-invalid={!!costError}
-            aria-describedby={costError ? 'product-cost-error' : undefined}
+            cents={unitCostCents}
+            onCommit={setUnitCostCents}
           />
-          {costError && (
-            <p id="product-cost-error" className={FORM_ERROR_CLASS}>
-              {costError}
-            </p>
-          )}
         </div>
       </div>
 
@@ -241,7 +227,14 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="product-threshold">Low-stock threshold</Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="product-threshold">Low-stock threshold</Label>
+            <InfoTooltip
+              content="The product shows as low stock once its quantity drops to this number or below. Leave it at 0 to flag it only when it runs out."
+              ariaLabel="About low-stock threshold"
+              trigger="tap"
+            />
+          </div>
           <Input
             id="product-threshold"
             type="number"

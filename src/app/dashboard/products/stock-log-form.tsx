@@ -2,6 +2,7 @@
 
 import { STOCK_MOVEMENT_REASON_LABEL } from '@/lib/stock';
 
+import { InfoTooltip, MoneyInput } from '@merqo/ui';
 import { Minus, Plus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -18,9 +19,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useAsyncAction } from '@/hooks';
-import { centsToDollarString, parseDollarsToCents, stockMovementFormSchema } from '@/lib/schemas';
+import { stockMovementFormSchema } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { FORM_ERROR_CLASS } from '@/lib/utils';
 import { recordStockMovement } from './actions';
 
 type Reason = 'restock' | 'waste' | 'adjustment';
@@ -43,10 +43,7 @@ export function StockLogForm({ product, onRecorded }: Props) {
   // Only meaningful for 'adjustment' — restock is always +, waste is always -.
   const [adjustmentSign, setAdjustmentSign] = useState<1 | -1>(1);
   const [note, setNote] = useState('');
-  const [unitCostDollars, setUnitCostDollars] = useState(
-    centsToDollarString(product.unit_cost_cents)
-  );
-  const [costError, setCostError] = useState<string | null>(null);
+  const [unitCostCents, setUnitCostCents] = useState<number | undefined>(product.unit_cost_cents);
   const { pending, run } = useAsyncAction();
 
   const sign = resolveSign(reason, adjustmentSign);
@@ -58,16 +55,7 @@ export function StockLogForm({ product, onRecorded }: Props) {
   function onSubmit(e: FormEvent) {
     e.preventDefault();
 
-    let unit_cost_cents: number | undefined;
-    if (reason === 'restock') {
-      const parsedCost = parseDollarsToCents(unitCostDollars);
-      if (!parsedCost.ok) {
-        setCostError('Enter a valid unit cost');
-        return;
-      }
-      setCostError(null);
-      unit_cost_cents = parsedCost.cents;
-    }
+    const unit_cost_cents = reason === 'restock' ? unitCostCents : undefined;
 
     const candidate = {
       product_id: product.id,
@@ -174,21 +162,20 @@ export function StockLogForm({ product, onRecorded }: Props) {
 
       {reason === 'restock' && (
         <div className="space-y-2">
-          <Label htmlFor="movement-unit-cost">Unit cost this restock ($)</Label>
-          <Input
+          <div className="flex items-center gap-1">
+            <Label htmlFor="movement-unit-cost">Unit cost this restock ($)</Label>
+            <InfoTooltip
+              content="Saved with this restock in the stock history only. It does not change the product's unit cost."
+              ariaLabel="About cost on the ledger"
+              trigger="tap"
+            />
+          </div>
+          <MoneyInput
             id="movement-unit-cost"
-            inputMode="decimal"
             className="font-mono"
-            value={unitCostDollars}
-            onChange={(e) => setUnitCostDollars(e.target.value)}
-            aria-invalid={!!costError}
-            aria-describedby={costError ? 'movement-unit-cost-error' : undefined}
+            cents={unitCostCents}
+            onCommit={setUnitCostCents}
           />
-          {costError && (
-            <p id="movement-unit-cost-error" className={FORM_ERROR_CLASS}>
-              {costError}
-            </p>
-          )}
         </div>
       )}
 

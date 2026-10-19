@@ -43,24 +43,28 @@ afterEach(() => {
 });
 
 describe('StockLogForm', () => {
-  it('shows an inline error and marks the field invalid on an unparseable restock unit cost', async () => {
+  it('sends the last valid restock unit cost when the field holds an unparseable amount', async () => {
     const user = userEvent.setup();
     render(<StockLogForm product={product} onRecorded={vi.fn()} />);
 
-    const costInput = screen.getByLabelText(/unit cost this restock/i);
+    const costInput = screen.getByLabelText<HTMLInputElement>(/unit cost this restock/i);
     await user.clear(costInput);
-    await user.type(costInput, '-5');
+    await user.type(costInput, '6.25x');
     await user.click(screen.getByRole('button', { name: /restock/i }));
 
-    expect(screen.getByText('Enter a valid unit cost')).toBeTruthy();
-    expect(costInput.getAttribute('aria-invalid')).toBe('true');
+    expect(costInput.value).toBe('6.25');
+    expect(recordStockMovementMock).toHaveBeenCalledWith(
+      expect.objectContaining({ reason: 'restock', unit_cost_cents: 625 })
+    );
+  });
 
-    await user.clear(costInput);
-    await user.type(costInput, '5.00');
-    await user.click(screen.getByRole('button', { name: /restock/i }));
+  it('explains that the restock unit cost stays on the ledger row', async () => {
+    const user = userEvent.setup();
+    render(<StockLogForm product={product} onRecorded={vi.fn()} />);
 
-    expect(screen.queryByText('Enter a valid unit cost')).toBeNull();
-    expect(costInput.getAttribute('aria-invalid')).toBe('false');
+    await user.click(screen.getByRole('button', { name: /about cost on the ledger/i }));
+
+    expect(await screen.findByText(/does not change the product's unit cost/i)).toBeTruthy();
   });
 
   it('records a movement and reports it to onRecorded', async () => {

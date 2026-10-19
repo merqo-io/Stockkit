@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Use the shared `@merqo/ui` components the way qkit and loopkit do. The unit-cost fields on the product form and the restock form are now `MoneyInput`: a cost that cannot be read as a non-negative amount is no longer accepted or flagged with an inline error, the field snaps back to the last valid amount when you leave it. The low-stock threshold and the restock cost gain an info icon (`InfoTooltip`) explaining them. The three overview tiles (inventory value, low stock, out of stock) are `StatTile` inside an `ElevatedCard`. Removed the now-unused `parseDollarsToCents` and `centsToDollarString` helpers. The dashboard already ends with the family footer and tour, so nothing changes there.
 - Pin `@merqo/ui` to commit `7b386558af36a1cbf008a9b4c4073c07ffc105ba` (tag `v0.34.2`) with matching build permission. From this revision the shared `useAsyncAction` and `AccountMenu` treat a Next.js `redirect()` from an action as navigation, so a redirecting sign-out no longer flashes "NEXT_REDIRECT" under the menu item. This app signs out on the client and navigates with the router, so sign-out was not affected and nothing changes for vendors. `v0.33.0` and `v0.34.0` only add `DataCollectionNotice`, which this app does not render.
 - Internal: the AI harness follows templateCentral 6.0.4. Hook commands no
   longer depend on the shell's current directory, the end-of-turn test run

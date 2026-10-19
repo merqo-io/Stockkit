@@ -46,25 +46,38 @@ afterEach(() => {
 });
 
 describe('ProductForm', () => {
-  it('shows an inline error and marks the field invalid on an unparseable unit cost', async () => {
+  it('keeps the last valid unit cost when the field holds an unparseable amount', async () => {
     const user = userEvent.setup();
     render(<ProductForm onSaved={vi.fn()} />);
 
     await user.type(screen.getByLabelText(/^name$/i), 'Chicken thigh');
-    const costInput = screen.getByLabelText(/unit cost/i);
+    const costInput = screen.getByLabelText<HTMLInputElement>(/unit cost/i);
     await user.clear(costInput);
-    await user.type(costInput, '-5');
+    await user.type(costInput, '7.5x');
     await user.click(screen.getByRole('button', { name: /add product/i }));
 
-    expect(screen.getByText('Enter a valid unit cost')).toBeTruthy();
-    expect(costInput.getAttribute('aria-invalid')).toBe('true');
+    expect(costInput.value).toBe('7.50');
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ unit_cost_cents: 750 }));
+  });
 
-    await user.clear(costInput);
-    await user.type(costInput, '5.00');
+  it('saves a cleared unit cost as zero', async () => {
+    const user = userEvent.setup();
+    render(<ProductForm onSaved={vi.fn()} />);
+
+    await user.type(screen.getByLabelText(/^name$/i), 'Chicken thigh');
+    await user.clear(screen.getByLabelText(/unit cost/i));
     await user.click(screen.getByRole('button', { name: /add product/i }));
 
-    expect(screen.queryByText('Enter a valid unit cost')).toBeNull();
-    expect(costInput.getAttribute('aria-invalid')).toBe('false');
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ unit_cost_cents: 0 }));
+  });
+
+  it('explains the low-stock threshold in a tap tooltip', async () => {
+    const user = userEvent.setup();
+    render(<ProductForm onSaved={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /about low-stock threshold/i }));
+
+    expect(await screen.findByText(/shows as low stock once its quantity drops/i)).toBeTruthy();
   });
 
   it('saves a new product and reports it to onSaved', async () => {
