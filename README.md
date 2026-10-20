@@ -196,6 +196,10 @@ Apply the schema (creates the `stockkit` schema, `vendors`/`products`/
   order, into Supabase → SQL Editor → Run. `src/lib/types.ts` is already
   hand-written to match.
 
+Never edit a migration after it has run anywhere; add a new one. Production
+only runs each file once, so later edits never reach it. `0022` restores grants
+that were added to `0001` after production had already applied it.
+
 `0003_merqo_vendor_profile_sync.sql` assumes the shared `merqo` schema (owned
 by the sibling `merqo` repo) already exists in the target project — apply
 `0000`-`0002` only against a database that doesn't have it.
