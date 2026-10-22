@@ -210,6 +210,51 @@ external auth provider — set `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID`/
 `_SECRET` (see `.env.example`) in your root `.env` for "Continue with
 Google" to work locally.
 
+### Staging
+
+Vercel `Preview` deployments use the shared staging Supabase project
+(`merqo-staging`), not production. The `staging` branch, kept on `main` by
+the `staging sync` workflow, is served at `stockkit-staging.merqo.io`. Full
+setup, the env model and the rollout checklist live in merqo's
+`docs/STAGING.md`. stockkit's `Preview` values:
+
+- `NEXT_PUBLIC_SUPABASE_URL` (team shared), `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+  `SUPABASE_SECRET_KEY`: the staging project.
+- `MERQO_BASE_URL` (`https://staging.merqo.io`) and `MERQO_CUSTOMER_SECRET`:
+  the team shared Preview copies, which hold staging values.
+- `MERQO_METRICS_SECRET`, `MERQO_PROVISION_SECRET`: staging-only values,
+  never the production ones, matching stockkit's row in the staging
+  `merqo.products` (merqo's `supabase/seed/staging-registry.sql`).
+- `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN`: `.merqo.io` for Git branch `staging` only,
+  so one sign-in covers the staging hosts. Never on other previews, where the
+  browser rejects the cookie and sign-in breaks.
+
+Vercel Deployment Protection must be off on this project (it still challenges
+a branch-assigned domain), and the sync workflow needs the repo secret
+`VERCEL_STAGING_DEPLOY_HOOK`: Vercel does not git-deploy a commit it already
+built for production, so the workflow calls the deploy hook instead.
+
+Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
+merqo's and qkit's, not with `supabase db push`: every kit shares one
+migration history table and reuses the same version numbers. First run
+`drop policy "vendor_avatars_public_read" on storage.objects;` in the staging
+SQL Editor: merqo's `0015` creates that policy, and stockkit's `0006` creates
+the identical one without a guard (on production `0006` ran first). `0006`
+then recreates it.
+
+#### Migration-bearing PRs: staging first
+
+Before merging a PR that adds a file under `supabase/migrations/`:
+
+1. Apply only the new file(s) to staging, from the PR branch checkout, with
+   `STAGING_DB_URL` set to the staging session pooler URI (merqo's
+   `docs/STAGING.md`, setup step 2):
+   `docker run --rm -e STAGING_DB_URL -v "${PWD}:/repo:ro" postgres:17.6-alpine sh /repo/scripts/staging-migrate.sh supabase/migrations/<new-file>.sql`
+2. Check the PR's own Vercel preview end to end. It already uses the staging
+   database and the other apps' staging hosts.
+3. Merge the PR.
+4. Apply the same file to production the usual way (Supabase SQL Editor).
+
 ## Scripts
 
 ```bash
@@ -254,6 +299,7 @@ transaction). See `AGENTS.md` for full conventions.
 
 ### Contents
 
+- `scripts/staging-migrate.sh`: loads migrations into the shared staging Supabase project with psql (see Staging above).
 - `scripts/check-route-logging.mjs` — pre-existing scaffold check that every API route under `src/app/api` uses the `withLogging` wrapper; still guards `src/app/api/health/route.ts`.
 - `src/app/error.tsx` + `src/app/not-found.tsx` + `src/app/global-error.tsx` — branded error/404/root-crash boundaries, matching qkit's and loopkit's family-wide pattern.
 - `src/app/(auth)/login/` — the combined sign-in/sign-up page (email/password + Google OAuth, plus a forgot-password flow) and its `completeSignup` server action (creates the `vendors` row, best-effort registers the vendor into the shared `merqo.vendor_profile` table).

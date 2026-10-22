@@ -39,6 +39,14 @@ gate) and `security.yml` (gitleaks secret scan, dependency audit, CodeQL).
   on private repos; would self-enable if the repo went public — uses
   `security-extended` queries, needs `security-events: write`).
 
+- `staging-sync.yml`: on push to `main` (or a manual run), fast-forwards the
+  `staging` branch to `main`, then POSTs the project's Vercel deploy hook (repo
+  secret `VERCEL_STAGING_DEPLOY_HOOK`) so `stockkit-staging.merqo.io` runs main's
+  code; Vercel does not git-deploy a commit it already built for production.
+  Fast-forward only: a diverged `staging` fails the job instead of being
+  overwritten. Without the secret it only warns. Only this job gets
+  `contents: write`.
+
 ## Connectivity
 
 Both workflows pin every third-party action to a full commit SHA (with a
