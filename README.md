@@ -225,9 +225,6 @@ setup, the env model and the rollout checklist live in merqo's
 - `MERQO_METRICS_SECRET`, `MERQO_PROVISION_SECRET`: staging-only values,
   never the production ones, matching stockkit's row in the staging
   `merqo.products` (merqo's `supabase/seed/staging-registry.sql`).
-- `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN`: `.merqo.io` for Git branch `staging` only,
-  so one sign-in covers the staging hosts. Never on other previews, where the
-  browser rejects the cookie and sign-in breaks.
 
 Vercel Deployment Protection must be off on this project (it still challenges
 a branch-assigned domain), and the sync workflow needs the repo secret
