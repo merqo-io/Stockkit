@@ -6,6 +6,10 @@
 
 - Staging: Vercel `Preview` deployments use the shared staging Supabase project, and the `staging` branch is served at `stockkit-staging.merqo.io`. The README's new Staging section lists stockkit's `Preview` values and the staging-first gate for PRs that add a migration. New `scripts/staging-migrate.sh` loads migrations into staging with psql (the kits share one migration history table with overlapping version numbers, so `supabase db push` cannot). The Staging section also covers the one pre-step stockkit's load needs: merqo's `0015` creates the same `vendor_avatars_public_read` policy as stockkit's `0006`, so drop it on staging first and let `0006` recreate it. The `staging sync` workflow keeps `staging` on `main` and triggers the Vercel deploy hook. Full setup: merqo's `docs/STAGING.md`.
 
+### Security
+
+- `next` and `eslint-config-next` 16.3.8 to 16.4.2. next `>=16.0.0 <=16.4.0` has two critical unauthenticated remote code execution advisories, GHSA-2464-fhr4-w9xw (Image Optimization API with SVG files) and GHSA-673q-mjm6-r5xr (`use cache` functions returning typed arrays), and a high Server Actions denial of service, GHSA-p3m5-59mp-jv5r. They failed the dependency-audit job on every open PR. `pnpm audit --prod --audit-level=high` is clean again.
+
 ### Changed
 
 - Use the shared `@merqo/ui` components the way qkit and loopkit do. The unit-cost fields on the product form and the restock form are now `MoneyInput`: a cost that cannot be read as a non-negative amount is no longer accepted or flagged with an inline error, the field snaps back to the last valid amount when you leave it. The low-stock threshold and the restock cost gain an info icon (`InfoTooltip`) explaining them. The three overview tiles (inventory value, low stock, out of stock) are `StatTile` inside an `ElevatedCard`. Removed the now-unused `parseDollarsToCents` and `centsToDollarString` helpers. The dashboard already ends with the family footer and tour, so nothing changes there.
