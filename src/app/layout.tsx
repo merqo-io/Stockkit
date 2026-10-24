@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Providers, ThemeProvider } from '@/components/layout';
+import { THEME_PROVIDER_PROPS } from '@/lib/theme-props';
 import type { Metadata } from 'next';
 import { Fraunces, Geist_Mono, Lato } from 'next/font/google';
 import './globals.css';
@@ -49,12 +50,7 @@ export default function RootLayout({
             AccountMenu (v0.18.0+), persisted via next-themes' own
             localStorage key and shared across every route under this one
             provider. */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider {...THEME_PROVIDER_PROPS}>
           <Providers>{children}</Providers>
         </ThemeProvider>
       </body>

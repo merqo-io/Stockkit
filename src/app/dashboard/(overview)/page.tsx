@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { PRODUCT_COLUMNS } from '@/lib/columns';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { formatPrice } from '@/lib/schemas';
 import { stockStatusFor } from '@/lib/stock';
@@ -32,7 +33,7 @@ export default async function DashboardOverviewPage() {
   const { data, error } = await readAllRows((after) => {
     const query = supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_COLUMNS)
       .eq('is_active', true)
       .order('id', { ascending: true })
       .limit(500);

@@ -39,3 +39,5 @@ stock moved").
 [app](../README.md)
 
 Movement reason labels use `stockMovementReasonLabel` from `@/lib/stock`, including a raw-label fallback for unknown values.
+
+Every page and action is gated by `requireAdmin()`, which needs `aal2`; a password-only session is redirected to `/mfa`. Service-client imports carry an eslint-disable reason.
