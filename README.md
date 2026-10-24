@@ -260,7 +260,7 @@ pnpm build      # production build
 pnpm test       # vitest
 pnpm test:e2e   # playwright public smoke + auth guard
 pnpm typecheck  # tsc --noEmit
-pnpm lint       # eslint
+pnpm lint       # eslint (shared `@merqo/ui/eslint` preset, see `eslint.config.mjs`)
 pnpm check      # prettier --check + eslint + tsc --noEmit + route-logging check
 pnpm format     # prettier --write
 ```

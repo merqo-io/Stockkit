@@ -40,7 +40,7 @@ export function ProductsWorkspace({ initialProducts }: Props) {
   // Server actions revalidatePath, which re-fetches this page's server data
   // and passes a fresh `initialProducts` array down — sync local state to it.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync local state to the revalidated server prop
     setProducts(initialProducts);
   }, [initialProducts]);
 

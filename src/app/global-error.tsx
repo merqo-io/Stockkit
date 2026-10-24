@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax -- renders without the app stylesheet, so colours stay literal */
 'use client';
 
 import { BRAND_PALE, BRAND_STEEL } from '@/lib/brand-icon';
@@ -37,7 +38,7 @@ export default function GlobalError({
           <p
             style={{ fontSize: '0.9rem', color: '#5c6478', margin: '0 0 1.5rem', lineHeight: 1.5 }}
           >
-            An unexpected error interrupted the page. Please try again — if it keeps happening,
+            An unexpected error interrupted the page. Please try again. If it keeps happening,
             refresh in a moment.
           </p>
           <button

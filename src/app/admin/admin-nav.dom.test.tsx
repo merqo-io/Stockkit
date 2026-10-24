@@ -10,20 +10,16 @@ vi.mock('next/navigation', () => ({
 import { AdminNav } from './admin-nav';
 
 describe('AdminNav', () => {
-  it('highlights Overview when on the /admin root', () => {
-    pathnameMock.mockReturnValue('/admin');
+  it.each([
+    ['/admin', 'Overview', 'Vendors'],
+    ['/admin/vendors', 'Vendors', 'Overview'],
+    ['/admin/activity', 'Activity', 'Overview'],
+  ])('highlights the tab for %s', (path, active, inactive) => {
+    pathnameMock.mockReturnValue(path);
     render(<AdminNav />);
 
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveClass('text-primary');
-    expect(screen.getByRole('link', { name: 'Vendors' })).not.toHaveClass('text-primary');
-  });
-
-  it('highlights Vendors on any /admin/vendors path, not just the exact root', () => {
-    pathnameMock.mockReturnValue('/admin/vendors');
-    render(<AdminNav />);
-
-    expect(screen.getByRole('link', { name: 'Vendors' })).toHaveClass('text-primary');
-    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveClass('text-primary');
+    expect(screen.getByRole('link', { name: active })).toHaveClass('text-primary');
+    expect(screen.getByRole('link', { name: inactive })).not.toHaveClass('text-primary');
   });
 
   it('links each tab to its route', () => {
@@ -35,13 +31,5 @@ describe('AdminNav', () => {
       'href',
       '/admin/activity'
     );
-  });
-
-  it('highlights Activity on the /admin/activity path', () => {
-    pathnameMock.mockReturnValue('/admin/activity');
-    render(<AdminNav />);
-
-    expect(screen.getByRole('link', { name: 'Activity' })).toHaveClass('text-primary');
-    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveClass('text-primary');
   });
 });
