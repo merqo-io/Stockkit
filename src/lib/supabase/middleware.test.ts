@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest, type NextResponse } from 'next/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { getUserMock, createServerClientMock } = vi.hoisted(() => ({
   getUserMock: vi.fn(),
@@ -88,5 +88,83 @@ describe('updateSession', () => {
     const res = await updateSession(req('/admin'));
     expect(res.status).toBe(307);
     expect(res.headers.get('location')).toBe('http://localhost/login');
+  });
+});
+
+describe('updateSession: host-only duplicate auth cookie cleanup', () => {
+  const withCookie = (path: string, cookie: string) =>
+    new NextRequest(new Request(`http://localhost${path}`, { headers: { cookie } }));
+  const cleared = (res: Response & { cookies: NextResponse['cookies'] }, name: string) =>
+    res.cookies.getAll().find((c) => c.name === name);
+  const DUPLICATED = 'sb-project-auth-token=host-only; sb-project-auth-token=domain';
+
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN = '.merqo.io';
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+  });
+
+  afterEach(() => {
+    delete process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN;
+  });
+
+  it('clears the host-only copy when the browser sends the same auth cookie twice', async () => {
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(withCookie('/dashboard', DUPLICATED));
+    expect(cleared(res, 'sb-project-auth-token')?.maxAge).toBe(0);
+  });
+
+  it('clears on a public path too, where no user is resolved', async () => {
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(withCookie('/', DUPLICATED));
+    expect(cleared(res, 'sb-project-auth-token')?.maxAge).toBe(0);
+  });
+
+  it('clears chunked token names', async () => {
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(
+      withCookie(
+        '/dashboard',
+        'sb-project-auth-token.0=a; sb-project-auth-token.0=b; sb-project-auth-token.1=a; sb-project-auth-token.1=b'
+      )
+    );
+    expect(cleared(res, 'sb-project-auth-token.0')?.maxAge).toBe(0);
+    expect(cleared(res, 'sb-project-auth-token.1')?.maxAge).toBe(0);
+  });
+
+  it('clears again on every request while the duplicate exists', async () => {
+    const { updateSession } = await import('./middleware');
+    const first = await updateSession(withCookie('/dashboard', DUPLICATED));
+    const second = await updateSession(withCookie('/dashboard', DUPLICATED));
+    expect(cleared(first, 'sb-project-auth-token')?.maxAge).toBe(0);
+    expect(cleared(second, 'sb-project-auth-token')?.maxAge).toBe(0);
+  });
+
+  it('leaves a single auth cookie alone', async () => {
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(withCookie('/dashboard', 'sb-project-auth-token=only-one'));
+    expect(cleared(res, 'sb-project-auth-token')).toBeUndefined();
+  });
+
+  it('does nothing when NEXT_PUBLIC_AUTH_COOKIE_DOMAIN is unset', async () => {
+    delete process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN;
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(withCookie('/dashboard', DUPLICATED));
+    expect(cleared(res, 'sb-project-auth-token')).toBeUndefined();
+  });
+
+  it('does not clobber a same-request token refresh', async () => {
+    createServerClientMock.mockImplementation((_url, _key, options) => ({
+      auth: {
+        getUser: vi.fn().mockImplementation(async () => {
+          options.cookies.setAll([
+            { name: 'sb-project-auth-token', value: 'freshly-refreshed', options: {} },
+          ]);
+          return { data: { user: { id: 'u1' } } };
+        }),
+      },
+    }));
+    const { updateSession } = await import('./middleware');
+    const res = await updateSession(withCookie('/dashboard', DUPLICATED));
+    expect(cleared(res, 'sb-project-auth-token')?.value).toBe('freshly-refreshed');
   });
 });

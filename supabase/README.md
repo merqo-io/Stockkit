@@ -46,3 +46,5 @@ hold cross-vendor isolation, and is referenced directly from `AGENTS.md`'s
 ## Parent
 
 [stockkit](../README.md)
+
+`config.toml` enables TOTP enrol and verify.

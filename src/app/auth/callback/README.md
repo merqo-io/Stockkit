@@ -17,3 +17,5 @@ uses the OAuth profile's `full_name`/`name` metadata (falling back to a
 placeholder) and `ignoreDuplicates: true`, so it's a no-op — never
 overwriting an existing stall name — on every later sign-in, including the
 password-recovery path this same route also serves.
+
+The `code` and `next` query values are parsed with `authCallbackQuerySchema` and `redirectPathSchema`.

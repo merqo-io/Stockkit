@@ -34,3 +34,5 @@ unit_cost_cents`, summed, formatted via `formatPrice`), low-stock and
 ## Boundary and coverage
 
 Active products are read through deterministic ID pagination using the session client, then sorted for presentation. RLS remains the ownership boundary. Read failures surface instead of producing partial stock totals or an empty first-product state; page tests cover the complete-read path.
+
+The product read lists its columns (`PRODUCT_COLUMNS`).
