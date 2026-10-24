@@ -26,7 +26,7 @@ export default defineConfig({
     // default (seen intermittently on dashboard/layout.test.tsx).
     testTimeout: 30000,
     setupFiles: ['./test/setup.ts'],
-    include: ['test/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    include: ['test/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}', 'eslint.config.test.ts'],
     coverage: {
       provider: 'v8',
       thresholds: { statements: 80, branches: 80, functions: 80, lines: 80 },
