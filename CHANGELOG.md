@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## 0.2.1 - 2026-10-24
+
+### Security
+
+- `zod` 4.4.3 to 4.6.6 (GHSA-mrhx-c7xc-m3w5, memory exhaustion on oversized constrained collections). No code change. An override pins any transitive `zod` below 4.6.6.
+
+- Dev tooling advisories: `vitest` and `@vitest/coverage-v8` to `4.1.12` (`@vitest/mocker` GHSA-qxg6-89mg-rqv8, GHSA-xp26-3454-mjgp), `vite` pinned as a direct dev dependency at the first patched version of its major (GHSA-587h-7wmj-h5pm and five more), `undici` override raised to `>=7.30.1`, `fast-uri` override raised to `>=4.2.3`. `@supabase/supabase-js` is now an exact pin instead of a caret range.
+
 ### Added
 
 - Staging: Vercel `Preview` deployments use the shared staging Supabase project, and the `staging` branch is served at `stockkit-staging.merqo.io`. The README's new Staging section lists stockkit's `Preview` values and the staging-first gate for PRs that add a migration. New `scripts/staging-migrate.sh` loads migrations into staging with psql (the kits share one migration history table with overlapping version numbers, so `supabase db push` cannot). The Staging section also covers the one pre-step stockkit's load needs: merqo's `0015` creates the same `vendor_avatars_public_read` policy as stockkit's `0006`, so drop it on staging first and let `0006` recreate it. The `staging sync` workflow keeps `staging` on `main` and triggers the Vercel deploy hook. Full setup: merqo's `docs/STAGING.md`.

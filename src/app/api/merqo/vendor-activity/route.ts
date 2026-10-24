@@ -11,7 +11,7 @@ import { withLogging } from '@/lib/utils/with-logging';
 
 export const revalidate = 0;
 
-const querySchema = z.object({ email: z.string().email() });
+const querySchema = z.object({ email: z.email() });
 
 export const GET = withLogging(async (request: NextRequest): Promise<NextResponse> => {
   if (!bearerOk(request)) {

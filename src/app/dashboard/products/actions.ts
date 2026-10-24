@@ -138,8 +138,7 @@ export async function saveProduct(input: ProductFormInput): Promise<SaveProductR
 
 /** Archive an owned product while retaining its stock ledger. */
 export async function archiveProduct(productId: string): Promise<ActionResult> {
-  if (!z.string().uuid().safeParse(productId).success)
-    return { success: false, error: 'Invalid product' };
+  if (!z.uuid().safeParse(productId).success) return { success: false, error: 'Invalid product' };
 
   const supabase = await createServerClient();
   const {
@@ -248,8 +247,7 @@ type GetMovementsResult = ActionResult<{ movements: StockMovement[] }>;
  * on Free; unlimited on Pro (see `ENTITLEMENTS.movementHistoryLimit`).
  */
 export async function getProductMovements(productId: string): Promise<GetMovementsResult> {
-  if (!z.string().uuid().safeParse(productId).success)
-    return { success: false, error: 'Invalid product' };
+  if (!z.uuid().safeParse(productId).success) return { success: false, error: 'Invalid product' };
 
   const supabase = await createServerClient();
   const {
@@ -271,8 +269,7 @@ type ExportCsvResult = ActionResult<{ csv: string }>;
 
 /** Full stock-movement ledger for one product as CSV text, Pro-only. */
 export async function exportProductMovementsCsv(productId: string): Promise<ExportCsvResult> {
-  if (!z.string().uuid().safeParse(productId).success)
-    return { success: false, error: 'Invalid product' };
+  if (!z.uuid().safeParse(productId).success) return { success: false, error: 'Invalid product' };
 
   const supabase = await createServerClient();
   const {

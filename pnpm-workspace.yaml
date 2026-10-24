@@ -17,8 +17,8 @@ overrides:
   postcss@<8.5.23: '>=8.5.23' # patches incomplete fix of the sourceMappingURL file-read advisory (GHSA-fxqj-rqcc-2cmp) — the earlier 8.5.12 pin only closed GHSA-6g55-p6wh-862q, not this follow-up
   nanoid@<3.3.17: '>=3.3.17' # patches high-severity DoS via GHSA-2v37-7h3g-55p8
 
-  undici@<7.29.1: '>=7.29.1 <8'
-  fast-uri@<4.1.5: '>=4.1.5 <5'
+  undici@<7.30.1: '>=7.30.1 <8'
+  fast-uri@<4.2.3: '>=4.2.3 <5'
   js-yaml@<4.3.1: '>=4.3.1 <5'
   js-yaml@>=5.0.0 <5.4.1: '>=5.4.1 <6'
   brace-expansion@<1.1.21: '>=1.1.21 <2'
@@ -27,3 +27,4 @@ overrides:
   source-map-js@<1.2.2: '>=1.2.2 <2'
   postcss-selector-parser@<7.1.6: '>=7.1.6 <8'
   fast-copy@<4.1.0: '>=4.1.0 <5'
+  zod@<4.6.6: '4.6.6'
