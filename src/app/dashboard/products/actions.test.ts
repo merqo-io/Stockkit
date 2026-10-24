@@ -244,7 +244,7 @@ describe('recordStockMovement — error mapping', () => {
     const { recordStockMovement } = await import('./actions');
     const result = await recordStockMovement(validInput);
 
-    expect(result).toEqual({ success: false, error: 'Not enough stock — check the quantity' });
+    expect(result).toEqual({ success: false, error: 'Not enough stock. Check the quantity' });
   });
 
   it('maps an ownership rejection to "Product not found"', async () => {

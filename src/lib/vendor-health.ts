@@ -103,6 +103,27 @@ export function vendorStatus(s: Signals, nowMs: number): VendorStatus {
   return 'quiet';
 }
 
+function bump(counts: Map<string, number>, key: string): void {
+  counts.set(key, (counts.get(key) ?? 0) + 1);
+}
+
+function rollUpMovements(movements: StockMovementLite[], cutoff30d: number) {
+  const totalMovements = new Map<string, number>();
+  const movements30d = new Map<string, number>();
+  const wasteMovements30d = new Map<string, number>();
+  const lastMovementAt = new Map<string, string>();
+
+  for (const m of movements) {
+    bump(totalMovements, m.vendor_id);
+    const cur = lastMovementAt.get(m.vendor_id);
+    if (!cur || m.created_at > cur) lastMovementAt.set(m.vendor_id, m.created_at);
+    if (Date.parse(m.created_at) < cutoff30d) continue;
+    bump(movements30d, m.vendor_id);
+    if (m.reason === 'waste') bump(wasteMovements30d, m.vendor_id);
+  }
+  return { totalMovements, movements30d, wasteMovements30d, lastMovementAt };
+}
+
 /**
  * Roll raw admin-overview rows into a per-vendor health map. Pure: no DB, no
  * clock. A product's stock movements cascade-delete with it (migration
@@ -116,27 +137,12 @@ export function buildVendorHealth(
   nowMs: number
 ): Map<string, VendorHealthRow> {
   const productCount = new Map<string, number>();
-  for (const p of products) {
-    productCount.set(p.vendor_id, (productCount.get(p.vendor_id) ?? 0) + 1);
-  }
+  for (const p of products) bump(productCount, p.vendor_id);
 
-  const cutoff30d = nowMs - ATTENTION_WINDOW_DAYS * MS_PER_DAY;
-  const totalMovements = new Map<string, number>();
-  const movements30d = new Map<string, number>();
-  const wasteMovements30d = new Map<string, number>();
-  const lastMovementAt = new Map<string, string>();
-
-  for (const m of movements) {
-    totalMovements.set(m.vendor_id, (totalMovements.get(m.vendor_id) ?? 0) + 1);
-    const cur = lastMovementAt.get(m.vendor_id);
-    if (!cur || m.created_at > cur) lastMovementAt.set(m.vendor_id, m.created_at);
-    if (Date.parse(m.created_at) >= cutoff30d) {
-      movements30d.set(m.vendor_id, (movements30d.get(m.vendor_id) ?? 0) + 1);
-      if (m.reason === 'waste') {
-        wasteMovements30d.set(m.vendor_id, (wasteMovements30d.get(m.vendor_id) ?? 0) + 1);
-      }
-    }
-  }
+  const { totalMovements, movements30d, wasteMovements30d, lastMovementAt } = rollUpMovements(
+    movements,
+    nowMs - ATTENTION_WINDOW_DAYS * MS_PER_DAY
+  );
 
   const out = new Map<string, VendorHealthRow>();
   for (const v of vendors) {

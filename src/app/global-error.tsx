@@ -1,14 +1,9 @@
+/* eslint-disable no-restricted-syntax -- renders without the app stylesheet, so colours stay literal */
 'use client';
 
 import { BRAND_PALE, BRAND_STEEL } from '@/lib/brand-icon';
 
-// Root error boundary. Next renders this ONLY when the root layout itself
-// throws (nested errors are caught by src/app/error.tsx); it replaces the
-// layout, so it must ship its own <html>/<body> and can't rely on the global
-// stylesheet having loaded — hence inline styles, hand-converted from
-// globals.css's light-mode OKLCH tokens to hex (reusing BRAND_STEEL/
-// BRAND_PALE, already the canonical hex approximation of --primary/
-// --primary-foreground). Kept deliberately tiny and dependency-free.
+// Replaces the root layout when it throws, so it ships its own <html> and inline styles.
 export default function GlobalError({
   reset,
 }: {
@@ -37,7 +32,7 @@ export default function GlobalError({
           <p
             style={{ fontSize: '0.9rem', color: '#5c6478', margin: '0 0 1.5rem', lineHeight: 1.5 }}
           >
-            An unexpected error interrupted the page. Please try again — if it keeps happening,
+            An unexpected error interrupted the page. Please try again. If it keeps happening,
             refresh in a moment.
           </p>
           <button

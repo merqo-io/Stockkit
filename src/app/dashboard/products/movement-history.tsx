@@ -24,7 +24,7 @@ export function MovementHistory({ productId, refreshKey }: Props) {
     let cancelled = false;
     // Reset before the async fetch so a slow load never shows stale history
     // from the previously selected product.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset must run before the async fetch
     setMovements(null);
     setFailed(false);
     getProductMovements(productId)

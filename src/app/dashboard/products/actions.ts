@@ -198,7 +198,7 @@ export async function recordStockMovement(
 
   if (error) {
     if (error.message.includes('below zero'))
-      return { success: false, error: 'Not enough stock — check the quantity' };
+      return { success: false, error: 'Not enough stock. Check the quantity' };
     if (error.message.includes('not found or not owned'))
       return { success: false, error: 'Product not found' };
     console.error('recordStockMovement failed', error.message);
