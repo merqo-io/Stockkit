@@ -9,7 +9,7 @@ import { withLogging } from '@/lib/utils/with-logging';
 
 export const revalidate = 0;
 
-const bodySchema = z.object({ user_id: z.string().uuid() });
+const bodySchema = z.object({ user_id: z.uuid() });
 
 export const POST = withLogging(async (request: NextRequest): Promise<NextResponse> => {
   if (!provisionBearerOk(request)) {

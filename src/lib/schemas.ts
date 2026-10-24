@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const MAX_MONEY_CENTS = 10_000_00;
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
@@ -32,7 +32,7 @@ export const vendorSchema = z.object({
 });
 
 export const productFormSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   name: z.string().min(1, 'Product name is required').max(100),
   // Free text — the UI offers unit presets (kg, pcs, box, …) but a vendor can
   // type anything that fits their own stock-keeping vocabulary.
@@ -56,7 +56,7 @@ export const productFormSchema = z.object({
 // — never chosen by the user through this form.
 export const stockMovementFormSchema = z
   .object({
-    product_id: z.string().uuid(),
+    product_id: z.uuid(),
     delta: z
       .number()
       .finite()

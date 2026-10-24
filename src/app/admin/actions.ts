@@ -11,7 +11,7 @@ import { MAX_MONEY_CENTS } from '@/lib/schemas';
 import { createServiceClient } from '@/lib/supabase/server';
 
 const setVendorPlanSchema = z.object({
-  vendorId: z.string().uuid(),
+  vendorId: z.uuid(),
   plan: z.enum(['free', 'pro']),
 });
 
