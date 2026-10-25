@@ -30,7 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { useAsyncAction } from '@/hooks';
-import { productFormSchema } from '@/lib/schemas';
+import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { archiveProduct, saveProduct } from './actions';
@@ -42,10 +42,96 @@ function submitLabel(saving: boolean, isNew: boolean) {
   return isNew ? 'Add product' : 'Save changes';
 }
 
+function UnitPicker({ unit, onChange }: { unit: string; onChange: (unit: string) => void }) {
+  const [unitOpen, setUnitOpen] = useState(false);
+  return (
+    <Popover open={unitOpen} onOpenChange={setUnitOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          id="product-unit"
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={unitOpen}
+          className="w-full justify-between font-normal"
+        >
+          {unit || 'Select unit'}
+          <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-56 p-0" align="start">
+        <Command>
+          <CommandInput
+            placeholder="Search or enter a unit…"
+            value={unit}
+            onValueChange={onChange}
+          />
+          <CommandList>
+            <CommandEmpty className="text-muted-foreground px-3 py-6 text-center text-sm">
+              No matching unit
+            </CommandEmpty>
+            {unit.trim() &&
+              !UNIT_PRESETS.some((u) => u.toLowerCase() === unit.trim().toLowerCase()) && (
+                <CommandGroup heading="Custom">
+                  <CommandItem value={unit} onSelect={() => setUnitOpen(false)}>
+                    <Check className="size-4 opacity-0" />
+                    Use &ldquo;{unit}&rdquo;
+                  </CommandItem>
+                </CommandGroup>
+              )}
+            <CommandGroup heading="Suggestions">
+              {UNIT_PRESETS.map((u) => (
+                <CommandItem
+                  key={u}
+                  value={u}
+                  onSelect={(value) => {
+                    onChange(value);
+                    setUnitOpen(false);
+                  }}
+                >
+                  <Check className={cn('size-4', unit === u ? 'opacity-100' : 'opacity-0')} />
+                  {u}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function savedProduct(existing: Product | undefined, input: ProductFormInput, id: string): Product {
+  const now = new Date().toISOString();
+  return {
+    id,
+    vendor_id: existing?.vendor_id ?? '',
+    name: input.name,
+    unit: input.unit,
+    unit_cost_cents: input.unit_cost_cents,
+    on_hand: existing ? existing.on_hand : input.on_hand,
+    low_stock_threshold: input.low_stock_threshold,
+    is_active: input.is_active,
+    created_at: existing?.created_at ?? now,
+    updated_at: now,
+  };
+}
+
 interface Props {
   product?: Product;
   onSaved: (product: Product) => void;
   onCancel?: () => void;
+}
+
+function initialDraft(product: Product | undefined) {
+  return {
+    name: product?.name ?? '',
+    unit: product?.unit ?? 'unit',
+    unitCostCents: product?.unit_cost_cents ?? 0,
+    onHand: String(product?.on_hand ?? 0),
+    lowStockThreshold: String(product?.low_stock_threshold ?? 0),
+    isActive: product?.is_active ?? true,
+  };
 }
 
 /** Create/edit form. Starting quantity is only editable when creating a new
@@ -53,17 +139,13 @@ interface Props {
  * Log stock form (StockLogForm), never a direct edit. */
 export function ProductForm({ product, onSaved, onCancel }: Props) {
   const isNew = !product;
-  const [name, setName] = useState(product?.name ?? '');
-  const [unit, setUnit] = useState(product?.unit ?? 'unit');
-  const [unitOpen, setUnitOpen] = useState(false);
-  const [unitCostCents, setUnitCostCents] = useState<number | undefined>(
-    product?.unit_cost_cents ?? 0
-  );
-  const [onHand, setOnHand] = useState(String(product?.on_hand ?? 0));
-  const [lowStockThreshold, setLowStockThreshold] = useState(
-    String(product?.low_stock_threshold ?? 0)
-  );
-  const [isActive, setIsActive] = useState(product?.is_active ?? true);
+  const initial = initialDraft(product);
+  const [name, setName] = useState(initial.name);
+  const [unit, setUnit] = useState(initial.unit);
+  const [unitCostCents, setUnitCostCents] = useState<number | undefined>(initial.unitCostCents);
+  const [onHand, setOnHand] = useState(initial.onHand);
+  const [lowStockThreshold, setLowStockThreshold] = useState(initial.lowStockThreshold);
+  const [isActive, setIsActive] = useState(initial.isActive);
   const { pending: saving, run: runSave } = useAsyncAction();
   const { pending: archiving, run: runArchive } = useAsyncAction();
 
@@ -92,19 +174,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           return;
         }
         toast.success(isNew ? 'Product added' : 'Product saved');
-        const now = new Date().toISOString();
-        onSaved({
-          id: result.productId,
-          vendor_id: product?.vendor_id ?? '',
-          name: parsed.data.name,
-          unit: parsed.data.unit,
-          unit_cost_cents: parsed.data.unit_cost_cents,
-          on_hand: isNew ? parsed.data.on_hand : (product?.on_hand ?? 0),
-          low_stock_threshold: parsed.data.low_stock_threshold,
-          is_active: parsed.data.is_active,
-          created_at: product?.created_at ?? now,
-          updated_at: now,
-        });
+        onSaved(savedProduct(product, parsed.data, result.productId));
       } catch {
         toast.error('Something went wrong. Please try again.');
       }
@@ -145,59 +215,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label htmlFor="product-unit">Unit</Label>
-          <Popover open={unitOpen} onOpenChange={setUnitOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                id="product-unit"
-                type="button"
-                variant="outline"
-                role="combobox"
-                aria-expanded={unitOpen}
-                className="w-full justify-between font-normal"
-              >
-                {unit || 'Select unit'}
-                <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-0" align="start">
-              <Command>
-                <CommandInput
-                  placeholder="Search or enter a unit…"
-                  value={unit}
-                  onValueChange={setUnit}
-                />
-                <CommandList>
-                  <CommandEmpty className="text-muted-foreground px-3 py-6 text-center text-sm">
-                    No matching unit
-                  </CommandEmpty>
-                  {unit.trim() &&
-                    !UNIT_PRESETS.some((u) => u.toLowerCase() === unit.trim().toLowerCase()) && (
-                      <CommandGroup heading="Custom">
-                        <CommandItem value={unit} onSelect={() => setUnitOpen(false)}>
-                          <Check className="size-4 opacity-0" />
-                          Use &ldquo;{unit}&rdquo;
-                        </CommandItem>
-                      </CommandGroup>
-                    )}
-                  <CommandGroup heading="Suggestions">
-                    {UNIT_PRESETS.map((u) => (
-                      <CommandItem
-                        key={u}
-                        value={u}
-                        onSelect={(value) => {
-                          setUnit(value);
-                          setUnitOpen(false);
-                        }}
-                      >
-                        <Check className={cn('size-4', unit === u ? 'opacity-100' : 'opacity-0')} />
-                        {u}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <UnitPicker unit={unit} onChange={setUnit} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="product-cost">Unit cost ($)</Label>

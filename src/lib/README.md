@@ -53,7 +53,8 @@ adaptation of qkit's `admin-vendor-health.ts` pattern to inventory-management
 signals instead of orders/booths: `vendorStatus(signals, nowMs)` classifies
 one vendor (first match wins — a real waste-ratio anomaly in the trailing
 30 days with a minimum 5-movement sample beats a stalled/silent/new/healthy
-read), `buildVendorHealth(vendors, products, movements, nowMs)` rolls raw
+read), `buildVendorHealth(vendors, products, movements, nowMs)` (with `rollUpMovements`
+and `bump` helpers) rolls raw
 admin-overview rows into a `Map<vendorId, VendorHealthRow>`, and
 `statusRank(status)` gives the sort key `listVendors()` uses. Pure — no DB,
 no clock reads of its own — so it's fully unit-tested in isolation
@@ -113,7 +114,8 @@ else (landing page, login) is public and skips the auth round-trip.
 `docs/business/2026-07-21-brand-icon-family-standard.md`'s shared
 formula. `BRAND_STEEL`/`BRAND_PALE` are concrete-hex approximations of
 `--primary`/`--primary-foreground` — keep in sync if those tokens change
-(currently the "Reefer Frost" theme's `#1f6e78`/`#eef3f2`).
+(currently the "Reefer Frost" theme's `#1f6e78`/`#eef3f2`). The file opts out of
+the colour-literal lint rule because `ImageResponse` needs literal colours.
 Its `fontFamily` fallback is the Georgia serif stand-in, matching
 qkit, now that the app's display font is Fraunces (shared family face,
 see `docs/business/2026-08-13-typography-family-standard.md`).

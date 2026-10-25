@@ -14,7 +14,7 @@ already uses, no new secret was minted).
   reads that user's `vendors` row. 404s if the vendor was never found at all,
   or has no `stockkit.vendors` row — "never touched stockkit" is a clean
   404, never a 200 with empty fields. Otherwise reads that vendor's
-  `products`/`stock_movements` and calls `computeVendorActivity`
+  `products`/`stock_movements` (via `readActivityRows`) and calls `computeVendorActivity`
   (`src/lib/merqo-vendor-activity.ts`), which reuses `vendor-health.ts`'s
   `buildVendorHealth` for the `status` field instead of duplicating its
   triage logic — the same map `/admin/vendors` builds. Returns

@@ -33,7 +33,7 @@ export default function RouteError({
         </p>
         <h1 className="mt-1 text-2xl leading-tight font-semibold">That didn&apos;t load</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          A hiccup on our end — it&apos;s usually a flaky connection. Try again.
+          A hiccup on our end. It&apos;s usually a flaky connection. Try again.
         </p>
         <Button
           onClick={reset}

@@ -42,7 +42,7 @@ export type AuditLogRow = {
 
 /** Renders a `detail` jsonb object as a flat "key: value, key: value" line. */
 function formatDetail(detail: Json | null): string | null {
-  if (detail == null || typeof detail !== 'object' || Array.isArray(detail)) return null;
+  if (detail === null || typeof detail !== 'object' || Array.isArray(detail)) return null;
   const entries = Object.entries(detail);
   if (entries.length === 0) return null;
   return entries.map(([key, value]) => `${key}: ${value}`).join(', ');

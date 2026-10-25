@@ -19,11 +19,7 @@ export function Nav({ authed = false }: NavProps) {
   return (
     <LandingNav
       wordmark={
-        // Plain <a>, not next/link's Link: this is a same-page hash jump to
-        // #top, and Link doesn't reliably update the URL bar's hash when
-        // only the fragment changes — it scrolls but leaves the old hash
-        // showing. A native anchor always gets this right.
-        // eslint-disable-next-line @next/next/no-html-link-for-pages
+        // eslint-disable-next-line @next/next/no-html-link-for-pages -- Link leaves the old hash in the URL bar on a fragment-only jump
         <a
           href="/#top"
           className="font-display text-3xl font-semibold tracking-tight transition-opacity hover:opacity-80"

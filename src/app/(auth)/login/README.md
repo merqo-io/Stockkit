@@ -2,7 +2,7 @@
 
 Combined sign-in/sign-up page. `page.tsx` is a thin `Suspense` wrapper;
 `login-form.tsx` holds the actual client component (email/password,
-Google OAuth — forces `hl=en` on the consent screen, cross-kit parity —
+`SentNotice` for the check-your-email screen, Google OAuth — forces `hl=en` on the consent screen, cross-kit parity —
 forgot-password). `actions.ts` has `completeSignup`, the
 server action that creates the `vendors` row after a new signup.
 `GoogleMark` comes from `@merqo/ui`, shared by the kit login pages.

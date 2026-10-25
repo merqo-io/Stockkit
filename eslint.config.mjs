@@ -1,6 +1,11 @@
+import { merqoEslintPreset } from '@merqo/ui/eslint';
 import coreWebVitals from 'eslint-config-next/core-web-vitals';
 import typescript from 'eslint-config-next/typescript';
 import sonarjs from 'eslint-plugin-sonarjs';
+
+const tsPlugin = typescript.find((c) => c.plugins?.['@typescript-eslint']).plugins[
+  '@typescript-eslint'
+];
 
 const config = [
   ...coreWebVitals,
@@ -13,14 +18,6 @@ const config = [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
-      // Comment hygiene: own-line comments only, no commented-out code. See templatecentral:standards code-standards/comments.md.
-      'no-inline-comments': [
-        'error',
-        { ignorePattern: 'eslint-|@ts-|prettier-|c8 |istanbul |webpackChunkName' },
-      ],
-      // sonarjs.configs.recommended ships this rule 'off'; this repo's comment-hygiene
-      // doctrine (AGENTS.md) requires it as a hard error.
-      'sonarjs/no-commented-code': 'error',
     },
   },
   {
@@ -30,19 +27,7 @@ const config = [
       'sonarjs/prefer-read-only-props': 'off',
     },
   },
-  {
-    // Tests and one-off scripts routinely label table-driven cases and
-    // fixtures with short trailing notes; that reads better inline, so the
-    // gate would be pure noise there. Fixtures also use fake secrets/URLs
-    // that sonarjs's security rules would otherwise false-positive on.
-    files: ['**/*.test.{ts,tsx}', '**/test/**', 'scripts/**', 'e2e/**'],
-    rules: {
-      'no-inline-comments': 'off',
-      'sonarjs/no-commented-code': 'off',
-      'sonarjs/no-hardcoded-secrets': 'off',
-      'sonarjs/no-clear-text-protocols': 'off',
-    },
-  },
+  ...merqoEslintPreset({ sonarjsPlugin: sonarjs.configs.recommended.plugins.sonarjs, tsPlugin }),
   {
     ignores: [
       '.next/**',

@@ -27,10 +27,7 @@ export function SiteFooter({
       copyright={creditText}
       showSignIn={showSignIn}
       wordmark={
-        /* Plain <a>, not next/link's Link — same-page hash jump to #top,
-           see Nav's wordmark comment for why Link doesn't reliably
-           update the URL bar's hash on a fragment-only navigation. */
-        /* eslint-disable-next-line @next/next/no-html-link-for-pages */
+        // eslint-disable-next-line @next/next/no-html-link-for-pages -- Link leaves the old hash in the URL bar on a fragment-only jump
         <a
           href="/#top"
           aria-label="stockkit home, back to top"

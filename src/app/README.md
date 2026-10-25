@@ -43,7 +43,8 @@ throws) and `not-found.tsx` (custom 404) are branded `@merqo/ui`
 app; `global-error.tsx` catches the one case
 those can't — the root layout itself throwing — so it ships its own
 `<html>`/`<body>` with inline styles hand-converted from `globals.css`'s
-light-mode tokens, since it can't rely on the stylesheet having loaded.
+light-mode tokens, since it can't rely on the stylesheet having loaded (so it opts out of the
+colour-literal lint rule).
 Matches qkit's and loopkit's three-file pattern. Their tests
 (`error.dom.test.tsx`, `not-found.dom.test.tsx`, `global-error.dom.test.tsx`)
 use the `.dom.test.tsx` suffix — stockkit's (and qkit's documented)

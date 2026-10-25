@@ -28,6 +28,47 @@ function submitLabel(loading: boolean, isSignin: boolean) {
   return isSignin ? 'Sign in' : 'Create account';
 }
 
+type Sent = { email: string; kind: 'signup' | 'reset' };
+
+function SentNotice({ sent, onBack }: { sent: Sent; onBack: () => void }) {
+  const isReset = sent.kind === 'reset';
+  return (
+    <main className="flex min-h-screen items-center justify-center p-5">
+      <div className="w-full max-w-md text-center">
+        <ElevatedCard className="px-7 py-10">
+          <Link href={PAGE_ROUTES.HOME} className="text-2xl font-bold tracking-tight">
+            <BrandText />
+          </Link>
+          <h1 className="mt-6 text-3xl leading-tight font-semibold">Check your email</h1>
+          <p className="text-muted-foreground mt-3 text-sm">
+            {isReset ? (
+              <>
+                We sent a password reset link to{' '}
+                <span className="text-foreground font-medium">{sent.email}</span>. Open it to choose
+                a new password.
+              </>
+            ) : (
+              <>
+                We sent a confirmation link to{' '}
+                <span className="text-foreground font-medium">{sent.email}</span>. Click it to
+                activate your account, then sign in.
+              </>
+            )}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-7 w-full rounded-xl"
+            onClick={onBack}
+          >
+            Back to sign in
+          </Button>
+        </ElevatedCard>
+      </div>
+    </main>
+  );
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,7 +79,7 @@ export function LoginForm() {
   const [stallName, setStallName] = useState('');
   const [stallNameError, setStallNameError] = useState<string | null>(null);
   const { pending: loading, run } = useAsyncAction();
-  const [sent, setSent] = useState<{ email: string; kind: 'signup' | 'reset' } | null>(null);
+  const [sent, setSent] = useState<Sent | null>(null);
 
   const {
     register,
@@ -140,44 +181,14 @@ export function LoginForm() {
   const isSignin = mode === 'signin';
 
   if (sent) {
-    const isReset = sent.kind === 'reset';
     return (
-      <main className="flex min-h-screen items-center justify-center p-5">
-        <div className="w-full max-w-md text-center">
-          <ElevatedCard className="px-7 py-10">
-            <Link href={PAGE_ROUTES.HOME} className="text-2xl font-bold tracking-tight">
-              <BrandText />
-            </Link>
-            <h1 className="mt-6 text-3xl leading-tight font-semibold">Check your email</h1>
-            <p className="text-muted-foreground mt-3 text-sm">
-              {isReset ? (
-                <>
-                  We sent a password reset link to{' '}
-                  <span className="text-foreground font-medium">{sent.email}</span>. Open it to
-                  choose a new password.
-                </>
-              ) : (
-                <>
-                  We sent a confirmation link to{' '}
-                  <span className="text-foreground font-medium">{sent.email}</span>. Click it to
-                  activate your account, then sign in.
-                </>
-              )}
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-7 w-full rounded-xl"
-              onClick={() => {
-                setSent(null);
-                setMode('signin');
-              }}
-            >
-              Back to sign in
-            </Button>
-          </ElevatedCard>
-        </div>
-      </main>
+      <SentNotice
+        sent={sent}
+        onBack={() => {
+          setSent(null);
+          setMode('signin');
+        }}
+      />
     );
   }
 
