@@ -1,6 +1,7 @@
 import { readAllRows } from '@/lib/read-all-rows';
 import { redirect } from 'next/navigation';
 
+import { PRODUCT_COLUMNS } from '@/lib/columns';
 import { createServerClient } from '@/lib/supabase/server';
 import { ProductsWorkspace } from './products-workspace';
 
@@ -16,7 +17,11 @@ export default async function ProductsPage() {
   if (!user) redirect('/login');
 
   const { data, error } = await readAllRows((after) => {
-    const query = supabase.from('products').select('*').order('id', { ascending: true }).limit(500);
+    const query = supabase
+      .from('products')
+      .select(PRODUCT_COLUMNS)
+      .order('id', { ascending: true })
+      .limit(500);
     return after === null ? query : query.gt('id', after);
   });
   if (error) throw new Error('Could not load inventory');

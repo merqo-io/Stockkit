@@ -138,4 +138,11 @@ describe('GET /auth/callback', () => {
       consoleError.mockRestore();
     });
   });
+
+  it('rejects an oversized authorization code without calling Supabase', async () => {
+    const { GET } = await import('./route');
+    const res = await GET(req(`http://localhost/auth/callback?code=${'a'.repeat(513)}`));
+    expect(res.headers.get('location')).toBe('http://localhost/login?error=oauth');
+    expect(createServerClientMock).not.toHaveBeenCalled();
+  });
 });

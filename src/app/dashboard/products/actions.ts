@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import type { ActionResult } from '@/lib/action-result';
 import { recordAudit } from '@/lib/audit';
+import { STOCK_MOVEMENT_COLUMNS } from '@/lib/columns';
 import { ENTITLEMENTS, normalizePlan, type Entitlement } from '@/lib/plan';
 import {
   productFormSchema,
@@ -220,7 +221,7 @@ async function readMovementPages(
   for (;;) {
     let query = supabase
       .from('stock_movements')
-      .select('*')
+      .select(STOCK_MOVEMENT_COLUMNS)
       .eq('product_id', productId)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })

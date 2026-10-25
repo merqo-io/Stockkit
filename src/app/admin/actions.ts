@@ -8,6 +8,7 @@ import { requireAdmin } from '@/lib/admin';
 import { recordAudit } from '@/lib/audit';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { MAX_MONEY_CENTS } from '@/lib/schemas';
+// eslint-disable-next-line no-restricted-imports -- admin reads rows across vendors that RLS hides; gated by requireAdmin
 import { createServiceClient } from '@/lib/supabase/server';
 
 const setVendorPlanSchema = z.object({

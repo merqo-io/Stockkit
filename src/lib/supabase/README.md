@@ -23,3 +23,5 @@ middleware helper that `src/proxy.ts` calls on every request.
 ## Boundary and coverage
 
 clients.test.ts verifies owned stockkit schema selection and client separation. Browser clients use only public Supabase values; the service-role factory remains server-only. These mocked factory tests do not replace database policy tests.
+
+`middleware.ts` clears the host-only copy of any auth cookie the browser sends twice (host-only plus `.merqo.io`) on every request, with no one-time marker, so a re-created duplicate cannot send the vendor back to /login.

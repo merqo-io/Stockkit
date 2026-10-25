@@ -176,3 +176,5 @@ cleanup contain rejected operations. Their primary account/profile writes
 retain failure reporting; cleanup failure cannot reverse completed work.
 
 `stock.ts` also owns typed stock-movement labels, including opening balances and unknown-reason display fallback.
+
+`security-headers.ts` holds the nonce route list and CSP source lists (including the Vercel toolbar origin outside production); `theme-props.ts` is shared by the root layout and the CSP; `columns.ts` lists the columns each table read selects; `admin.ts` also requires `aal2` in `requireAdmin()`.
