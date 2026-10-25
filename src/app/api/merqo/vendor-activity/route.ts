@@ -13,6 +13,39 @@ export const revalidate = 0;
 
 const querySchema = z.object({ email: z.email() });
 
+type ServiceClient = Awaited<ReturnType<typeof createServiceClient>>;
+
+type ActivityMovement = { vendor_id: string; reason: StockMovementReason; created_at: string };
+
+async function readActivityRows(supabase: ServiceClient, vendorId: string) {
+  const [productsRes, movementsRes] = await Promise.all([
+    readAllRows((after) => {
+      const query = supabase
+        .from('products')
+        .select('id, vendor_id')
+        .eq('vendor_id', vendorId)
+        .order('id', { ascending: true })
+        .limit(500);
+      return after === null ? query : query.gt('id', after);
+    }),
+    readAllRows((after) => {
+      const query = supabase
+        .from('stock_movements')
+        .select('id, vendor_id, reason, created_at')
+        .eq('vendor_id', vendorId)
+        .order('id', { ascending: true })
+        .limit(500);
+      return after === null ? query : query.gt('id', after);
+    }),
+  ]);
+  const error = productsRes.error ?? movementsRes.error;
+  return {
+    error: error?.message ?? null,
+    products: productsRes.data ?? [],
+    movements: (movementsRes.data ?? []) as ActivityMovement[],
+  };
+}
+
 export const GET = withLogging(async (request: NextRequest): Promise<NextResponse> => {
   if (!bearerOk(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -54,44 +87,13 @@ export const GET = withLogging(async (request: NextRequest): Promise<NextRespons
   }
   const vendor = vendorRes.data as { id: string; plan: VendorPlan; created_at: string };
 
-  const [productsRes, movementsRes] = await Promise.all([
-    readAllRows((after) => {
-      const query = supabase
-        .from('products')
-        .select('id, vendor_id')
-        .eq('vendor_id', user.id)
-        .order('id', { ascending: true })
-        .limit(500);
-      return after === null ? query : query.gt('id', after);
-    }),
-    readAllRows((after) => {
-      const query = supabase
-        .from('stock_movements')
-        .select('id, vendor_id, reason, created_at')
-        .eq('vendor_id', user.id)
-        .order('id', { ascending: true })
-        .limit(500);
-      return after === null ? query : query.gt('id', after);
-    }),
-  ]);
-  if (productsRes.error || movementsRes.error) {
-    console.error(
-      'merqo vendor-activity: read failed',
-      productsRes.error?.message ?? movementsRes.error?.message
-    );
+  const rows = await readActivityRows(supabase, user.id);
+  if (rows.error) {
+    console.error('merqo vendor-activity: read failed', rows.error);
     return NextResponse.json({ error: 'Upstream unavailable' }, { status: 503 });
   }
 
-  const payload = computeVendorActivity(
-    vendor,
-    productsRes.data ?? [],
-    (movementsRes.data ?? []) as {
-      vendor_id: string;
-      reason: StockMovementReason;
-      created_at: string;
-    }[],
-    Date.now()
-  );
+  const payload = computeVendorActivity(vendor, rows.products, rows.movements, Date.now());
 
   return NextResponse.json(payload);
 });
