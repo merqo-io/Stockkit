@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `.claude/skill-usage.log` is git-ignored, matching the other kits (the skill-usage hook writes it locally on every skill call).
+
 ## 0.3.0 - 2026-10-24
 
 ### Security
