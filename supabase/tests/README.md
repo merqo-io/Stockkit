@@ -84,6 +84,7 @@ what the app _asks_ the database for, never what the database _permits_.
 - `stock-write-boundary.test.sql` checks metadata-only vendor grants, validated stock RPC writes and rollback on ledger failure.
 - `core-table-grants.test.sql` checks the net table and column grants on `vendors`, `products` and `stock_movements` for `service_role` and `authenticated`, and that the service role can read all three.
 - `profile-sync-scope.test.sql` checks scoped entitlement/admin helpers and name-only shared profile synchronization. Two shared-schema cases skip when Merqo is absent from a standalone local database.
+- `db-hygiene.test.sql` checks the `0023` foreign key indexes and that every stockkit table has RLS on.
 
 ## Connectivity
 
