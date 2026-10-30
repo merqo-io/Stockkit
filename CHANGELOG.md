@@ -1,9 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## 0.3.1 - 2026-10-30
 
 ### Changed
 
+- Migration `0023_fk_indexes.sql` indexes the unindexed foreign keys the Supabase advisor flagged: `admin_audit.admin_id`, `feedback.vendor_id`, `products.vendor_id`, `stock_movements.vendor_id`. A pgTAP test (`db-hygiene.test.sql`) checks them and that every stockkit table has RLS on.
 - `.claude/skill-usage.log` is git-ignored, matching the other kits (the skill-usage hook writes it locally on every skill call).
 
 ## 0.3.0 - 2026-10-24

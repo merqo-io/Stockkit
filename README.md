@@ -357,3 +357,7 @@ Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@6.0.4`
 ## Security headers and MFA
 
 `src/proxy.ts` sets the CSP (nonce on per-request routes) and `X-Robots-Tag` off production. The admin area requires TOTP MFA; see `src/app/mfa/README.md` and `docs/security/`.
+
+## Database indexes
+
+Every foreign key column is indexed (`supabase/migrations/0023_fk_indexes.sql`), so the RLS policies that filter on `vendor_id` stay index-backed.
