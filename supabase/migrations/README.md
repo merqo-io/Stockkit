@@ -233,6 +233,7 @@ self-contained.
 ## Restored core table grants
 
 `0021_audit_truncate_privileges.sql` revokes `TRUNCATE` on `admin_audit` and `stock_movements` from the service role. `0022_restore_core_table_grants.sql` restates the net grants on `vendors`, `products` and `stock_movements`. Production ran `0001` before its table grants were added to that file, so neither `service_role` nor `authenticated` held them there. The migration grants only what `0001` intended after `0010`, `0015`, `0019` and `0021` narrowed it; `core-table-grants.test.sql` checks the result.
+
 - `0023_fk_indexes.sql` indexes every foreign key column the Supabase advisor flagged as unindexed, including `products.vendor_id` and `stock_movements.vendor_id`, which every RLS policy filters on.
 
 ## Parent
