@@ -214,7 +214,9 @@ Google" to work locally.
 
 Vercel `Preview` deployments use the shared staging Supabase project
 (`merqo-staging`), not production. The `staging` branch, kept on `main` by
-the `staging sync` workflow, is served at `stockkit-staging.merqo.io`. Full
+the `staging sync` workflow, is served at `stockkit-staging.merqo.io`. The
+workflow pushes with the `merqo-staging-sync` GitHub App token because a ruleset
+limits `staging` pushes to that app. Full
 setup, the env model and the rollout checklist live in merqo's
 `docs/STAGING.md`. stockkit's `Preview` values:
 
