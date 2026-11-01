@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
+
 ## 0.3.1 - 2026-10-30
 
 ### Changed
