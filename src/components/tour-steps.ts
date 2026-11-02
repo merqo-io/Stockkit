@@ -17,7 +17,7 @@ export function tourSteps(isMobile: boolean, exampleLowStockIndicator: string): 
       element: sel('inventory-value'),
       title: 'Your inventory value',
       description:
-        "Welcome to StockKit. Once you've added products, your total stock value and low or out-of-stock alerts show up right here, calculated live from what's on hand." +
+        "Welcome to stockkit. Once you've added products, your total stock value and low or out-of-stock alerts show up right here, calculated live from what's on hand." +
         `<div class="tour-example"><div class="tour-example-label">Example product</div><div class="tour-example-row" style="margin-top:0.35rem"><strong>Fresh Chicken Thigh, 1kg &middot; 4 kg left</strong><span style="display:inline-flex;align-items:center;gap:0.375rem">${exampleLowStockIndicator}</span></div></div>`,
     },
     {
