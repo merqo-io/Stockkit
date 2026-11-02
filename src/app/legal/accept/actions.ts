@@ -1,5 +1,6 @@
 'use server';
 
+import { clientIp } from '@/lib/rate-limit';
 // eslint-disable-next-line no-restricted-imports -- RLS has no client policy for this write; the caller is verified first
 import { createServerClient, createServiceClient } from '@/lib/supabase/server';
 import { safeRedirectPath } from '@merqo/ui';
@@ -17,10 +18,6 @@ function sha256(input: string): string {
 
 function merqoBaseUrl(): string {
   return process.env.MERQO_BASE_URL ?? 'https://www.merqo.io';
-}
-
-function clientIp(hdrs: Headers): string {
-  return hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() || hdrs.get('x-real-ip') || 'unknown';
 }
 
 /**
@@ -58,7 +55,7 @@ export async function acceptLegalTerms(formData: FormData): Promise<void> {
   }
 
   const reqHeaders = await headers();
-  const ip = clientIp(reqHeaders);
+  const ip = clientIp(reqHeaders) ?? 'unknown';
   const userAgent = reqHeaders.get('user-agent') || 'unknown';
 
   for (const docType of DOC_TYPES) {

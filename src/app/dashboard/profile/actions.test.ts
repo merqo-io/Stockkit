@@ -10,6 +10,11 @@ const mocks = vi.hoisted(() => ({
   from: vi.fn(),
   create: vi.fn(),
   revalidate: vi.fn(),
+  limits: vi.fn(),
+}));
+vi.mock('@/lib/rate-limit', async (orig) => ({
+  ...(await orig<typeof import('@/lib/rate-limit')>()),
+  checkLimits: mocks.limits,
 }));
 vi.mock('@/lib/supabase/server', () => ({ createServerClient: mocks.create }));
 vi.mock('@/lib/merqo-vendor-profile', () => ({
@@ -20,6 +25,7 @@ vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidate }));
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.limits.mockResolvedValue('allowed');
   mocks.getUser.mockResolvedValue({ data: { user: { id: 'vendor-a' } } });
   mocks.getProfile.mockResolvedValue({
     stall_name: 'Original',
@@ -33,6 +39,14 @@ beforeEach(() => {
 });
 
 describe('profile actions', () => {
+  it.each(['limited', 'error'])('fails closed when the limiter says %s', async (outcome) => {
+    mocks.limits.mockResolvedValue(outcome);
+    const expected = { success: false, error: 'Too many tries. Please wait and try again.' };
+    expect(await updateStallName({ name: 'Stall' })).toEqual(expected);
+    expect(await updateSocialLinks({ website: 'https://example.com' })).toEqual(expected);
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid inputs before database access', async () => {
     expect((await updateStallName({ name: '' })).success).toBe(false);
     expect((await updateSocialLinks({ website: 'broken' })).success).toBe(false);

@@ -2,6 +2,7 @@
 
 import type { ActionResult } from '@/lib/action-result';
 import { patchVendorProfile } from '@/lib/merqo-vendor-profile';
+import { checkLimits, LIMITS, RATE_LIMIT_MESSAGE, userAndIpSpecs } from '@/lib/rate-limit';
 import {
   profileNameSchema,
   socialLinksSchema,
@@ -31,6 +32,11 @@ export async function updateStallName(input: ProfileNameInput): Promise<ActionRe
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not signed in' };
+
+  const limited = await checkLimits(
+    userAndIpSpecs('profile', user.id, null, { user: LIMITS.profileUser })
+  );
+  if (limited !== 'allowed') return { success: false, error: RATE_LIMIT_MESSAGE };
 
   try {
     await patchVendorProfile(supabase, user.id, { stallName: parsed.data.name });
@@ -74,6 +80,11 @@ export async function updateSocialLinks(input: SocialLinksInput): Promise<Action
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not signed in' };
+
+  const limited = await checkLimits(
+    userAndIpSpecs('profile', user.id, null, { user: LIMITS.profileUser })
+  );
+  if (limited !== 'allowed') return { success: false, error: RATE_LIMIT_MESSAGE };
 
   try {
     await patchVendorProfile(supabase, user.id, { socialLinks: parsed.data });

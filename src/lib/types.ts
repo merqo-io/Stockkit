@@ -270,6 +270,11 @@ export interface Database {
         Args: { p_uid: string };
         Returns: boolean;
       };
+      // Fixed-window limiter (migration 0024); service role only.
+      check_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number };
+        Returns: boolean;
+      };
       record_stock_movement: {
         Args: {
           p_product_id: string;

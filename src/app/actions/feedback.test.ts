@@ -7,11 +7,17 @@ const { getUserMock, rpcMock, schemaMock, createServerClientMock } = vi.hoisted(
   createServerClientMock: vi.fn(),
 }));
 
+const { limitsMock } = vi.hoisted(() => ({ limitsMock: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
 }));
+vi.mock('@/lib/rate-limit', async (orig) => ({
+  ...(await orig<typeof import('@/lib/rate-limit')>()),
+  checkLimits: limitsMock,
+}));
 
 beforeEach(() => {
+  limitsMock.mockReset().mockResolvedValue('allowed');
   getUserMock.mockReset().mockResolvedValue({ data: { user: { id: 'v1' } } });
   rpcMock.mockReset().mockResolvedValue({ data: { id: 'fb1' }, error: null });
   schemaMock.mockReset().mockReturnValue({ rpc: rpcMock });
@@ -38,6 +44,17 @@ describe('submitFeedbackAction', () => {
     const result = await submitFeedbackAction({ nps: 11 });
     expect(result.success).toBe(false);
     expect(getUserMock).not.toHaveBeenCalled();
+    expect(rpcMock).not.toHaveBeenCalled();
+  });
+
+  it.each(['limited', 'error'])('fails closed when the limiter says %s', async (outcome) => {
+    limitsMock.mockResolvedValue(outcome);
+    const { submitFeedbackAction } = await import('./feedback');
+    const result = await submitFeedbackAction({ nps: 5 });
+    expect(result).toEqual({
+      success: false,
+      error: 'Too many tries. Please wait and try again.',
+    });
     expect(rpcMock).not.toHaveBeenCalled();
   });
 

@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { recordAudit } from '@/lib/audit';
-import { provisionBearerOk } from '@/lib/merqo-auth';
+import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { getOrCreateVendorProfile } from '@/lib/merqo-vendor-profile';
 import { createServiceClient } from '@/lib/supabase/server';
 import { withLogging } from '@/lib/utils/with-logging';
@@ -12,9 +12,8 @@ export const revalidate = 0;
 const bodySchema = z.object({ user_id: z.uuid() });
 
 export const POST = withLogging(async (request: NextRequest): Promise<NextResponse> => {
-  if (!provisionBearerOk(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await guardMerqoRoute(request, 'vendor-provision', 'provision');
+  if (denied) return denied;
 
   let json: unknown;
   try {

@@ -1,7 +1,7 @@
 import { readAllRows } from '@/lib/read-all-rows';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { bearerOk } from '@/lib/merqo-auth';
+import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { computeStockkitMetrics } from '@/lib/metrics';
 import { createServiceClient } from '@/lib/supabase/server';
 import type { StockMovementReason, VendorPlan } from '@/lib/types';
@@ -10,9 +10,8 @@ import { withLogging } from '@/lib/utils/with-logging';
 export const revalidate = 0;
 
 export const GET = withLogging(async (request: NextRequest): Promise<NextResponse> => {
-  if (!bearerOk(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await guardMerqoRoute(request, 'metrics', 'metrics');
+  if (denied) return denied;
 
   const supabase = await createServiceClient();
 
