@@ -6,6 +6,12 @@
 
 - The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
 
+## 0.4.1 - 2026-11-02
+
+### Changed
+
+- The onboarding tour welcome reads "Welcome to stockkit." in lowercase; only the logo mark is PascalCase.
+
 ## 0.4.0 - 2026-11-02
 
 ### Changed

@@ -25,6 +25,14 @@ describe('tourSteps', () => {
     expect(description).not.toContain('class="tour-example-pill"');
   });
 
+  it('welcomes the vendor with the lowercase brand name, since only the logo mark is PascalCase', () => {
+    for (const mode of [false, true]) {
+      const description = tourSteps(mode, renderTourExample())[0].description;
+      expect(description).toContain('Welcome to stockkit.');
+      expect(description).not.toContain('StockKit');
+    }
+  });
+
   it('opens on the inventory value stat and ends on the replay button in both modes', () => {
     for (const mode of [false, true]) {
       const steps = tourSteps(mode, renderTourExample());
