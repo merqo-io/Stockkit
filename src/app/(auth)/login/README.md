@@ -17,3 +17,5 @@ shows a generic toast instead of failing silently.
 
 Both the sign-in/sign-up card and the collapsed forgot-password panel are
 wrapped in `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local).
+
+`completeSignup` is rate limited (5 per hour per user, 20 per hour per IP) and fails closed, answering with "Too many tries. Please wait and try again."

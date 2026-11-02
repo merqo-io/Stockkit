@@ -365,3 +365,7 @@ Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@6.0.4`
 ## Database indexes
 
 Every foreign key column is indexed (`supabase/migrations/0023_fk_indexes.sql`), so the RLS policies that filter on `vendor_id` stay index-backed.
+
+## Rate limiting
+
+Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `stockkit.check_rate_limit` (migration 0024, apply before deploy) and `src/lib/rate-limit.ts`. The client IP comes from trusted headers only. Failed bearer auth on `/api/merqo/*` is logged without the token.
