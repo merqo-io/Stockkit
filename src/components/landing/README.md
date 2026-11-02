@@ -32,7 +32,7 @@ so the gradient "Stock"/flat "Kit" treatment never renders two different
 ways on the same page.
 
 `ledger-card-preview.tsx` is `Hero`'s illustration — a mock product card
-(name, stock-status dot, on-hand count, unit cost), not real data, but its
+(name, stock-status dot, on-hand count), not real data, but its
 recent-movement row cycles between two sample entries every few seconds
 (`prefers-reduced-motion`-gated, reusing the `.fade-rise` keyframe) so the
 page's one signature visual reads as a live ledger instead of a frozen
@@ -47,3 +47,5 @@ Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 `cleanup()` instead of declaring its own per-file `afterEach`.
 
 `BackToTop` comes from `@merqo/ui` and is rendered beside `SiteFooter` in the public layout.
+
+`landing-copy.dom.test.tsx` renders the real `Nav`, `Hero`, `HowItWorks`, `Benefits` and `Faq` together and guards the public copy: no `$`, em dash or banned words, the "In build" badge, the exact pilot pricing line, and every signup CTA pointing at `WAITLIST_URL`. Signed-out CTAs read "Join the waitlist"; `/login` and `/dashboard` stay reachable by direct URL and the nav "Sign in" link. `Hero` shows an "In build" badge with "Built, not yet tried with vendors."; the low-stock step says the dashboard shows what is running low, because nothing is sent to the vendor.

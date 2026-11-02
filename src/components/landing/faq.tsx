@@ -1,15 +1,18 @@
+export const PRICING_LINE =
+  "Free during the pilot. If we start charging, you'll get at least 30 days' notice first.";
+
 const FAQ = [
   {
     q: 'Does stockkit track sales automatically?',
-    a: "Not yet — today it's manual stock in/out and costing. Automatic sales-linked stock tracking is planned.",
+    a: 'No. You log stock in and out by hand, and stockkit works out the costing.',
   },
   {
     q: 'What counts as a stock movement?',
-    a: 'Restock (adding stock), waste (removing spoiled/lost stock), or adjustment (correcting a count) — every movement is kept as a permanent record.',
+    a: 'Restock (adding stock), waste (removing spoiled/lost stock), or adjustment (correcting a count). Every movement is kept as a permanent record.',
   },
   {
-    q: 'Is there a free plan?',
-    a: 'stockkit is free to use today.',
+    q: 'What will it cost?',
+    a: PRICING_LINE,
   },
 ];
 

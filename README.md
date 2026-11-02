@@ -2,10 +2,10 @@
 
 Inventory tracking for small vendors. Vendors sign in, add the products they
 stock, log restocks/waste/adjustments against a running on-hand count, and
-see stock value and low-stock alerts on a dashboard. The landing footer
+see stock value and low-stock flags on a dashboard. The landing footer
 matches qkit's exactly (single-row wordmark/tagline/copyright/sign-in
 link, no bottom CTA band above it), and the page's `BackToTop` button and
-"Get started" CTA size match the cross-kit landing-page parity pass.
+"Join the waitlist" CTA size match the cross-kit landing-page parity pass.
 Google OAuth sign-in forces the consent screen
 to English (`hl=en`), matching the same fix in paykit/merqo. The Free
 plan's 20-active-product cap is enforced in Postgres against both new
@@ -143,11 +143,13 @@ had not. `src/lib/image-upload-adapter.ts` stays local — the Storage
 bucket and object path are stockkit's own. Which kit uses which shared
 export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
+`@merqo/ui` is pinned to v0.36.0 (2026-11-02). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly.
+
 ## Routes
 
 | Route                 | Who                       | Purpose                                                                                                          |
 | --------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `/`                   | anyone                    | landing page, links to `/login`                                                                                  |
+| `/`                   | anyone                    | landing page, "In build" badge, waitlist CTA                                                                     |
 | `/login`              | anyone                    | Supabase email/password + Google OAuth sign-in / sign-up                                                         |
 | `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                   |
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                   |

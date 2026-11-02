@@ -5,10 +5,10 @@ import { describe, expect, it } from 'vitest';
 import { Hero } from './hero';
 
 describe('Hero', () => {
-  it('links Get started to signup when signed out', () => {
+  it('links Join the waitlist to the waitlist when signed out', () => {
     render(<Hero />);
-    const cta = screen.getByRole('link', { name: 'Get started' });
-    expect(cta.getAttribute('href')).toBe('/login?mode=signup');
+    const cta = screen.getByRole('link', { name: 'Join the waitlist' });
+    expect(cta.getAttribute('href')).toBe('https://merqo.io/waitlist?kit=stockkit');
   });
 
   it('links to the dashboard when signed in', () => {

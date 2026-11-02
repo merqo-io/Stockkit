@@ -9,6 +9,6 @@ describe('Faq', () => {
     render(<Faq />);
     expect(screen.getByText('Does stockkit track sales automatically?')).toBeTruthy();
     expect(screen.getByText('What counts as a stock movement?')).toBeTruthy();
-    expect(screen.getByText('Is there a free plan?')).toBeTruthy();
+    expect(screen.getByText('What will it cost?')).toBeTruthy();
   });
 });

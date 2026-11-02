@@ -33,7 +33,7 @@ export function SiteFooter({
           aria-label="stockkit home, back to top"
           className="font-display text-foreground text-lg font-bold tracking-tight transition-opacity hover:opacity-80"
         >
-          StockKit
+          stockkit
         </a>
       }
     />

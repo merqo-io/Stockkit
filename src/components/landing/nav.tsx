@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { BrandText } from '@/components/widgets';
-import { PAGE_ROUTES } from '@/lib/constants/routes';
+import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
 
 interface NavProps {
   authed?: boolean;
@@ -45,7 +45,7 @@ export function Nav({ authed = false }: NavProps) {
                 <Link href={PAGE_ROUTES.LOGIN}>Sign in</Link>
               </Button>
               <Button asChild size="sm" className="font-semibold">
-                <Link href={`${PAGE_ROUTES.LOGIN}?mode=signup`}>Get started</Link>
+                <a href={WAITLIST_URL}>Join the waitlist</a>
               </Button>
             </>
           )}
