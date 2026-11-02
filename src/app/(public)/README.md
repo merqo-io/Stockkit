@@ -16,3 +16,5 @@ auth-aware session check for free.
 ## Shared package note
 
 `BackToTop` now comes from `@merqo/ui` (v0.31.0) rather than `@/components/landing/back-to-top`.
+
+The landing is waitlist-only: signed-out CTAs link to `WAITLIST_URL` (`src/lib/constants/routes.ts`) and no pricing is shown beyond the pilot notice in the FAQ.

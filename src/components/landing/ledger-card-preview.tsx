@@ -54,7 +54,7 @@ export function LedgerCardPreview() {
         </div>
         <div>
           <p className="text-muted-foreground text-xs tracking-wide uppercase">Unit cost</p>
-          <p className="font-mono text-3xl font-semibold">$18.50</p>
+          <p className="font-mono text-3xl font-semibold">18.50</p>
         </div>
       </div>
       <div className="border-border mt-5 border-t pt-4">

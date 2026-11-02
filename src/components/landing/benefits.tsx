@@ -4,7 +4,7 @@ const BENEFITS = [
   {
     icon: Boxes,
     title: 'Always know your on-hand count',
-    body: 'Every restock, waste, and adjustment updates a running balance per product — no more counting shelves to find out what you actually have.',
+    body: 'Every restock, waste, and adjustment updates a running balance per product, so you can skip counting shelves to find out what you have.',
   },
   {
     icon: Coins,
@@ -14,7 +14,7 @@ const BENEFITS = [
   {
     icon: History,
     title: 'Nothing gets lost or overwritten',
-    body: 'Every stock change is kept as a permanent, append-only record — restock, waste, and adjustment history you can always look back on.',
+    body: 'Every stock change is kept as a permanent, append-only record: restock, waste, and adjustment history you can always look back on.',
   },
 ];
 

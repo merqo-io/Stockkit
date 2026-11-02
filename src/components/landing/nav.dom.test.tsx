@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest';
 import { Nav } from './nav';
 
 describe('Nav', () => {
-  it('shows Sign in and Get started when signed out', () => {
+  it('shows Sign in and Join the waitlist when signed out', () => {
     render(<Nav />);
     expect(screen.getByRole('link', { name: 'Sign in' }).getAttribute('href')).toBe('/login');
-    expect(screen.getByRole('link', { name: 'Get started' }).getAttribute('href')).toBe(
-      '/login?mode=signup'
+    expect(screen.getByRole('link', { name: 'Join the waitlist' }).getAttribute('href')).toBe(
+      'https://merqo.io/waitlist?kit=stockkit'
     );
   });
 

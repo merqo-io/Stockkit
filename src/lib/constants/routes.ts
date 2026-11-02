@@ -9,3 +9,5 @@ export const PAGE_ROUTES = {
   ADMIN_VENDORS: '/admin/vendors',
   ADMIN_ACTIVITY: '/admin/activity',
 } as const;
+
+export const WAITLIST_URL = 'https://merqo.io/waitlist?kit=stockkit';

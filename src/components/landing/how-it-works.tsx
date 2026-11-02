@@ -11,12 +11,12 @@ const STEPS = [
   {
     icon: RefreshCw,
     title: 'Log stock in and out',
-    body: 'Restock, record waste, or adjust counts — every change is logged.',
+    body: 'Restock, record waste, or adjust counts. Every change is logged.',
   },
   {
     icon: TrendingUp,
     title: 'Watch your numbers',
-    body: 'See total inventory value and get alerted when something runs low.',
+    body: 'See total inventory value and which products are running low on your dashboard.',
   },
 ];
 

@@ -6,6 +6,16 @@
 
 - The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
 
+## 0.4.0 - 2026-11-02
+
+### Changed
+
+- The public landing states readiness ("In build", "Built, not yet tried with vendors.") and publishes no pricing; the FAQ carries the pilot notice instead.
+- Signed-out signup CTAs read "Join the waitlist" and link to the merqo waitlist. `/login` and `/dashboard` stay reachable directly.
+- Landing and metadata copy no longer promises low-stock alerts, since nothing is sent; the dashboard flags low stock.
+- A landing copy guard test renders the real sections and checks for prices, em dashes, banned words, the pricing line and the waitlist links.
+- The `@merqo/ui` pin moves to v0.36.0.
+
 ## 0.3.1 - 2026-10-30
 
 ### Changed
