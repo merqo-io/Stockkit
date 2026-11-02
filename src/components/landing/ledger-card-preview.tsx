@@ -7,15 +7,7 @@ import { STOCK_STATUS_DOT_CLASS } from '@/lib/stock';
 import { cn } from '@/lib/utils';
 import { ElevatedCard } from '@merqo/ui';
 
-// A marketing illustration (not real data) — stockkit's answer to qkit's
-// live order-board carousel / loopkit's stamp card: show the actual product
-// concept (a ledger entry) instead of describing it in text. The activity
-// row cycles through a couple of sample entries so the card reads as a
-// *live, running* ledger rather than a frozen screenshot. Motion is gated
-// on prefers-reduced-motion (falls back to leaving the first entry showing,
-// same pattern as dashboard-tour.tsx's matchMedia guard) and reuses the
-// existing `.fade-rise` treatment (see globals.css) instead of introducing
-// new animation infrastructure.
+// Sample data for illustration, not a real product.
 const SAMPLE_ACTIVITY = [
   { icon: ArrowUpRight, tone: 'text-stock-ok', label: '+12 restock', time: '2h ago' },
   { icon: ArrowDownRight, tone: 'text-stock-low', label: '−3 waste', time: '5h ago' },
@@ -47,15 +39,9 @@ export function LedgerCardPreview() {
         </div>
         <span className="text-muted-foreground text-xs">In stock</span>
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-4">
-        <div>
-          <p className="text-muted-foreground text-xs tracking-wide uppercase">On hand</p>
-          <p className="font-mono text-3xl font-semibold">42</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground text-xs tracking-wide uppercase">Unit cost</p>
-          <p className="font-mono text-3xl font-semibold">18.50</p>
-        </div>
+      <div className="mt-5">
+        <p className="text-muted-foreground text-xs tracking-wide uppercase">On hand</p>
+        <p className="font-mono text-3xl font-semibold">42</p>
       </div>
       <div className="border-border mt-5 border-t pt-4">
         <div key={activityIndex} className="fade-rise flex items-center gap-2 text-sm">

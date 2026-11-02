@@ -35,7 +35,6 @@ export function Hero({ authed = false }: HeroProps) {
             <a href="#how">See how it works</a>
           </Button>
         </div>
-        <p className="text-muted-foreground mt-6 text-sm">Own your data.</p>
       </div>
       <div className="fade-rise flex justify-center lg:justify-end">
         <LedgerCardPreview />

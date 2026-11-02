@@ -32,7 +32,7 @@ so the gradient "Stock"/flat "Kit" treatment never renders two different
 ways on the same page.
 
 `ledger-card-preview.tsx` is `Hero`'s illustration — a mock product card
-(name, stock-status dot, on-hand count, unit cost), not real data, but its
+(name, stock-status dot, on-hand count), not real data, but its
 recent-movement row cycles between two sample entries every few seconds
 (`prefers-reduced-motion`-gated, reusing the `.fade-rise` keyframe) so the
 page's one signature visual reads as a live ledger instead of a frozen

@@ -2,8 +2,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { SiteFooter } from '@/components/layout/site-footer';
 import { Benefits } from './benefits';
-import { Faq } from './faq';
+import { Faq, PRICING_LINE } from './faq';
 import { Hero } from './hero';
 import { HowItWorks } from './how-it-works';
 import { Nav } from './nav';
@@ -26,6 +27,7 @@ function renderLanding() {
       <HowItWorks />
       <Benefits />
       <Faq />
+      <SiteFooter />
     </>
   );
 }
@@ -37,6 +39,7 @@ describe('landing copy guardrails', () => {
     expect(text).not.toContain('$');
     expect(text).not.toContain('—');
     expect(text).not.toMatch(/\/month|\bPro\b|free plan/i);
+    expect(text).not.toMatch(/own your data/i);
     for (const word of BANNED) expect(text).not.toMatch(word);
   });
 
@@ -44,9 +47,16 @@ describe('landing copy guardrails', () => {
     const { container } = renderLanding();
     expect(screen.getByText('In build')).toBeTruthy();
     expect(screen.getByText('Built, not yet tried with vendors.')).toBeTruthy();
-    expect(container.textContent).toContain(
+    expect(PRICING_LINE).toBe(
       "Free during the pilot. If we start charging, you'll get at least 30 days' notice first."
     );
+    expect(container.textContent).toContain(PRICING_LINE);
+  });
+
+  it('uses lowercase brand names in the footer', () => {
+    render(<SiteFooter />);
+    expect(screen.getByRole('link', { name: /stockkit home/ }).textContent).toBe('stockkit');
+    expect(screen.queryByText('StockKit')).toBeNull();
   });
 
   it('sends every signup CTA to the waitlist', () => {

@@ -6,7 +6,7 @@ nav lives in `src/components/landing/nav.tsx`, not here), plus
 `Providers`/`ThemeProvider`.
 
 `SiteFooter` is a single-row, bordered footer (`border-t`, transparent
-background) matching qkit's landing footer exactly — a `StockKit` wordmark
+background) matching qkit's landing footer exactly — a lowercase `stockkit` wordmark
 (also `/#top`), a one-line tagline, the mandatory `© <year> stockkit · a
 Merqo kit` credit line, an `/about` link, `@merqo/ui`'s `LegalFooterLinks`
 (Terms/Privacy, linking to `/legal/terms`/`/legal/privacy`), and (via the `showSignIn` prop,
