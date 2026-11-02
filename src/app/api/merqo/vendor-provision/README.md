@@ -28,4 +28,4 @@ already exist, then reports their plan.
 
 See the repo root [README.md](../../../../../README.md) for the full layout.
 
-The route is gated by `guardMerqoRoute` (`src/lib/merqo-auth.ts`): 120 requests per minute per IP (429 with Retry-After, fails open on limiter error), then the bearer check; a 401 logs route, reason and IP, never the token.
+The route is gated by `guardMerqoRoute` (`src/lib/merqo-auth.ts`): 120 requests per minute per route and IP (429 with Retry-After, fails open on limiter error), then the bearer check; a 401 logs route, reason and IP, never the token.

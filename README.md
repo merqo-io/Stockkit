@@ -368,4 +368,4 @@ Every foreign key column is indexed (`supabase/migrations/0023_fk_indexes.sql`),
 
 ## Rate limiting
 
-Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `stockkit.check_rate_limit` (migration 0024, apply before deploy) and `src/lib/rate-limit.ts`. The client IP comes from trusted headers only. Failed bearer auth on `/api/merqo/*` is logged without the token.
+Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `stockkit.check_rate_limit` (migration 0024, apply before deploy) and `src/lib/rate-limit.ts`. The client IP comes from `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop (never the first). Failed bearer auth on `/api/merqo/*` is logged without the token.

@@ -32,4 +32,4 @@ See the repo root [README.md](../../../../../README.md) for the full layout.
 
 Resolve the validated email through the bounded administrator listing, then page products and movements for that vendor. Query failures must not become an empty but successful activity card. Route tests assert the vendor filters and complete-read failure paths.
 
-The route is gated by `guardMerqoRoute` (`src/lib/merqo-auth.ts`): 120 requests per minute per IP (429 with Retry-After, fails open on limiter error), then the bearer check; a 401 logs route, reason and IP, never the token.
+The route is gated by `guardMerqoRoute` (`src/lib/merqo-auth.ts`): 120 requests per minute per route and IP (429 with Retry-After, fails open on limiter error), then the bearer check; a 401 logs route, reason and IP, never the token.
