@@ -177,3 +177,8 @@ retain failure reporting; cleanup failure cannot reverse completed work.
 `security-headers.ts` holds the nonce route list and CSP source lists (including the Vercel toolbar origin outside production); `theme-props.ts` is shared by the root layout and the CSP; `columns.ts` lists the columns each table read selects; `admin.ts` also requires `aal2` in `requireAdmin()`.
 
 `rate-limit.ts` — `clientIp` (trusted headers only, never the first `x-forwarded-for` hop), `checkLimits` (calls `stockkit.check_rate_limit`, migration 0024; returns allowed, limited or error so callers pick fail-open or fail-closed) and `userAndIpSpecs`. `merqo-auth.ts` also exports `guardMerqoRoute` (rate limit then bearer, with 401 logging).
+
+`ensure-vendor-row.ts` — `ensureVendorRow(supabase, knownUser?)`: upserts the
+local `vendors` row (`ignoreDuplicates`) for the signed-in user; shared by
+`/auth/callback` and `dashboard/layout.tsx` (self-heal for vendors arriving
+via the `*.merqo.io` cookie). Logs and swallows errors.

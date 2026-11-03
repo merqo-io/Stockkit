@@ -5,7 +5,7 @@ through. Exchanges the Supabase `code` for a session, then redirects to a
 safe same-origin `?next=` path (default `/dashboard`) or to
 `/login?error=oauth` on a missing/failed exchange.
 
-On a successful exchange, `ensureVendorRow` also self-heals a local
+On a successful exchange, `ensureVendorRow` (`@/lib/ensure-vendor-row`) also self-heals a local
 `stockkit.vendors` row for the signed-in user: the email/password sign-up
 flow creates one via `completeSignup` (`(auth)/login/actions.ts`), but
 Google OAuth sign-in has no equivalent step, so without this a vendor who
@@ -19,3 +19,7 @@ overwriting an existing stall name — on every later sign-in, including the
 password-recovery path this same route also serves.
 
 The `code` and `next` query values are parsed with `authCallbackQuerySchema` and `redirectPathSchema`.
+
+`dashboard/layout.tsx` calls the same helper when a signed-in vendor has no
+`vendors` row, since the auth cookie is shared across `*.merqo.io` and a vendor
+signed in via merqo can reach `/dashboard` without passing through this route.

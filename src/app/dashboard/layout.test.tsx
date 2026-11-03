@@ -1,14 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import DashboardLayout from './layout';
 
-const { getUserMock, fromMock, createServerClientMock, resolveVendorNameMock, stampTourSeenMock } =
-  vi.hoisted(() => ({
-    getUserMock: vi.fn(),
-    fromMock: vi.fn(),
-    createServerClientMock: vi.fn(),
-    resolveVendorNameMock: vi.fn(),
-    stampTourSeenMock: vi.fn(),
-  }));
+const {
+  getUserMock,
+  fromMock,
+  createServerClientMock,
+  resolveVendorNameMock,
+  stampTourSeenMock,
+  ensureVendorRowMock,
+} = vi.hoisted(() => ({
+  getUserMock: vi.fn(),
+  fromMock: vi.fn(),
+  createServerClientMock: vi.fn(),
+  resolveVendorNameMock: vi.fn(),
+  stampTourSeenMock: vi.fn(),
+  ensureVendorRowMock: vi.fn(),
+}));
 
 vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
@@ -16,6 +23,10 @@ vi.mock('@/lib/supabase/server', () => ({
 
 vi.mock('@/lib/vendor-name', () => ({
   resolveVendorName: resolveVendorNameMock,
+}));
+
+vi.mock('@/lib/ensure-vendor-row', () => ({
+  ensureVendorRow: ensureVendorRowMock,
 }));
 
 vi.mock('@/lib/tour-prefs', () => ({
@@ -46,6 +57,7 @@ beforeEach(() => {
   fromMock.mockReset();
   resolveVendorNameMock.mockReset();
   stampTourSeenMock.mockReset().mockResolvedValue(undefined);
+  ensureVendorRowMock.mockReset().mockResolvedValue('Seeded Name');
   createServerClientMock.mockReset().mockResolvedValue({
     auth: { getUser: getUserMock },
     from: fromMock,
@@ -123,10 +135,9 @@ describe('DashboardLayout', () => {
     expect(stampTourSeenMock).toHaveBeenCalledWith(expect.anything(), 'v1');
   });
 
-  it('durably stamps tour_seen_at when no vendor row is found yet', async () => {
-    getUserMock.mockResolvedValue({
-      data: { user: { id: 'v1', user_metadata: {} } },
-    });
+  it('creates the missing vendor row before stamping the tour, and uses its name', async () => {
+    const user = { id: 'v1', user_metadata: {} };
+    getUserMock.mockResolvedValue({ data: { user } });
     fromMock.mockReturnValue({
       select: () => ({
         eq: () => ({
@@ -134,12 +145,30 @@ describe('DashboardLayout', () => {
         }),
       }),
     });
+    resolveVendorNameMock.mockResolvedValue('Seeded Name');
+
+    const { default: DashboardLayout } = await import('./layout');
+    await DashboardLayout({ children: null });
+
+    expect(ensureVendorRowMock).toHaveBeenCalledWith(expect.anything(), user);
+    expect(stampTourSeenMock).toHaveBeenCalledWith(expect.anything(), 'v1');
+    expect(ensureVendorRowMock.mock.invocationCallOrder[0]).toBeLessThan(
+      stampTourSeenMock.mock.invocationCallOrder[0]
+    );
+    expect(resolveVendorNameMock).toHaveBeenCalledWith(expect.anything(), 'v1', 'Seeded Name');
+  });
+
+  it('does not touch the vendor row when it already exists', async () => {
+    getUserMock.mockResolvedValue({
+      data: { user: { id: 'v1', user_metadata: {} } },
+    });
+    mockVendorRow({ name: 'Ah Huat', tour_seen_at: null });
     resolveVendorNameMock.mockResolvedValue('Ah Huat');
 
     const { default: DashboardLayout } = await import('./layout');
     await DashboardLayout({ children: null });
 
-    expect(stampTourSeenMock).toHaveBeenCalledWith(expect.anything(), 'v1');
+    expect(ensureVendorRowMock).not.toHaveBeenCalled();
   });
 
   it('does not re-stamp tour_seen_at once it is already set', async () => {
