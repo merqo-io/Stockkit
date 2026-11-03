@@ -2,7 +2,6 @@
 
 import { DataTable, type DataTableColumn } from '@merqo/ui';
 
-import { VendorPlanToggle } from '@/app/admin/vendors/vendor-plan-toggle';
 import { VendorStatusBadge } from '@/app/admin/vendors/vendor-status-badge';
 import { Badge } from '@/components/ui/badge';
 import type { VendorRow } from '@/lib/admin-data';
@@ -26,11 +25,6 @@ const columns: DataTableColumn<VendorRow>[] = [
     header: 'Joined',
     cell: (v) => new Date(v.created_at).toLocaleDateString(),
     className: 'text-muted-foreground',
-  },
-  {
-    header: 'Action',
-    cell: (v) => <VendorPlanToggle vendorId={v.id} vendorName={v.name} plan={v.plan} />,
-    className: 'text-right',
   },
 ];
 

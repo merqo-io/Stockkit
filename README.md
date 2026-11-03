@@ -71,11 +71,10 @@ kit's real `<kit>.merqo.io` domain as of v0.14.1 — v0.14.0 had pointed at
 each kit's `-sg.vercel.app` deployment host instead, a different domain
 from the shared-session cookie's `.merqo.io` scope) into `@merqo/ui`'s
 "Switch products" submenu, letting a signed-in vendor jump to another kit's
-dashboard — SSO handles auth, this is pure in-product navigation. The Pro
-price ($19.99/mo) lives in a live, admin-editable `stockkit.pricing`
-table (`supabase/migrations/0014_stockkit_pricing.sql`, seeded, public-read
-RLS, service-role-only writes) rather than a hardcoded constant — an admin
-can change it from `/admin`'s Pricing section with no redeploy. A
+dashboard, SSO handles auth, this is pure in-product navigation. A vendor's
+plan is a cache of the entitlement merqo pushes to `POST /api/merqo/entitlement`
+(`stockkit.vendor_entitlements`, migration `0025`); stockkit holds no price or
+plan toggle of its own. A
 mechanical comment-hygiene check (templateCentral 5.13.0's pattern list)
 runs on every edit and in CI, flagging change-narration comments and
 oversized comment blocks. `pnpm-workspace.yaml`'s `overrides` force-patches
@@ -155,9 +154,9 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                   |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                         |
 | `/dashboard/products` | vendor (auth)             | product list; log stock, edit products, view movement history                                                    |
-| `/dashboard/plan`     | vendor (auth)             | Free/Pro plan summary + request-upgrade CTA                                                                      |
-| `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity, live Pro pricing editor         |
-| `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status, a Free/Pro plan toggle, sorted most-urgent first                       |
+| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; plan changes happen in the Merqo account                                      |
+| `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                  |
+| `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                |
 | `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                           |
 | `/legal/*`            | anyone / vendor (auth)    | Terms of Service, Privacy Policy, and the accept interstitial for a stale vendor — own README (`src/app/legal/`) |
 | `/about`              | anyone                    | "Why Merqo" page, `@merqo/ui`'s shared `AboutMerqo` component (`v0.25.0`) — own README (`src/app/about/`)        |
@@ -189,8 +188,8 @@ Set these in `.env.local` (find them in Supabase → Project Settings → API).
 Apply the schema (creates the `stockkit` schema, `vendors`/`products`/
 `stock_movements` tables, RLS policies, the `record_stock_movement` /
 `sync_vendor_profile` functions, the `admins`/`admin_audit` tables +
-`is_admin()` function backing the `/admin` console, and the single-row
-`pricing` table seeding the live Pro price):
+`is_admin()` function backing the `/admin` console; later migrations add the
+`vendor_entitlements` cache and drop `vendors.plan` and `pricing`):
 
 - **With the Supabase CLI:** `supabase db push`, then keep `src/lib/types.ts`
   in sync by hand (or `supabase gen types typescript --linked`).
@@ -319,7 +318,7 @@ transaction). See `AGENTS.md` for full conventions.
 - `src/app/api/health/` — the scaffold health-check route (logging-wrapped, used by the Dockerfile healthcheck); untouched.
 - `src/app/api/merqo/` — the merqo cutover: `metrics/`, `vendor-status/`, `vendor-provision/`, and `vendor-activity/`, bearer-secret Route Handlers merqo's hub calls into (own README, and one per route folder).
 - `src/app/dashboard/` — the authenticated vendor dashboard: `layout.tsx` (resolves the session + stall name — via `@/lib/vendor-name`'s `resolveVendorName`, reading the shared `merqo.vendor_profile`, not the local `vendors.name` column — + avatar URL, renders `dashboard-nav.tsx` — a thin adapter over `@merqo/ui`'s composed `DashboardNav`+`AccountMenu`, its header now width-constrained by an inner `max-w-7xl` container (as of `@merqo/ui` v0.9.0 — was full-bleed/edge-to-edge and misaligned against the page content below it) — the shared component's own header layout, with inline Overview/Products links and the account dropdown — and `@/components/dashboard-tour`'s onboarding tour), `loading.tsx` (centered spinner shown while this segment or any nested page loads), `(overview)/page.tsx` (stock-value/low/out-of-stock stats, shared `StatTile`), and `products/` (the products workspace — own README).
-- `src/app/admin/` — the Merqo-team admin console (ported from loopkit's admin-console pattern): `requireAdmin()`-gated layout + nav, an overview page (vendor/product/plan totals + recent cross-vendor stock activity), `vendors/` (every vendor with a Free/Pro plan toggle), and `activity/` (an `admin_audit` viewer via `@merqo/ui`'s shared `AuditLogTable`) — own READMEs. Backed by `src/lib/admin.ts`/`admin-data.ts` and migration `0013_stockkit_admin.sql`.
+- `src/app/admin/`, the Merqo-team admin console (ported from loopkit's admin-console pattern): `requireAdmin()`-gated layout + nav, an overview page (vendor/product/plan totals + recent cross-vendor stock activity), `vendors/` (every vendor with its plan badge), and `activity/` (an `admin_audit` viewer via `@merqo/ui`'s shared `AuditLogTable`), own READMEs. Backed by `src/lib/admin.ts`/`admin-data.ts` and migration `0013_stockkit_admin.sql`.
 - `src/components/dashboard-tour.tsx` + `tour-steps.ts` — thin adapter over `@merqo/ui`'s `DashboardTour`, which owns the `driver.js` overlay lifecycle (auto-runs once on first login, tracked server-side via `vendors.tour_seen_at`, stamped as soon as the tour starts rather than when it finishes, so a mid-tour refresh can't re-trigger it), replay button, and popover theming (generated at runtime from this app's own CSS custom properties — no local `tour.css`); stockkit supplies step content and routing.
 - `src/app/actions/` — server actions shared across routes rather than colocated with a single page (vendor NPS feedback, Get-help support messages) — own README.
 - `src/components/ui/` — shadcn primitives (CLI-managed style, hand-copied from the sibling `qkit` project where a needed one — `checkbox`/`switch`/`alert-dialog` — wasn't already present here) — own README.

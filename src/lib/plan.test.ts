@@ -1,17 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { ENTITLEMENTS, normalizePlan, resolvePlanView } from './plan';
+import { ENTITLEMENTS, resolvePlanView, resolveTier } from './plan';
 
-describe('normalizePlan', () => {
-  it('returns "pro" only for the exact string "pro"', () => {
-    expect(normalizePlan('pro')).toBe('pro');
+describe('resolveTier', () => {
+  const now = new Date('2026-11-03T00:00:00Z');
+
+  it('is free without a cache row', () => {
+    expect(resolveTier(null, now)).toBe('free');
+    expect(resolveTier(undefined, now)).toBe('free');
   });
 
-  it('coerces anything else to "free"', () => {
-    expect(normalizePlan('free')).toBe('free');
-    expect(normalizePlan(undefined)).toBe('free');
-    expect(normalizePlan(null)).toBe('free');
-    expect(normalizePlan('PRO')).toBe('free');
-    expect(normalizePlan(123)).toBe('free');
+  it('is free for a free row', () => {
+    expect(resolveTier({ tier: 'free', valid_until: null }, now)).toBe('free');
+  });
+
+  it('is pro for a paid row with no expiry', () => {
+    expect(resolveTier({ tier: 'paid', valid_until: null }, now)).toBe('pro');
+  });
+
+  it('is pro for a paid row that has not yet lapsed', () => {
+    expect(resolveTier({ tier: 'paid', valid_until: '2026-11-04T00:00:00Z' }, now)).toBe('pro');
+  });
+
+  it('lapses to free once valid_until has passed, with no push', () => {
+    expect(resolveTier({ tier: 'paid', valid_until: '2026-11-02T00:00:00Z' }, now)).toBe('free');
+    expect(resolveTier({ tier: 'paid', valid_until: '2026-11-03T00:00:00Z' }, now)).toBe('free');
+  });
+
+  it('treats an unrecognised tier as free', () => {
+    expect(resolveTier({ tier: 'PAID', valid_until: null }, now)).toBe('free');
   });
 });
 
@@ -36,21 +52,19 @@ describe('ENTITLEMENTS', () => {
 });
 
 describe('resolvePlanView', () => {
-  it('renders Free as capped metrics, no CSV line, and an upgrade CTA', () => {
+  it('renders Free as capped metrics and no CSV line', () => {
     const view = resolvePlanView('free', ENTITLEMENTS.free);
     expect(view.tier).toBe('free');
     expect(view.label).toBe('Free');
-    expect(view.showUpgrade).toBe(true);
     expect(view.features).toEqual([
       { kind: 'metric', prefix: 'Up to', value: 20, suffix: 'active products' },
       { kind: 'metric', prefix: 'Last', value: 10, suffix: 'stock movements per product' },
     ]);
   });
 
-  it('renders Pro as unlimited text lines, CSV export, and no upgrade CTA', () => {
+  it('renders Pro as unlimited text lines and CSV export', () => {
     const view = resolvePlanView('pro', ENTITLEMENTS.pro);
     expect(view.label).toBe('Pro');
-    expect(view.showUpgrade).toBe(false);
     expect(view.features).toEqual([
       { kind: 'text', text: 'Unlimited products' },
       { kind: 'text', text: 'Full stock movement history' },

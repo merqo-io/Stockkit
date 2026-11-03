@@ -16,19 +16,18 @@ what the app _asks_ the database for, never what the database _permits_.
   exercisable — and vendor D, added solely for the batched-reactivation
   test below). It asserts, per role:
   - **RLS is enabled** on `vendors`, `products`, `stock_movements`,
-    `feedback`, `pricing` — a policy on a table with RLS off is decoration.
+    `feedback`, `vendor_entitlements`, a policy on a table with RLS off is decoration.
   - **Cross-vendor isolation** — A reads/updates only its own rows; B's rows
     are invisible, and an update targeting them matches 0 rows rather than
     raising (the `USING` clause filters the candidate set, it doesn't throw).
   - **The append-only ledger** — `stock_movements` has no UPDATE/DELETE
     policy _or_ grant, so even a row's own owner is refused (`42501`).
-  - **Plan escalation is closed** (migration `0010`) — a vendor can update
-    `name`/`tour_seen_at` but not `plan`, and cannot smuggle `plan: 'pro'`
-    into their first `vendors` insert; the column-level grants reject the
-    statement before RLS is even consulted.
+  - **Plan escalation is closed**, a vendor can update `name`/`tour_seen_at`
+    and cannot write `vendor_entitlements` (merqo's pushed plan, migration
+    `0025`); `vendors.plan` no longer exists (`0026`).
   - **The Free active-product cap** (migration `0011`) — B is topped up to 20
     active products and refused a 21st, allowed again after deactivating one,
-    and unrestricted once its `plan` is set to `'pro'`. That part only
+    and unrestricted once it has a paid `vendor_entitlements` row. That part only
     exercises the RLS `WITH CHECK`; the multi-row bypass it cannot catch is
     covered separately against C, who is on Free with zero products, so
     every row of a 25-row `insert ... select` passes the per-row check and
@@ -57,12 +56,13 @@ what the app _asks_ the database for, never what the database _permits_.
     can't be used to probe an arbitrary vendor's plan over PostgREST.
   - **anon is locked out entirely** — no table-level grant at all, so reads
     raise `42501` rather than returning an empty set.
-  - **`pricing` is public-read, admin-write-only** (migration `0014`) — both
-    a signed-in vendor and `anon` can read the seeded row (`1999` cents), and
-    neither has an UPDATE grant at all, so a direct write from either role
-    raises `42501` before RLS is ever consulted; the only writer is the
-    service-role `setPricing` admin action, which this suite can't exercise
-    since service_role bypasses RLS by design.
+  - **`vendor_entitlements` is own-row read, service-role write** (migration
+    `0025`), neither a vendor nor `anon` can write it or execute
+    `apply_vendor_entitlement`, and `anon` cannot read it.
+  - **`vendor-entitlements.test.sql`**, covers the upsert function
+    (unknown email, stored, stale and equal `issued_at` no-ops) and the cap
+    reading the cache, including a lapsed `valid_until` and an open-ended
+    paid row.
   - **`admin_audit`/`stock_movements` stay append-only even for service_role**
     (migration `0015`) — since service_role carries BYPASSRLS, this is the
     one place the suite deliberately runs `set local role service_role` to

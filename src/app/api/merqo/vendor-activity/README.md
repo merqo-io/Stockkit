@@ -17,7 +17,8 @@ already uses, no new secret was minted).
   `products`/`stock_movements` (via `readActivityRows`) and calls `computeVendorActivity`
   (`src/lib/merqo-vendor-activity.ts`), which reuses `vendor-health.ts`'s
   `buildVendorHealth` for the `status` field instead of duplicating its
-  triage logic — the same map `/admin/vendors` builds. Returns
+  triage logic, the same map `/admin/vendors` builds. The `plan` comes from the
+  `vendor_entitlements` cache. Returns
   `{ active, plan, status, metrics, lastActivityAt }`, `metrics` being a
   generic `{label, value}[]` (Products / Stock movements (30d) / Waste ratio
   (30d)) merqo renders without needing stockkit-specific domain knowledge.

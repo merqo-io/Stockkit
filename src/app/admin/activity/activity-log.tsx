@@ -3,6 +3,7 @@
 import { AuditLogTable, type AuditLogEntry } from '@merqo/ui';
 
 const ACTION_LABEL: Record<string, string> = {
+  // These two labels are kept only so historical audit rows still render.
   set_vendor_plan: 'Set vendor plan',
   set_pricing: 'Set pricing',
   delete_product: 'Delete product',

@@ -1,3 +1,5 @@
+// Vendor-facing 'free'|'pro' differs from the wire and table 'free'|'paid' on
+// purpose; paid maps to pro.
 export type Tier = 'free' | 'pro';
 
 /**
@@ -29,13 +31,23 @@ const PRO: Entitlement = {
 
 export const ENTITLEMENTS: Record<Tier, Entitlement> = { free: FREE, pro: PRO };
 
+/** The cached subset of merqo's entitlement push that decides the tier. */
+export interface CachedEntitlement {
+  tier: string;
+  valid_until: string | null;
+}
+
 /**
- * Coerce an untrusted plan value to a known Tier. Anything that isn't
- * exactly 'pro' degrades to 'free', so gating never crashes on a bad or
- * missing value.
+ * Resolve a vendor's tier from the entitlement cache. Mirrors the SQL helper
+ * `stockkit.vendor_is_paid` (migration 0025): paid means tier 'paid' and a
+ * `valid_until` that is null or still in the future. Merqo has no cron, so a
+ * lapse applies here by comparing against `now`, not by waiting for a push.
+ * A missing row or anything unrecognised degrades to free.
  */
-export function normalizePlan(value: unknown): Tier {
-  return value === 'pro' ? 'pro' : 'free';
+export function resolveTier(row: CachedEntitlement | null | undefined, now: Date): Tier {
+  if (!row || row.tier !== 'paid') return 'free';
+  if (row.valid_until === null) return 'pro';
+  return new Date(row.valid_until).getTime() > now.getTime() ? 'pro' : 'free';
 }
 
 /**
@@ -52,7 +64,6 @@ export interface PlanView {
   tier: Tier;
   label: string;
   features: PlanFeature[];
-  showUpgrade: boolean;
 }
 
 /**
@@ -85,6 +96,5 @@ export function resolvePlanView(plan: Tier, entitlement: Entitlement): PlanView 
     tier: plan,
     label: plan === 'pro' ? 'Pro' : 'Free',
     features,
-    showUpgrade: plan === 'free',
   };
 }

@@ -6,8 +6,9 @@ import { listAllUsers } from '@/lib/list-all-users';
 import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { computeVendorActivity } from '@/lib/merqo-vendor-activity';
 import { createServiceClient } from '@/lib/supabase/server';
-import type { StockMovementReason, VendorPlan } from '@/lib/types';
+import type { StockMovementReason } from '@/lib/types';
 import { withLogging } from '@/lib/utils/with-logging';
+import { readVendorTier } from '@/lib/vendor-entitlement';
 
 export const revalidate = 0;
 
@@ -72,7 +73,7 @@ export const GET = withLogging(async (request: NextRequest): Promise<NextRespons
 
   const vendorRes = await supabase
     .from('vendors')
-    .select('id, plan, created_at')
+    .select('id, created_at')
     .eq('id', user.id)
     .maybeSingle();
   if (vendorRes.error) {
@@ -84,7 +85,11 @@ export const GET = withLogging(async (request: NextRequest): Promise<NextRespons
   if (!vendorRes.data) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
-  const vendor = vendorRes.data as { id: string; plan: VendorPlan; created_at: string };
+  const tier = await readVendorTier(supabase, user.id);
+  if (tier === null) {
+    return NextResponse.json({ error: 'Upstream unavailable' }, { status: 503 });
+  }
+  const vendor = { ...vendorRes.data, plan: tier };
 
   const rows = await readActivityRows(supabase, user.id);
   if (rows.error) {

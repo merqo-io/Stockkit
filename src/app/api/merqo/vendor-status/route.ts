@@ -5,8 +5,8 @@ import { listAllUsers } from '@/lib/list-all-users';
 import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { resolveVendorStatus } from '@/lib/merqo-vendor-status';
 import { createServiceClient } from '@/lib/supabase/server';
-import type { VendorPlan } from '@/lib/types';
 import { withLogging } from '@/lib/utils/with-logging';
+import { readVendorTier } from '@/lib/vendor-entitlement';
 
 export const revalidate = 0;
 
@@ -33,20 +33,20 @@ export const GET = withLogging(async (request: NextRequest): Promise<NextRespons
     (candidate) => candidate.email?.toLowerCase() === parsed.data.email.toLowerCase()
   );
   if (!user) return NextResponse.json({ active: false, plan: null });
-  const vendorsRes = await supabase
-    .from('vendors')
-    .select('id, plan')
-    .eq('id', user.id)
-    .maybeSingle();
+  const vendorsRes = await supabase.from('vendors').select('id').eq('id', user.id).maybeSingle();
   if (vendorsRes.error) {
     console.error('merqo vendor-status: read failed', vendorsRes.error.message);
+    return NextResponse.json({ error: 'Upstream unavailable' }, { status: 503 });
+  }
+  const tier = await readVendorTier(supabase, user.id);
+  if (tier === null) {
     return NextResponse.json({ error: 'Upstream unavailable' }, { status: 503 });
   }
 
   const status = resolveVendorStatus(
     parsed.data.email,
     (usersRes.data?.users ?? []).map((u) => ({ id: u.id, email: u.email ?? null })),
-    (vendorsRes.data ? [vendorsRes.data] : []) as { id: string; plan: VendorPlan }[]
+    vendorsRes.data ? [{ id: vendorsRes.data.id, plan: tier }] : []
   );
 
   return NextResponse.json(status);

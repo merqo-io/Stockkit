@@ -50,11 +50,11 @@ describe('platformTotals', () => {
   it('aggregates vendor plan counts, product active counts, and a head-count of movements', async () => {
     createServiceClientMock.mockResolvedValue({
       from: fromByTable({
-        vendors: {
+        vendors: { data: [{ id: 'v1' }, { id: 'v2' }, { id: 'v3' }], error: null },
+        vendor_entitlements: {
           data: [
-            { id: 'v1', plan: 'free' },
-            { id: 'v2', plan: 'pro' },
-            { id: 'v3', plan: 'free' },
+            { id: 'v2', tier: 'paid', valid_until: null },
+            { id: 'v3', tier: 'paid', valid_until: '2000-01-01T00:00:00Z' },
           ],
           error: null,
         },
@@ -194,9 +194,13 @@ describe('listVendors', () => {
       from: fromByTable({
         vendors: {
           data: [
-            { id: 'v2', name: 'Zebra Stall', plan: 'free', created_at: '2026-07-01T00:00:00Z' },
-            { id: 'v1', name: 'Ant Stall', plan: 'pro', created_at: '2026-06-01T00:00:00Z' },
+            { id: 'v2', name: 'Zebra Stall', created_at: '2026-07-01T00:00:00Z' },
+            { id: 'v1', name: 'Ant Stall', created_at: '2026-06-01T00:00:00Z' },
           ],
+          error: null,
+        },
+        vendor_entitlements: {
+          data: [{ id: 'v1', tier: 'paid', valid_until: null }],
           error: null,
         },
         products: {
@@ -240,9 +244,7 @@ describe('listVendors', () => {
     createServiceClientMock.mockResolvedValue({
       from: fromByTable({
         vendors: {
-          data: [
-            { id: 'v1', name: 'Solo Stall', plan: 'free', created_at: '2026-06-01T00:00:00Z' },
-          ],
+          data: [{ id: 'v1', name: 'Solo Stall', created_at: '2026-06-01T00:00:00Z' }],
           error: null,
         },
         products: { data: [], error: null },
@@ -405,34 +407,5 @@ describe('auditLog', () => {
 
     const { auditLog } = await import('./admin-data');
     await expect(auditLog()).rejects.toThrow('auditLog: timeout');
-  });
-});
-
-describe('currentPricing', () => {
-  it('returns the live pricing row', async () => {
-    createServiceClientMock.mockResolvedValue({
-      from: fromByTable({
-        pricing: { data: { monthly_cents: 1999, currency: 'SGD' }, error: null },
-      }),
-    });
-
-    const { currentPricing } = await import('./admin-data');
-    const result = await currentPricing();
-
-    expect(result).toEqual({ monthly_cents: 1999, currency: 'SGD' });
-  });
-
-  it('falls back to DEFAULT_PRICING when the row is missing', async () => {
-    createServiceClientMock.mockResolvedValue({
-      from: fromByTable({
-        pricing: { data: null, error: null },
-      }),
-    });
-
-    const { currentPricing } = await import('./admin-data');
-    const { DEFAULT_PRICING } = await import('@/lib/pricing');
-    const result = await currentPricing();
-
-    expect(result).toEqual(DEFAULT_PRICING);
   });
 });

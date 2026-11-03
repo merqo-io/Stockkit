@@ -2,6 +2,11 @@ import { NextRequest } from 'next/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { GET as metrics } from './metrics/route';
 import { GET as activity } from './vendor-activity/route';
+vi.mock('@/lib/vendor-entitlement', () => ({
+  readAllVendorTiers: vi.fn(async () => ({ tiers: new Map([['v1', 'pro']]), error: null })),
+  readVendorTier: vi.fn(async () => 'pro'),
+}));
+
 const m = vi.hoisted(() => ({ from: vi.fn(), listUsers: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({
   createServiceClient: async () => ({
@@ -64,7 +69,7 @@ beforeEach(() => {
   });
 });
 const tables = {
-  vendors: [{ id: 'v1', plan: 'pro', created_at: now }],
+  vendors: [{ id: 'v1', created_at: now }],
   products: [
     { id: 'p1', vendor_id: 'v1', unit_cost_cents: 100, on_hand: 1 },
     { id: 'p2', vendor_id: 'v1', unit_cost_cents: 200, on_hand: 2 },

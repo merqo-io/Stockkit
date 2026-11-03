@@ -6,6 +6,10 @@ vi.mock('@/lib/supabase/server', () => ({
   createServiceClient: vi.fn(async () => ({ from: fromMock })),
 }));
 
+vi.mock('@/lib/vendor-entitlement', () => ({
+  readAllVendorTiers: vi.fn(async () => ({ tiers: new Map([['v1', 'pro']]), error: null })),
+}));
+
 import { GET } from '@/app/api/merqo/metrics/route';
 
 function req(auth?: string) {
@@ -52,7 +56,7 @@ describe('GET /api/merqo/metrics (stockkit)', () => {
   it("returns a payload shaped for merqo's contract on success", async () => {
     mockTables({
       vendors: {
-        data: [{ id: 'v1', plan: 'pro', created_at: new Date().toISOString() }],
+        data: [{ id: 'v1', created_at: new Date().toISOString() }],
         error: null,
       },
       products: {

@@ -8,8 +8,9 @@ cross-kit health/revenue dashboard. Bearer-secret gated (`bearerOk`,
 
 ## Contents
 
-- `route.ts` — reads `vendors`, `products`, and `stock_movements`
-  concurrently, calls `computeStockkitMetrics` (`src/lib/metrics.ts`), and
+- `route.ts`: reads `vendors`, `products`, `stock_movements` and the
+  `vendor_entitlements` cache concurrently (the Free/Pro mix now comes from the
+  cache, since `vendors.plan` was dropped), calls `computeStockkitMetrics` (`src/lib/metrics.ts`), and
   returns the result shaped to merqo's `metricsPayloadSchema`. stockkit has
   no checkout/order concept — `src/lib/metrics.ts`'s own header comment
   documents the best-fit mapping onto its inventory domain: `revenue_cents_*`

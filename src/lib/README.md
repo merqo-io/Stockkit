@@ -8,18 +8,16 @@ this file keeps no input-side money helpers. `unit_cost_cents` fields are
 capped at `MAX_MONEY_CENTS` ($10k), matching qkit's fat-finger guard rail;
 `types.ts` — hand-maintained DB types mirroring
 `supabase/migrations/` (now including `vendors.tour_seen_at` added by
-`0008_vendor_tour_seen.sql` for the dashboard onboarding tour, `vendors.plan` added by
-`0009_vendor_plan.sql` for Free/Pro tier tracking, the `admins`/`admin_audit`
+`0008_vendor_tour_seen.sql` for the dashboard onboarding tour, the `vendor_entitlements`
+cache added by `0025_vendor_entitlements.sql` (merqo's pushed plan; `vendors.plan`
+was dropped by `0026`), the `admins`/`admin_audit`
 tables + `is_admin()` function added by `0013_stockkit_admin.sql` for the
-Merqo-team admin console, and the single-row `pricing` table added by
-`0014_stockkit_pricing.sql` for the live, admin-editable Pro price, and the
+Merqo-team admin console, and the
 `legal_check_state` table added by `0016_legal_check_state.sql` for the
 legal-acceptance gate's TTL cache);
-`pricing.ts` — `PricingConfig` interface and `DEFAULT_PRICING` fallback
-constant (seeded to match migration `0014`'s $19.99/mo, deliberately
-non-zero unlike qkit's zeroed fallback — stockkit has no pre-Stripe beta
-framing for zero to signal), consumed by `admin-data.ts`'s
-`currentPricing()`, the admin pricing form, and the vendor plan page;
+`merqo-entitlement-contract.ts`, the wire schema of merqo's entitlement push, copied
+verbatim from merqo; `vendor-entitlement.ts`, `readVendorTier`/`readAllVendorTiers`,
+the readers of the `vendor_entitlements` cache that apply `resolveTier`;
 `admin.ts` — `isAdmin(userId)`/`requireAdmin()`:
 the admin-console gate, 404-ing a signed-out or non-admin request via
 `notFound()` rather than revealing the route exists; `audit.ts` —
@@ -27,17 +25,16 @@ the admin-console gate, 404-ing a signed-out or non-admin request via
 `admin_audit`, via the service-role client. Best-effort — logs and swallows
 an insert failure rather than failing the action it records. Shared by every
 mutating action worth reconstructing or disputing later: the admin actions
-in `src/app/admin/actions.ts` (`setVendorPlan`/`setPricing`) and
+(none remain in `src/app/admin/`) and
 `archiveProduct` in `src/app/dashboard/products/actions.ts`. Archive retains
 the product identity and stock ledger; migration 0018 prevents parent deletion
 from cascading through existing movement rows. Client initialization and insert
 rejections are logged and contained along with returned database errors; `admin-data.ts` —
-`platformTotals()`/`recentActivity(limit)`/`listVendors()`/`auditLog(limit)`/`currentPricing()`:
+`platformTotals()`/`recentActivity(limit)`/`listVendors()`/`auditLog(limit)`:
 cross-vendor reads for the admin console via the service-role client
 (RLS-exempt on purpose), aggregated in TS over flat
-`vendors`/`products`/`stock_movements`/`admin_audit` reads; `currentPricing()`
-reads the single `pricing` row, falling back to `DEFAULT_PRICING` if it's
-missing; `auditLog(limit)` reads `admin_audit` most-recent-first, resolving
+`vendors`/`products`/`stock_movements`/`admin_audit` reads, with plans from the
+`vendor_entitlements` cache; `auditLog(limit)` reads `admin_audit` most-recent-first, resolving
 each row's `admin_id` to a vendor name the same way `recentActivity`
 resolves `vendor_id` (batched `vendors` lookup, falling back to the raw id
 when the actor isn't a vendor — e.g. an admin with no vendor row of their
@@ -64,11 +61,11 @@ product/movement exists at all, never on plan;
 `plan.ts` — Free/Pro
 entitlement model: `Tier` union type, `Entitlement` interface with
 capabilities (`maxActiveProducts`, `movementHistoryLimit`, `csvExport`),
-`ENTITLEMENTS` lookup table, `normalizePlan(value)` coercion function
-for gating vendor features by plan, and `resolvePlanView(plan, entitlement)`
-— the plan page's free-vs-pro branching (card label, `PlanFeature[]` list,
-whether the upgrade CTA shows) lifted out of the page's JSX so it's
-unit-testable without rendering a server component. Note
+`ENTITLEMENTS` lookup table, `resolveTier(row, now)` (the TS mirror of the SQL
+`vendor_is_paid`: paid and not past `valid_until`)
+for gating vendor features by plan. `resolvePlanView(plan, entitlement)` holds
+the plan page's free-vs-pro branching (card label, `PlanFeature[]` list),
+lifted out of the page's JSX so it's unit-testable without rendering a server component. Note
 `ENTITLEMENTS.free.maxActiveProducts` is the source of truth for the
 active-product cap, mirrored as a hardcoded literal in
 `supabase/migrations/0011_product_limit_rls.sql`'s `active_product_cap`

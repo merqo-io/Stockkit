@@ -47,7 +47,7 @@ select ok((select relrowsecurity from pg_class where oid = 'stockkit.vendors'::r
 select ok((select relrowsecurity from pg_class where oid = 'stockkit.products'::regclass), 'RLS on products');
 select ok((select relrowsecurity from pg_class where oid = 'stockkit.stock_movements'::regclass), 'RLS on stock_movements');
 select ok((select relrowsecurity from pg_class where oid = 'stockkit.feedback'::regclass), 'RLS on feedback');
-select ok((select relrowsecurity from pg_class where oid = 'stockkit.pricing'::regclass), 'RLS on pricing');
+select ok((select relrowsecurity from pg_class where oid = 'stockkit.vendor_entitlements'::regclass), 'RLS on vendor_entitlements');
 select ok((select relrowsecurity from pg_class where oid = 'stockkit.legal_check_state'::regclass), 'RLS on legal_check_state');
 select is(
   (select count(*)::int from pg_policies
@@ -74,14 +74,15 @@ select lives_ok(
 select lives_ok(
   $$ update stockkit.vendors set tour_seen_at = now() where id = '00000000-0000-0000-0000-00000000000a' $$,
   'A can update its own tour_seen_at');
--- The plan-escalation guard (migration 0010). `plan` is outside the
--- column-level UPDATE grant, so the privilege check rejects the statement
--- before RLS is ever consulted — a vendor cannot self-grant Pro.
+-- Plan escalation stays closed after migration 0026: the plan lives in the
+-- merqo-fed cache, which authenticated can only read, so a vendor cannot
+-- self-grant a paid tier.
 select throws_ok(
-  $$ update stockkit.vendors set plan = 'pro' where id = '00000000-0000-0000-0000-00000000000a' $$,
+  $$ insert into stockkit.vendor_entitlements (vendor_id, tier, issued_at)
+     values ('00000000-0000-0000-0000-00000000000a', 'paid', now()) $$,
   '42501',
   null,
-  'A cannot grant itself the Pro plan (no UPDATE grant on vendors.plan)');
+  'A cannot grant itself a paid tier (no INSERT grant on vendor_entitlements)');
 
 -- products: vendor-all, WITH CHECK closes the re-point escalation
 select isnt_empty(
@@ -153,18 +154,17 @@ select throws_ok(
   null,
   'A cannot insert feedback as B');
 
--- pricing: public read, no write for anyone except service_role (0014).
--- The seed row from migration 0014 is already present (id = 1, 1999 cents)
--- — no fixture insert needed.
-select is(
-  (select monthly_cents from stockkit.pricing where id = 1),
-  1999,
-  'A reads the live price');
+-- vendor_entitlements: own-row read, writes by service_role only (0025).
 select throws_ok(
-  $$ update stockkit.pricing set monthly_cents = 500 where id = 1 $$,
+  $$ update stockkit.vendor_entitlements set tier = 'paid' $$,
   '42501',
   null,
-  'A cannot update pricing (no UPDATE grant on stockkit.pricing)');
+  'A cannot update vendor_entitlements (no UPDATE grant)');
+select throws_ok(
+  $$ select stockkit.apply_vendor_entitlement('a@test.local', 'paid', false, '24h', null, now()) $$,
+  '42501',
+  null,
+  'A cannot execute apply_vendor_entitlement');
 
 -- legal_check_state: service-role-only (0016), no policy at all for A.
 select throws_ok(
@@ -191,20 +191,15 @@ select set_config(
   'request.jwt.claims',
   json_build_object('sub', '00000000-0000-0000-0000-00000000000c', 'role', 'authenticated')::text,
   true);
-select throws_ok(
-  $$ insert into stockkit.vendors (id, name, plan)
-     values ('00000000-0000-0000-0000-00000000000c', 'Vendor C', 'pro') $$,
-  '42501',
-  null,
-  'C cannot smuggle plan = pro into its first vendors insert');
+select hasnt_column('stockkit', 'vendors', 'plan', 'vendors.plan was dropped (0026)');
 select lives_ok(
   $$ insert into stockkit.vendors (id, name)
      values ('00000000-0000-0000-0000-00000000000c', 'Vendor C') $$,
   'C can insert its own vendors row with only (id, name)');
 select is(
-  (select plan from stockkit.vendors where id = '00000000-0000-0000-0000-00000000000c'),
-  'free',
-  'C lands on the free plan by column default');
+  stockkit.can_create_product('00000000-0000-0000-0000-00000000000c'),
+  true,
+  'C with no entitlement row is on the free cap and under it');
 
 -- ── Free-plan active-product cap (products_vendor_insert / 0011) ─────────────
 reset role;
@@ -237,10 +232,11 @@ select lives_ok(
      values ('00000000-0000-0000-0000-00000000000b', 'Back Under Cap') $$,
   'B can insert again once it is back under 20 active products');
 
--- Pro lifts the cap entirely. Set by the service role — the only writer of
--- vendors.plan after 0010.
+-- A paid entitlement with no expiry lifts the cap entirely. Written as the
+-- table owner, standing in for the service-role apply_vendor_entitlement.
 reset role;
-update stockkit.vendors set plan = 'pro' where id = '00000000-0000-0000-0000-00000000000b';
+insert into stockkit.vendor_entitlements (vendor_id, tier, issued_at)
+  values ('00000000-0000-0000-0000-00000000000b', 'paid', now());
 set local role authenticated;
 select set_config(
   'request.jwt.claims',
@@ -488,14 +484,16 @@ select throws_ok(
   '42501',
   null,
   'anon cannot execute can_create_product');
-select isnt_empty(
-  $$ select 1 from stockkit.pricing where id = 1 $$,
-  'anon can read pricing');
 select throws_ok(
-  $$ update stockkit.pricing set monthly_cents = 500 where id = 1 $$,
+  $$ select 1 from stockkit.vendor_entitlements $$,
   '42501',
   null,
-  'anon cannot update pricing');
+  'anon cannot read vendor_entitlements');
+select throws_ok(
+  $$ select stockkit.apply_vendor_entitlement('a@test.local', 'paid', false, '24h', null, now()) $$,
+  '42501',
+  null,
+  'anon cannot execute apply_vendor_entitlement');
 
 reset role;
 select * from finish();

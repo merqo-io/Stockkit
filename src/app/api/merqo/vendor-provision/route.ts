@@ -6,6 +6,7 @@ import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { getOrCreateVendorProfile } from '@/lib/merqo-vendor-profile';
 import { createServiceClient } from '@/lib/supabase/server';
 import { withLogging } from '@/lib/utils/with-logging';
+import { readVendorTier } from '@/lib/vendor-entitlement';
 
 export const revalidate = 0;
 
@@ -56,13 +57,8 @@ export const POST = withLogging(async (request: NextRequest): Promise<NextRespon
     return NextResponse.json({ error: 'Could not provision vendor' }, { status: 500 });
   }
 
-  const { data: vendorRow, error: readError } = await supabase
-    .from('vendors')
-    .select('plan')
-    .eq('id', user_id)
-    .maybeSingle();
-  if (readError || !vendorRow) {
-    console.error('vendor-provision: read-back failed', readError?.message);
+  const tier = await readVendorTier(supabase, user_id);
+  if (tier === null) {
     return NextResponse.json({ error: 'Could not read vendor plan' }, { status: 500 });
   }
 
@@ -71,12 +67,12 @@ export const POST = withLogging(async (request: NextRequest): Promise<NextRespon
   await recordAudit(user_id, 'merqo_vendor_provision', user_id, {
     actor: 'merqo_system',
     already_existed: alreadyExisted,
-    plan: vendorRow.plan,
+    plan: tier,
   });
 
   return NextResponse.json({
     ok: true,
     already_existed: alreadyExisted,
-    plan: vendorRow.plan,
+    plan: tier,
   });
 });

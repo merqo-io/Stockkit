@@ -6,7 +6,7 @@ import { z } from 'zod';
 import type { ActionResult } from '@/lib/action-result';
 import { recordAudit } from '@/lib/audit';
 import { STOCK_MOVEMENT_COLUMNS } from '@/lib/columns';
-import { ENTITLEMENTS, normalizePlan, type Entitlement } from '@/lib/plan';
+import { ENTITLEMENTS, type Entitlement } from '@/lib/plan';
 import {
   productFormSchema,
   stockMovementFormSchema,
@@ -15,23 +15,21 @@ import {
 } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
 import type { Product, StockMovement } from '@/lib/types';
+import { readVendorTier } from '@/lib/vendor-entitlement';
 
 type SaveProductResult = ActionResult<{ productId: string }>;
 
 /**
- * Resolve a vendor's plan and normalize it to an Entitlement. Fails closed to
- * Free when the lookup errors — the safe default, and what `normalizePlan`
- * already does for a missing/garbage value — but logs it, so a real outage
- * silently downgrading a paying Pro vendor (capped products, truncated
- * history, no CSV export) leaves a trace instead of nothing at all.
+ * Resolve a vendor's tier from the merqo entitlement cache and map it to an
+ * Entitlement. Fails closed to Free when the lookup errors; readVendorTier
+ * logs it, so a real outage silently downgrading a paying vendor (capped
+ * products, truncated history, no CSV export) leaves a trace.
  */
 async function vendorEntitlement(
   supabase: Awaited<ReturnType<typeof createServerClient>>,
   vendorId: string
 ) {
-  const { data, error } = await supabase.from('vendors').select('plan').eq('id', vendorId).single();
-  if (error) console.error('vendorEntitlement plan lookup failed', error.message);
-  return ENTITLEMENTS[normalizePlan(data?.plan)];
+  return ENTITLEMENTS[(await readVendorTier(supabase, vendorId)) ?? 'free'];
 }
 
 /**

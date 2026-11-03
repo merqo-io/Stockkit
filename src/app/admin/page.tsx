@@ -1,21 +1,16 @@
 import { Stat } from '@/app/admin/stat';
 import { requireAdmin } from '@/lib/admin';
-import { currentPricing, platformTotals, recentActivity } from '@/lib/admin-data';
+import { platformTotals, recentActivity } from '@/lib/admin-data';
 import { stockMovementReasonLabel } from '@/lib/stock';
 import { cn } from '@/lib/utils';
 import { ElevatedCard } from '@merqo/ui';
-import { PricingSection } from './pricing-section';
 
 export const revalidate = 0;
 
 export default async function AdminOverviewPage() {
   await requireAdmin();
 
-  const [totals, activity, pricing] = await Promise.all([
-    platformTotals(),
-    recentActivity(15),
-    currentPricing(),
-  ]);
+  const [totals, activity] = await Promise.all([platformTotals(), recentActivity(15)]);
 
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-5 py-8">
@@ -74,13 +69,6 @@ export default async function AdminOverviewPage() {
             )}
           </ul>
         </ElevatedCard>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
-          Pricing
-        </h2>
-        <PricingSection initial={pricing} />
       </section>
     </main>
   );

@@ -10,6 +10,7 @@ const {
   insertMock,
   insertSelectMock,
   singleMock,
+  tierMock,
   updateMock,
   updateEqMock,
   updateSelectMock,
@@ -29,6 +30,7 @@ const {
   insertMock: vi.fn(),
   insertSelectMock: vi.fn(),
   singleMock: vi.fn(),
+  tierMock: vi.fn(),
   updateMock: vi.fn(),
   updateEqMock: vi.fn(),
   updateSelectMock: vi.fn(),
@@ -44,6 +46,8 @@ vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
   createServiceClient: createServiceClientMock,
 }));
+
+vi.mock('@/lib/vendor-entitlement', () => ({ readVendorTier: tierMock }));
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 
@@ -61,8 +65,8 @@ function freshProductRow() {
 beforeEach(() => {
   getUserMock.mockReset().mockResolvedValue({ data: { user: { id: 'v1' } } });
 
-  // vendors plan lookup: from('vendors').select('plan').eq('id', ...).single()
-  singleMock.mockReset().mockResolvedValue({ data: { plan: 'free' }, error: null });
+  tierMock.mockReset().mockResolvedValue('free');
+  singleMock.mockReset().mockResolvedValue({ data: null, error: null });
 
   // Active-product count: from('products').select('id', {count:'exact', head:true})
   //   .eq('vendor_id', ...).eq('is_active', true). Real supabase-js resolves this
@@ -116,9 +120,8 @@ beforeEach(() => {
 
 describe('saveProduct — active-product cap', () => {
   it('rejects a new product on Free once the vendor already has 20 active products', async () => {
-    singleMock
-      .mockResolvedValueOnce({ data: { plan: 'free' }, error: null })
-      .mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
+    tierMock.mockResolvedValueOnce('free');
+    singleMock.mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
     headMock.mockResolvedValue({ count: 20, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -132,9 +135,8 @@ describe('saveProduct — active-product cap', () => {
   });
 
   it('allows a new product on Free when under the cap', async () => {
-    singleMock
-      .mockResolvedValueOnce({ data: { plan: 'free' }, error: null })
-      .mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
+    tierMock.mockResolvedValueOnce('free');
+    singleMock.mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
     headMock.mockResolvedValue({ count: 19, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -144,9 +146,8 @@ describe('saveProduct — active-product cap', () => {
   });
 
   it('allows unlimited new products on Pro regardless of count', async () => {
-    singleMock
-      .mockResolvedValueOnce({ data: { plan: 'pro' }, error: null })
-      .mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
+    tierMock.mockResolvedValueOnce('pro');
+    singleMock.mockResolvedValueOnce({ data: { id: 'p-new' }, error: null });
     headMock.mockResolvedValue({ count: 500, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -186,7 +187,7 @@ describe('saveProduct — active-product cap', () => {
 
   it('rejects reactivating a product on Free once back at the cap', async () => {
     existingMaybeSingleMock.mockResolvedValueOnce({ data: { is_active: false }, error: null });
-    singleMock.mockResolvedValueOnce({ data: { plan: 'free' }, error: null });
+    tierMock.mockResolvedValueOnce('free');
     headMock.mockResolvedValue({ count: 20, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -204,7 +205,7 @@ describe('saveProduct — active-product cap', () => {
 
   it('allows reactivating a product on Free when under the cap', async () => {
     existingMaybeSingleMock.mockResolvedValueOnce({ data: { is_active: false }, error: null });
-    singleMock.mockResolvedValueOnce({ data: { plan: 'free' }, error: null });
+    tierMock.mockResolvedValueOnce('free');
     headMock.mockResolvedValue({ count: 19, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -218,7 +219,7 @@ describe('saveProduct — active-product cap', () => {
 
   it('allows reactivating a product on Pro regardless of count', async () => {
     existingMaybeSingleMock.mockResolvedValueOnce({ data: { is_active: false }, error: null });
-    singleMock.mockResolvedValueOnce({ data: { plan: 'pro' }, error: null });
+    tierMock.mockResolvedValueOnce('pro');
     headMock.mockResolvedValue({ count: 500, error: null });
 
     const { saveProduct } = await import('./actions');
@@ -278,28 +279,18 @@ describe('recordStockMovement — error mapping', () => {
   });
 });
 
-describe('vendorEntitlement — fail-closed plan lookup', () => {
-  it('degrades to Free and logs when the vendors plan lookup errors', async () => {
-    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
-    singleMock.mockResolvedValueOnce({
-      data: null,
-      error: { message: 'connection reset by peer' },
-    });
+describe('vendorEntitlement, fail-closed lookup', () => {
+  it('degrades to Free when the entitlement lookup fails', async () => {
+    tierMock.mockResolvedValueOnce(null);
 
     const { exportProductMovementsCsv } = await import('./actions');
     const result = await exportProductMovementsCsv('11111111-1111-4111-8111-111111111111');
 
-    // Fail-closed: a Pro vendor whose lookup hiccups is treated as Free, but
-    // the outage is no longer silent.
+    // Fail-closed: a paid vendor whose lookup hiccups is treated as Free.
     expect(result).toEqual({
       success: false,
       error: 'CSV export is a Pro feature. Upgrade to export your full stock history.',
     });
-    expect(logged).toHaveBeenCalledWith(
-      'vendorEntitlement plan lookup failed',
-      'connection reset by peer'
-    );
-    logged.mockRestore();
   });
 });
 
@@ -326,7 +317,7 @@ describe('exportProductMovementsCsv', () => {
   it.each(['=1+1', '+SUM(1,2)', '-1+1', '@SUM(1,2)', '\t=1+1', '\r=1+1'])(
     'exports formula-like notes as text: %s',
     async (note) => {
-      singleMock.mockResolvedValueOnce({ data: { plan: 'pro' }, error: null });
+      tierMock.mockResolvedValueOnce('pro');
       const orderMock = vi.fn().mockResolvedValue({
         data: [{ created_at: '2026-07-01', reason: 'adjustment', delta: -1, note }],
         error: null,
@@ -354,7 +345,7 @@ describe('exportProductMovementsCsv', () => {
   });
 
   it('rejects on Free with a friendly error', async () => {
-    singleMock.mockResolvedValueOnce({ data: { plan: 'free' }, error: null });
+    tierMock.mockResolvedValueOnce('free');
 
     const { exportProductMovementsCsv } = await import('./actions');
     const result = await exportProductMovementsCsv('11111111-1111-4111-8111-111111111111');
@@ -366,7 +357,7 @@ describe('exportProductMovementsCsv', () => {
   });
 
   it('returns CSV content on Pro', async () => {
-    singleMock.mockResolvedValueOnce({ data: { plan: 'pro' }, error: null });
+    tierMock.mockResolvedValueOnce('pro');
     const orderMock = vi.fn().mockResolvedValue({
       data: [
         {
@@ -392,7 +383,7 @@ describe('exportProductMovementsCsv', () => {
   });
 
   it('escapes a note containing a comma so it does not shift columns', async () => {
-    singleMock.mockResolvedValueOnce({ data: { plan: 'pro' }, error: null });
+    tierMock.mockResolvedValueOnce('pro');
     const orderMock = vi.fn().mockResolvedValue({
       data: [
         {
@@ -417,7 +408,7 @@ describe('exportProductMovementsCsv', () => {
   });
 
   it('escapes a note containing embedded double quotes and a newline', async () => {
-    singleMock.mockResolvedValueOnce({ data: { plan: 'pro' }, error: null });
+    tierMock.mockResolvedValueOnce('pro');
     const orderMock = vi.fn().mockResolvedValue({
       data: [
         {

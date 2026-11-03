@@ -9,13 +9,11 @@ vendors/products/stock_movements domain (no "programs" concept here).
 
 ## Contents
 
-- `actions.ts` — Server Actions (admin-only via `requireAdmin()`): `setVendorPlan`, writing via the service-role client and appending an `admin_audit` row; `setPricing`, updating the single `stockkit.pricing` row (service-role client, since migration 0014 gives that table no write policy) and appending a matching `admin_audit` row, then revalidating both `/admin` and `/dashboard/plan`. The audit-row insert itself (`recordAudit()`) now lives in the shared `src/lib/audit.ts`, reused outside `/admin` too — e.g. `archiveProduct` (`dashboard/products/actions.ts`) audits a vendor's product archival while retaining its stock ledger.
 - `admin-nav.tsx` — `AdminNav` client component: the Overview/Vendors/Activity tab bar, highlighting the active section by path.
 - `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders the header (`BrandText` wordmark, Admin badge, sign-out) and `AdminNav`.
-- `page.tsx` — `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (wrapped in `@merqo/ui`'s `ElevatedCard`), and a Pricing section fed by `currentPricing()`.
-- `pricing-section.tsx` — `PricingSection`: a thin client-component adapter wiring `@merqo/ui`'s presentational `PricingForm` to this app's own `setPricing` action, `sonner` toast, and `router.refresh()` — the same pattern `profile-form.tsx` uses for a `@merqo/ui` component. `onSave` throws on a failed `setPricing` call rather than toasting inline, so the failure routes through `PricingForm`'s own `onError` exactly once.
+- `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (wrapped in `@merqo/ui`'s `ElevatedCard`), and nothing else: pricing and plan changes live in merqo.
 - `stat.tsx` — `Stat`: a small labeled-value tile (built on `@merqo/ui`'s `ElevatedCard` and `StatTile` for the shell and label/value content, both promoted 2026-09-16 — `ElevatedCard` was stockkit-local before, `StatTile` already shared — `font-mono` value per this app's ledger typographic convention) used on the admin overview page.
-- `vendors/` — vendor list with per-vendor Free/Pro plan toggles (own README).
+- `vendors/`, vendor list with each vendor's plan badge (own README).
 - `activity/` — the `admin_audit` viewer, rendered via `@merqo/ui`'s shared
   `AuditLogTable` (own README).
 
@@ -27,8 +25,7 @@ inside `layout.tsx`'s gated shell. This folder's own `page.tsx` reads
 `platformTotals()` and `recentActivity()` from `@/lib/admin-data`, rendering
 each total in a `stat.tsx` `Stat` tile. `vendors/page.tsx` reads
 `listVendors()` from the same module and renders its own table (no `Stat`
-tiles there), with `vendor-plan-toggle.tsx` calling this folder's
-`actions.ts`'s `setVendorPlan`. `activity/page.tsx` reads `auditLog()` from
+tiles there). `activity/page.tsx` reads `auditLog()` from
 the same module — a separate feed from `recentActivity()`'s stock-movement
 ledger, since `admin_audit` and `stock_movements` are different tables
 answering different questions ("what did an admin/vendor do" vs. "what
