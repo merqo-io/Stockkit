@@ -107,3 +107,5 @@ unchanged. The opening trigger uses definer rights after product INSERT RLS.
 stock-write-boundary.test.sql covers raw-write denial, permitted metadata,
 cross-owner/anonymous RPC denial, validation and rollback on ledger failure.
 These SQL regressions have not been executed in this audit environment.
+
+rate-limits.test.sql covers the 0024 limiter: RLS on with no policies, execute granted to service_role only, window counting and parameter validation. Not executed in this environment.

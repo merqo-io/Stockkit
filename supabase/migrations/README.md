@@ -256,3 +256,7 @@ These SQL regressions have not been executed in this audit environment.
 ## Scoped administration predicates
 
 The latest migration limits `is_admin(uuid)` to the signed-in user or trusted service-role administration. Anonymous and foreign-user membership probing is denied; existing self-scoped RLS policies retain their behavior.
+
+## Rate limiter
+
+0024_rate_limits.sql adds `stockkit.rate_limits` (RLS on, no policies, service-role only) and `stockkit.check_rate_limit(key, limit, window_seconds)`, a security-definer fixed-window counter that also deletes windows older than a day on about 2% of calls. Execute is revoked from public, anon and authenticated. Apply it by hand (staging, then prod) before deploying code that calls it: signup, feedback and profile saves fail closed without it. rate-limits.test.sql covers the grants and the window behaviour.

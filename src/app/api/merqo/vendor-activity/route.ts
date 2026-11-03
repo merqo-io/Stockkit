@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { listAllUsers } from '@/lib/list-all-users';
-import { bearerOk } from '@/lib/merqo-auth';
+import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { computeVendorActivity } from '@/lib/merqo-vendor-activity';
 import { createServiceClient } from '@/lib/supabase/server';
 import type { StockMovementReason, VendorPlan } from '@/lib/types';
@@ -47,9 +47,8 @@ async function readActivityRows(supabase: ServiceClient, vendorId: string) {
 }
 
 export const GET = withLogging(async (request: NextRequest): Promise<NextResponse> => {
-  if (!bearerOk(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await guardMerqoRoute(request, 'vendor-activity', 'metrics');
+  if (denied) return denied;
 
   const { searchParams } = new URL(request.url);
   const parsed = querySchema.safeParse({ email: searchParams.get('email') ?? '' });

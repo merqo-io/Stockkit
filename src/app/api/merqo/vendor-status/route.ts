@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { listAllUsers } from '@/lib/list-all-users';
-import { bearerOk } from '@/lib/merqo-auth';
+import { guardMerqoRoute } from '@/lib/merqo-auth';
 import { resolveVendorStatus } from '@/lib/merqo-vendor-status';
 import { createServiceClient } from '@/lib/supabase/server';
 import type { VendorPlan } from '@/lib/types';
@@ -13,9 +13,8 @@ export const revalidate = 0;
 const querySchema = z.object({ email: z.email() });
 
 export const GET = withLogging(async (request: NextRequest): Promise<NextResponse> => {
-  if (!bearerOk(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await guardMerqoRoute(request, 'vendor-status', 'metrics');
+  if (denied) return denied;
 
   const { searchParams } = new URL(request.url);
   const parsed = querySchema.safeParse({ email: searchParams.get('email') ?? '' });

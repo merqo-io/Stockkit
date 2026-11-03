@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
+
 ### Changed
 
 - `vercel.json` limits git-triggered Vercel builds to `main`, so PR and branch pushes stop using the Hobby daily deployment cap. Staging still deploys through its deploy hook; ad-hoc previews come from the `vercel` CLI.
@@ -15,6 +21,12 @@
 
 ## 0.4.0 - 2026-11-02
 
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
+
 ### Changed
 
 - The public landing states readiness ("In build", "Built, not yet tried with vendors.") and publishes no pricing; the FAQ carries the pilot notice instead.
@@ -24,6 +36,12 @@
 - The `@merqo/ui` pin moves to v0.36.0.
 
 ## 0.3.1 - 2026-10-30
+
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
 
 ### Changed
 
@@ -50,6 +68,12 @@
 
 ## 0.2.2 - 2026-10-24
 
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
+
 ### Changed
 
 - Lint config now consumes the shared `@merqo/ui/eslint` preset (`@merqo/ui` v0.35.0): comment and directive hygiene, size and complexity limits, a ban on colour literals and the em dash in `src`. `eslint-plugin-sonarjs` 4.2.2 and `@eslint-community/eslint-plugin-eslint-comments` 4.8.1 pinned. `eslint.config.test.ts` asserts the key rules resolve to `error`.
@@ -70,6 +94,12 @@
 ### Security
 
 - `next` and `eslint-config-next` 16.3.8 to 16.4.2. next `>=16.0.0 <=16.4.0` has two critical unauthenticated remote code execution advisories, GHSA-2464-fhr4-w9xw (Image Optimization API with SVG files) and GHSA-673q-mjm6-r5xr (`use cache` functions returning typed arrays), and a high Server Actions denial of service, GHSA-p3m5-59mp-jv5r. They failed the dependency-audit job on every open PR. `pnpm audit --prod --audit-level=high` is clean again.
+
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
 
 ### Changed
 
@@ -100,6 +130,12 @@
 - Improve small brand-text and input-boundary contrast in both themes while preserving primary button fills and decorative separators.
 
 - Desktop vendors can open the product creation form when their inventory is empty.
+
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
 
 ### Changed
 
@@ -430,6 +466,12 @@ design.md`: `{active, plan, status, metrics, lastActivityAt}`, reusing
   SQL). Added the shadcn `Badge` primitive via the CLI (previously
   missing from this repo).
 - `BackToTop` scroll-to-top button on the landing page (ported from qkit).
+
+### Security
+
+- DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
+- `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
+- Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
 
 ### Changed
 

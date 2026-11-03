@@ -22,3 +22,5 @@ See the repo root [README.md](../../../../../README.md) for the full layout.
 ## Boundary and coverage
 
 Validate the email and reject failed or incomplete administrator listings before resolving vendor status. Tests cover authorization, malformed input and upstream failures so an unavailable lookup cannot be mistaken for a vendor who has never activated the product.
+
+The route is gated by `guardMerqoRoute` (`src/lib/merqo-auth.ts`): 120 requests per minute per route and IP (429 with Retry-After, fails open on limiter error), then the bearer check; a 401 logs route, reason and IP, never the token.

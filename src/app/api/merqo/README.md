@@ -36,3 +36,5 @@ See the repo root [README.md](../../../../README.md) for the full layout.
 ## Boundary and coverage
 
 Collection pagination tests verify that aggregate and per-vendor reads advance by deterministic IDs and fail when a page is incomplete or unavailable. Bearer authentication precedes service access; successful empty data must remain distinct from a failed read.
+
+Every route calls `guardMerqoRoute` (`src/lib/merqo-auth.ts`) first: a 120 per minute per route and IP limit (429 with Retry-After; fails open if the limiter errors, since the bearer is the real gate), then the bearer check, logging a structured warning with route, reason and IP (never the token) on a 401. `rate-limit.test.ts` covers it.

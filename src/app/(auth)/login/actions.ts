@@ -1,8 +1,16 @@
 'use server';
 
 import type { ActionResult } from '@/lib/action-result';
+import {
+  checkLimits,
+  clientIp,
+  LIMITS,
+  RATE_LIMIT_MESSAGE,
+  userAndIpSpecs,
+} from '@/lib/rate-limit';
 import { vendorSchema } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
+import { headers } from 'next/headers';
 
 /**
  * Finish setting up a newly signed-up vendor: create their `vendors` row (the
@@ -21,6 +29,15 @@ export async function completeSignup(stallName: string): Promise<ActionResult> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not authenticated' };
+
+  // Fails closed: signup is abuse-sensitive and the vendor can retry later.
+  const outcome = await checkLimits(
+    userAndIpSpecs('signup', user.id, clientIp(await headers()), {
+      user: LIMITS.signupUser,
+      ip: LIMITS.signupIp,
+    })
+  );
+  if (outcome !== 'allowed') return { success: false, error: RATE_LIMIT_MESSAGE };
 
   const { error } = await supabase.from('vendors').upsert({ id: user.id, name: parsed.data.name });
   if (error) {

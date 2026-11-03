@@ -65,3 +65,5 @@ The avatar save handler deletes the image it orphans: after a successful save, t
 Shared name and social-link writes use field-specific patch_vendor_profile updates, preserving the other column under concurrent saves. Missing rows are provisioned atomically; empty social links explicitly clear links.
 
 Controlled password fields share markup with the recovery form while this page retains its vendor-session save flow. The shared back button uses Next.js `Link`.
+
+`updateStallName` and `updateSocialLinks` share a 10 per hour per user rate limit and fail closed. Avatar uploads go straight to Storage; the `vendor-avatars` bucket caps (5 MB, jpeg/png/webp) are the server-side enforcement.

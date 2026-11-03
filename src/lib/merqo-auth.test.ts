@@ -1,4 +1,6 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/lib/supabase/server', () => ({ createServiceClient: vi.fn() }));
 
 import { bearerOk, provisionBearerOk } from './merqo-auth';
 
