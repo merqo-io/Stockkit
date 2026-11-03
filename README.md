@@ -214,6 +214,12 @@ Google" to work locally.
 
 ### Staging
 
+`vercel.json` limits git-triggered Vercel builds to `main` (`deploymentEnabled`
+with `**`, since `*` does not match branch names containing `/`), so PR and
+branch pushes no longer build previews and use up the Hobby plan's daily
+deployment cap. `staging` deploys through the deploy hook below, which that
+setting does not gate. For an ad-hoc preview, run the `vercel` CLI.
+
 Vercel `Preview` deployments use the shared staging Supabase project
 (`merqo-staging`), not production. The `staging` branch, kept on `main` by
 the `staging sync` workflow, is served at `stockkit-staging.merqo.io`. The
@@ -251,8 +257,9 @@ Before merging a PR that adds a file under `supabase/migrations/`:
    `STAGING_DB_URL` set to the staging session pooler URI (merqo's
    `docs/STAGING.md`, setup step 2):
    `docker run --rm -e STAGING_DB_URL -v "${PWD}:/repo:ro" postgres:17.6-alpine sh /repo/scripts/staging-migrate.sh supabase/migrations/<new-file>.sql`
-2. Check the PR's own Vercel preview end to end. It already uses the staging
-   database and the other apps' staging hosts.
+2. Check the change end to end on a preview from the `vercel` CLI (PRs no
+   longer build one). It uses the staging database and the other apps' staging
+   hosts.
 3. Merge the PR.
 4. Apply the same file to production the usual way (Supabase SQL Editor).
 
