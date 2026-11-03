@@ -219,6 +219,8 @@ with `**`, since `*` does not match branch names containing `/`), so PR and
 branch pushes no longer build previews and use up the Hobby plan's daily
 deployment cap. `staging` deploys through the deploy hook below, which that
 setting does not gate. For an ad-hoc preview, run the `vercel` CLI.
+`vercel.json` also pins functions to `sin1` (Singapore) so compute stays in
+the same region as Supabase.
 
 Vercel `Preview` deployments use the shared staging Supabase project
 (`merqo-staging`), not production. The `staging` branch, kept on `main` by
