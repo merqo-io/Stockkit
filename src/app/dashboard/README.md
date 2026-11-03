@@ -10,7 +10,7 @@ loopkit/paykit), so this inline call in the layout is the one real gate
 entry point; every page under `/dashboard/*` renders through it, so none of
 them duplicate the check (their own `if (!user) redirect('/login')` lines
 are pure defense-in-depth against `proxy.ts`, not independent entry points).
-`layout.tsx` then resolves the stall name (via `@/lib/vendor-name`'s
+`layout.tsx` first self-heals a missing `vendors` row via `@/lib/ensure-vendor-row` (a vendor signed in through merqo shares the auth cookie and may never hit `/auth/callback`; skipped when the row exists), then resolves the stall name (via `@/lib/vendor-name`'s
 `resolveVendorName` — the shared `merqo.vendor_profile.stall_name`, same
 source of truth `profile/page.tsx` reads, not the local `vendors.name`
 column) + avatar URL (read defensively off `user.user_metadata`) and

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import { DashboardTourServer } from '@/components/dashboard-tour.server';
 import { SiteFooter } from '@/components/layout';
+import { ensureVendorRow } from '@/lib/ensure-vendor-row';
 import { requireCurrentLegalAcceptance } from '@/lib/legal-gate';
 import { createServerClient } from '@/lib/supabase/server';
 import { stampTourSeen } from '@/lib/tour-prefs';
@@ -30,13 +31,18 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     .eq('id', user.id)
     .maybeSingle();
 
+  // The auth cookie is shared across *.merqo.io, so a vendor signed in via
+  // merqo can land here without ever running /auth/callback; heal the missing
+  // row before anything FK-dependent (stampTourSeen, products) needs it.
+  const seededName = vendor ? null : await ensureVendorRow(supabase, user);
+
   // Stamp before sending the response so a hard navigation cannot lose it.
   if (!vendor?.tour_seen_at) {
     await stampTourSeen(supabase, user.id);
   }
 
   // Shared vendor profile data takes precedence over the signup-time local name.
-  const vendorName = await resolveVendorName(supabase, user.id, vendor?.name ?? null);
+  const vendorName = await resolveVendorName(supabase, user.id, vendor?.name ?? seededName);
 
   // avatar_url is arbitrary JSON on the auth user — read defensively, per
   // the profile settings standard's §3.1 (kit-local, never the shared table).
