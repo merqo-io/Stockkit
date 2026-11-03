@@ -15,8 +15,8 @@ tables + `is_admin()` function added by `0013_stockkit_admin.sql` for the
 Merqo-team admin console, and the
 `legal_check_state` table added by `0016_legal_check_state.sql` for the
 legal-acceptance gate's TTL cache);
-`merqo-entitlement-contract.ts` — the wire schema of merqo's entitlement push, copied
-verbatim from merqo; `vendor-entitlement.ts` — `readVendorTier`/`readAllVendorTiers`,
+`merqo-entitlement-contract.ts`, the wire schema of merqo's entitlement push, copied
+verbatim from merqo; `vendor-entitlement.ts`, `readVendorTier`/`readAllVendorTiers`,
 the readers of the `vendor_entitlements` cache that apply `resolveTier`;
 `admin.ts` — `isAdmin(userId)`/`requireAdmin()`:
 the admin-console gate, 404-ing a signed-out or non-admin request via
@@ -64,7 +64,7 @@ capabilities (`maxActiveProducts`, `movementHistoryLimit`, `csvExport`),
 `ENTITLEMENTS` lookup table, `resolveTier(row, now)` (the TS mirror of the SQL
 `vendor_is_paid`: paid and not past `valid_until`)
 for gating vendor features by plan, and `resolvePlanView(plan, entitlement)`
-— the plan page's free-vs-pro branching (card label, `PlanFeature[]` list) lifted out of the page's JSX so it's
+, the plan page's free-vs-pro branching (card label, `PlanFeature[]` list) lifted out of the page's JSX so it's
 unit-testable without rendering a server component. Note
 `ENTITLEMENTS.free.maxActiveProducts` is the source of truth for the
 active-product cap, mirrored as a hardcoded literal in

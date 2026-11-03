@@ -1,3 +1,4 @@
+// Vendor-facing 'free'|'pro' differs from the wire and table 'free'|'paid' on purpose; paid maps to pro.
 export type Tier = 'free' | 'pro';
 
 /**

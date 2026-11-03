@@ -16,13 +16,13 @@ what the app _asks_ the database for, never what the database _permits_.
   exercisable — and vendor D, added solely for the batched-reactivation
   test below). It asserts, per role:
   - **RLS is enabled** on `vendors`, `products`, `stock_movements`,
-    `feedback`, `vendor_entitlements` — a policy on a table with RLS off is decoration.
+    `feedback`, `vendor_entitlements`, a policy on a table with RLS off is decoration.
   - **Cross-vendor isolation** — A reads/updates only its own rows; B's rows
     are invisible, and an update targeting them matches 0 rows rather than
     raising (the `USING` clause filters the candidate set, it doesn't throw).
   - **The append-only ledger** — `stock_movements` has no UPDATE/DELETE
     policy _or_ grant, so even a row's own owner is refused (`42501`).
-  - **Plan escalation is closed** — a vendor can update `name`/`tour_seen_at`
+  - **Plan escalation is closed**, a vendor can update `name`/`tour_seen_at`
     and cannot write `vendor_entitlements` (merqo's pushed plan, migration
     `0025`); `vendors.plan` no longer exists (`0026`).
   - **The Free active-product cap** (migration `0011`) — B is topped up to 20
@@ -57,9 +57,9 @@ what the app _asks_ the database for, never what the database _permits_.
   - **anon is locked out entirely** — no table-level grant at all, so reads
     raise `42501` rather than returning an empty set.
   - **`vendor_entitlements` is own-row read, service-role write** (migration
-    `0025`) — neither a vendor nor `anon` can write it or execute
+    `0025`), neither a vendor nor `anon` can write it or execute
     `apply_vendor_entitlement`, and `anon` cannot read it.
-  - **`vendor-entitlements.test.sql`** — covers the upsert function
+  - **`vendor-entitlements.test.sql`**, covers the upsert function
     (unknown email, stored, stale and equal `issued_at` no-ops) and the cap
     reading the cache, including a lapsed `valid_until` and an open-ended
     paid row.

@@ -9,7 +9,7 @@ enforced by `dashboard/products/actions.ts` and the database.
 
 ## Contents
 
-- `page.tsx` — `PlanPage()` (server, `revalidate = 0`): auth guard, reads the
+- `page.tsx`, `PlanPage()` (server, `revalidate = 0`): auth guard, reads the
   vendor's tier from the merqo entitlement cache via `readVendorTier`
   (`@/lib/vendor-entitlement`, failing closed to Free), and hands it to
   `@/lib/plan`'s `resolvePlanView`, which owns the free-vs-pro branching so it

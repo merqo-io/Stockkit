@@ -13,7 +13,7 @@ Server actions shared across routes rather than colocated with a single page —
 
 ## Connectivity
 
-Each file is a `"use server"` module imported directly by the client component that triggers it: `feedback.ts` and `support.ts` by `src/app/dashboard/dashboard-nav.tsx`, which wires them into `@merqo/ui`'s `AccountMenu` `onFeedbackSubmit`/`getHelp.onSubmit` props as throw-adapters (the shared contract expects a rejected promise on failure; these actions return `{success, error}`). Both go through the RLS-scoped `createServerClient()` — no service-role usage, since the target RPCs are SECURITY DEFINER and derive the vendor identity themselves.
+Each file is a `"use server"` module imported directly by the client component that triggers it: `feedback.ts` and `support.ts` by `src/app/dashboard/dashboard-nav.tsx`, which wires them into `@merqo/ui`'s `AccountMenu` `onFeedbackSubmit`/`getHelp.onSubmit` props as throw-adapters (the shared contract expects a rejected promise on failure; these actions return `{success, error}`). Both go through the RLS-scoped `createServerClient()`, no service-role usage, since the target RPCs are SECURITY DEFINER and derive the vendor identity themselves.
 
 ## Parent
 

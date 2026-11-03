@@ -279,7 +279,7 @@ describe('recordStockMovement — error mapping', () => {
   });
 });
 
-describe('vendorEntitlement — fail-closed lookup', () => {
+describe('vendorEntitlement, fail-closed lookup', () => {
   it('degrades to Free when the entitlement lookup fails', async () => {
     tierMock.mockResolvedValueOnce(null);
 
