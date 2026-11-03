@@ -6,6 +6,10 @@
 
 - `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
 
+### Fixed
+
+- `/dashboard` creates the missing `vendors` row for a vendor signed in through merqo (the auth cookie is shared across `*.merqo.io`, so `/auth/callback` is skipped), instead of failing product creation on `products_vendor_id_fkey`.
+
 ### Removed
 
 - `vendors.plan` (legacy `pro` rows become paid with no expiry, migration `0026`), the `stockkit.pricing` table (`0027`), `src/lib/pricing.ts`, the admin pricing form and plan toggle, and the upgrade-request CTA. `/dashboard/plan` shows no price and points to the Merqo account.
