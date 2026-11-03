@@ -15,3 +15,5 @@ design history; this is the standing backlog going forward).
   This dated registry records the initial backlog; current audit findings live in `../audits/`.
 
 - `2026-10-10-component-reuse-spec.md`: component consolidation boundaries, CSV export wiring and verification requirements.
+
+- `templatecentral-adoption-log.md`: what the templateCentral 6.0.4 review adopted and skipped, moved out of `AGENTS.md`.

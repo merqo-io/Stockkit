@@ -53,54 +53,22 @@ and a few older paths are still ahead of it).
 
 ## File Layout
 
-```
-src/app/(auth)/login/            — combined sign-in/sign-up page + completeSignup action
-src/app/(public)/                — landing page
-src/app/dashboard/               — vendor dashboard: layout (session + sign-out), overview stats
-src/app/dashboard/products/      — products workspace: list/detail UI + server actions
-src/proxy.ts                     — Supabase session refresh + /dashboard guard (Next 16)
-src/lib/supabase/                — browser / server / service clients + middleware helper
-src/lib/types.ts                 — DB types (hand-maintained mirror of supabase/migrations)
-src/lib/schemas.ts                — Zod schemas for forms + actions, money-cents helpers
-src/lib/stock.ts                  — shared stock-status (ok/low/out) classification
-src/lib/action-result.ts          — ActionResult<T> server-action return type
-src/components/ui/                — shadcn primitives (CLI-managed style; do not hand-edit)
-supabase/migrations/              — SQL schema + RLS + record_stock_movement/sync_vendor_profile
-```
+Source tree map: `docs/FILE-LAYOUT.md`.
 
 ## Data model
 
-- `vendors` (id = `auth.users.id`, stall name).
-- `products` — belong to a vendor; `on_hand` (numeric, live balance),
-  `unit_cost_cents`, `low_stock_threshold`, `is_active`.
-- `stock_movements` — append-only ledger (`restock` / `waste` / `adjustment` /
-  `initial`). No update/delete RLS policy — default-deny keeps it immutable,
-  even for the row's own owner.
+Full schema notes: `docs/DATA-MODEL.md`. Rules that bind every change:
+
+- `stock_movements` is an append-only ledger (no update/delete RLS policy,
+  immutable even to the row's owner). `admin_audit` is likewise never updated
+  or deleted; the service-role client has no `update`/`delete` grant on
+  either table (`0015_audit_immutability.sql`).
 - The only write path for a stock change is `stockkit.record_stock_movement`
-  (SECURITY INVOKER — the caller is always the vendor acting on their own
-  data, so RLS already authorizes it): applies the delta to `on_hand`,
-  rejects a move that would take it below zero, and appends the ledger row,
-  atomically (one function body = one implicit transaction).
-- RLS: a vendor sees/edits only their own `vendors` row, `products`, and
-  `stock_movements`. No public read of anything — unlike qkit's booths, none
-  of this data ever needs to be public.
-- `stockkit.sync_vendor_profile` (SECURITY DEFINER) forwards a vendor's stall
-  name to the shared `merqo.patch_vendor_profile` RPC, preserving social links on signup — best-effort,
-  never blocks or fails signup if it errors.
-- `admins`/`admin_audit` (`0013_stockkit_admin.sql`): platform-operator
-  allow-list and audit trail — one row per admin- or vendor-initiated action
-  worth reconstructing later (`setVendorPlan`, `setPricing`, a vendor's own
-  `delete_product` — see `recordAudit()` in `src/lib/audit.ts`, shared by
-  `src/app/admin/actions.ts` and `src/app/dashboard/products/actions.ts`).
-  RLS is admin-read-only; the service-role client can `select`/`insert` on
-  both `admin_audit` and `stock_movements` but not `update`/`delete`
-  (`0015_audit_immutability.sql`) — neither table is ever updated or deleted
-  by the app, so closing that off at the grant level costs nothing and means
-  a compromised service-role key still can't rewrite either trail.
-  **Retention: keep `admin_audit` and `stock_movements` rows for 5 years**,
-  matching IRAS's record-keeping norm for a small Singapore business; no
-  archival/purge job exists yet — this is the stated policy so retention
-  isn't decided ad hoc later.
+  (SECURITY INVOKER, atomic, rejects a move below zero).
+- RLS: a vendor sees/edits only their own `vendors`, `products` and
+  `stock_movements` rows. No public read of anything.
+- **Retention: keep `admin_audit` and `stock_movements` rows for 5 years**
+  (IRAS norm for a small Singapore business); no purge job exists yet.
 
 ## Rules (always)
 
@@ -126,40 +94,8 @@ supabase/migrations/              — SQL schema + RLS + record_stock_movement/s
   one deliberate typographic signature (a "ledger" motif). Don't drop it on
   new numeric displays.
 
-**templateCentral 6.0.4 review (2026-10-12):** `harness.json` moved 5.15.0 →
-6.0.4, porting the harness qkit adopted in its own 6.0.1 and 6.0.4 reviews
-(qkit's `AGENTS.md` holds the full reasoning). The scripts were 3-way merged
-against qkit's, so this repo's local lines are kept. Adopted:
-
-- Hook commands anchored on `${CLAUDE_PROJECT_DIR}`, each with a timeout. The
-  old relative paths resolved against the shell's current directory.
-- `stop-checks.sh` skips the test run on a clean tree; `subagent-stop.sh`
-  skips read-only agents; `post-edit-typecheck.sh` reports through
-  `additionalContext`.
-- The skill-usage matcher (`Skill__.*` never matched; now `Skill`), and
-  `NotebookEdit` on the `protect-files.sh` matcher.
-- The per-segment `block-no-verify.sh`: closes a hook-skipping flag on push,
-  `--force-with-lease`, `HEAD:main`, deleting a protected branch and
-  `bash -c` wrappers. A bare `git commit` / `git push` is judged by the
-  branch it can land on (the hook input's `cwd` plus every literal `cd`
-  target), so a worktree commit is no longer blocked by the main checkout
-  sitting on `main`. Anything the hook cannot resolve also judges the
-  project root: use a bare `git commit` or `git -C <literal path>`.
-- `protect-files.sh`: symlinked parents resolved, `notebook_path` read,
-  relative paths anchored on the project root.
-- `verify-harness.sh` fails on an unreadable or empty manifest.
-- The commit-msg gate accepts `type(scope)!:` and the messages git writes
-  itself (`Revert "…"`, `fixup!`, `squash!`, `amend!`).
-- The PR-only CI gates (changelog, readme, comment hygiene) fail when
-  `origin/<base>` is missing and read the base branch from `env`.
-- `post-tool-failure.sh` removed (the agent already sees tool errors).
-
-Not adopted, for qkit's reasons: exec-form hooks (`"command": "bash",
-"args": [...]`; a bare `bash` resolved without a shell on Windows can be
-the WSL launcher, so any hook that used that form here is now a shell
-string), the gitleaks command and allowlist syntax changes, the shared
-`.claude/ci-gates.sh`, `.claude/hooks/local/`, and every Azure DevOps and
-OpenCode item.
+The templateCentral 6.0.4 adoption review (2026-10-12) — what was adopted and
+what was not — is in `docs/meta/templatecentral-adoption-log.md`.
 
 ## AI Harness
 
@@ -196,7 +132,7 @@ dormant self-skipping CodeQL job. An `e2e` job ("e2e (public smoke)") runs
 the Playwright specs in `e2e/`. No `mutation` job (no Stryker config), out of
 scope for this pass.
 RLS isolation: `supabase/tests/rls.test.sql` via `supabase test db`.
-Project skills (directory form, `<name>/SKILL.md`): `.claude/skills/` |
+Project skills (directory form, `<name>/SKILL.md`): `.claude/skills/` (`next-verify`, `supabase-migrate`) |
 Manifest: `.claude/harness.json`
 
 ## Project-Specific Notes
