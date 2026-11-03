@@ -63,9 +63,9 @@ entitlement model: `Tier` union type, `Entitlement` interface with
 capabilities (`maxActiveProducts`, `movementHistoryLimit`, `csvExport`),
 `ENTITLEMENTS` lookup table, `resolveTier(row, now)` (the TS mirror of the SQL
 `vendor_is_paid`: paid and not past `valid_until`)
-for gating vendor features by plan, and `resolvePlanView(plan, entitlement)`
-, the plan page's free-vs-pro branching (card label, `PlanFeature[]` list) lifted out of the page's JSX so it's
-unit-testable without rendering a server component. Note
+for gating vendor features by plan. `resolvePlanView(plan, entitlement)` holds
+the plan page's free-vs-pro branching (card label, `PlanFeature[]` list),
+lifted out of the page's JSX so it's unit-testable without rendering a server component. Note
 `ENTITLEMENTS.free.maxActiveProducts` is the source of truth for the
 active-product cap, mirrored as a hardcoded literal in
 `supabase/migrations/0011_product_limit_rls.sql`'s `active_product_cap`
