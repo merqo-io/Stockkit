@@ -36,6 +36,8 @@ skill invocation.
 
 The `templatecentral_version` in `harness.json` matches the marker on line 1 of `AGENTS.md`; bump both together.
 
+`AGENTS.md` is kept short because it is always loaded; reference material it points to lives in `docs/FILE-LAYOUT.md`, `docs/DATA-MODEL.md` and `docs/meta/templatecentral-adoption-log.md`.
+
 ## Parent
 
 [stockkit](../README.md)

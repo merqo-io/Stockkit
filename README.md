@@ -361,7 +361,7 @@ The shared UI dependency is pinned to immutable commit 7b386558af36a1cbf008a9b4c
 
 Component reuse decisions and preserved behavior are documented in [the cleanup spec](docs/meta/2026-10-10-component-reuse-spec.md). Stock reason labels and password fields are shared locally; product details expose the existing Pro CSV export action.
 
-The AI harness follows templateCentral 6.0.4: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in. The dated entry in `AGENTS.md` lists what was adopted.
+The AI harness follows templateCentral 6.0.4: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in. `docs/meta/templatecentral-adoption-log.md` lists what was adopted. `AGENTS.md` is kept under 200 lines; the file layout and full data model live in `docs/FILE-LAYOUT.md` and `docs/DATA-MODEL.md`.
 
 Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@6.0.4`), matching `.claude/harness.json`.
 
