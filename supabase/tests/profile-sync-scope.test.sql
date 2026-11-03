@@ -3,7 +3,7 @@ select plan(13);
 insert into auth.users(id,instance_id,aud,role,email) values
 ('10000000-0000-4000-8000-000000000020','00000000-0000-0000-0000-000000000000','authenticated','authenticated','profile-scope-owner@test.local'),
 ('10000000-0000-4000-8000-000000000030','00000000-0000-0000-0000-000000000000','authenticated','authenticated','profile-scope-foreign@test.local');
-insert into stockkit.vendors(id,name,plan) values('10000000-0000-4000-8000-000000000020','Owner','free'),('10000000-0000-4000-8000-000000000030','Foreign','pro');
+insert into stockkit.vendors(id,name) values('10000000-0000-4000-8000-000000000020','Owner'),('10000000-0000-4000-8000-000000000030','Foreign');
 create function pg_temp.profile_sync_checks() returns setof text language plpgsql as $checks$
 declare links jsonb;
 begin

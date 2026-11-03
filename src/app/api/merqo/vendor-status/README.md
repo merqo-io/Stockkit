@@ -11,7 +11,7 @@ only caller.
 
 - `route.ts` — resolves the email to an auth user via `listAllUsers`
   (paginated, `src/lib/list-all-users.ts`), reads `vendors` for that user's
-  `plan`, and returns `{ active, plan }` via `resolveVendorStatus`
+  row and the plan from the `vendor_entitlements` cache, and returns `{ active, plan }` via `resolveVendorStatus`
   (`src/lib/merqo-vendor-status.ts`).
 - `route.test.ts` — auth/validation/upstream-failure cases for the route above.
 

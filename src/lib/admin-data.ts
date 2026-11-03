@@ -1,7 +1,7 @@
-import { DEFAULT_PRICING, type PricingConfig } from '@/lib/pricing';
 import { readAllRows } from '@/lib/read-all-rows';
 import { createServiceClient } from '@/lib/supabase/server';
 import type { Json } from '@/lib/types';
+import { readAllVendorTiers } from '@/lib/vendor-entitlement';
 import { buildVendorHealth, statusRank, type VendorStatus } from '@/lib/vendor-health';
 
 export type PlatformTotals = {
@@ -57,11 +57,11 @@ function formatDetail(detail: Json | null): string | null {
 /** Platform-wide totals for the overview stat tiles. */
 export async function platformTotals(): Promise<PlatformTotals> {
   const supabase = await createServiceClient();
-  const [vendorsRes, productsRes, movementsRes] = await Promise.all([
+  const [vendorsRes, productsRes, movementsRes, tiersRes] = await Promise.all([
     readAllRows((after) => {
       const query = supabase
         .from('vendors')
-        .select('id, plan')
+        .select('id')
         .order('id', { ascending: true })
         .limit(500);
       return after === null ? query : query.gt('id', after);
@@ -75,7 +75,9 @@ export async function platformTotals(): Promise<PlatformTotals> {
       return after === null ? query : query.gt('id', after);
     }),
     supabase.from('stock_movements').select('id', { count: 'exact', head: true }),
+    readAllVendorTiers(supabase),
   ]);
+  if (tiersRes.error) throw new Error(`platformTotals: ${tiersRes.error}`);
   if (vendorsRes.error) throw new Error(`platformTotals: ${vendorsRes.error.message}`);
   if (productsRes.error) throw new Error(`platformTotals: ${productsRes.error.message}`);
   if (movementsRes.error) throw new Error(`platformTotals: ${movementsRes.error.message}`);
@@ -85,8 +87,8 @@ export async function platformTotals(): Promise<PlatformTotals> {
 
   return {
     vendors: vendors.length,
-    freeVendors: vendors.filter((v) => v.plan !== 'pro').length,
-    proVendors: vendors.filter((v) => v.plan === 'pro').length,
+    freeVendors: vendors.filter((v) => tiersRes.tiers.get(v.id) !== 'pro').length,
+    proVendors: vendors.filter((v) => tiersRes.tiers.get(v.id) === 'pro').length,
     products: products.length,
     activeProducts: products.filter((p) => p.is_active).length,
     stockMovements: movementsRes.count ?? 0,
@@ -137,11 +139,11 @@ export async function recentActivity(limit = 15): Promise<ActivityRow[]> {
  */
 export async function listVendors(): Promise<VendorRow[]> {
   const supabase = await createServiceClient();
-  const [vendorsRes, productsRes, movementsRes] = await Promise.all([
+  const [vendorsRes, productsRes, movementsRes, tiersRes] = await Promise.all([
     readAllRows((after) => {
       const query = supabase
         .from('vendors')
-        .select('id, name, plan, created_at')
+        .select('id, name, created_at')
         .order('id', { ascending: true })
         .limit(500);
       return after === null ? query : query.gt('id', after);
@@ -162,7 +164,9 @@ export async function listVendors(): Promise<VendorRow[]> {
         .limit(500);
       return after === null ? query : query.gt('id', after);
     }),
+    readAllVendorTiers(supabase),
   ]);
+  if (tiersRes.error) throw new Error(`listVendors: ${tiersRes.error}`);
   if (vendorsRes.error) throw new Error(`listVendors: ${vendorsRes.error.message}`);
   if (productsRes.error) throw new Error(`listVendors: ${productsRes.error.message}`);
   if (movementsRes.error) throw new Error(`listVendors: ${movementsRes.error.message}`);
@@ -182,7 +186,7 @@ export async function listVendors(): Promise<VendorRow[]> {
     .map((v) => ({
       id: v.id,
       name: v.name,
-      plan: v.plan,
+      plan: tiersRes.tiers.get(v.id) ?? 'free',
       created_at: v.created_at,
       product_count: counts.get(v.id) ?? 0,
       status: health.get(v.id)!.status,
@@ -225,15 +229,4 @@ export async function auditLog(limit = 100): Promise<AuditLogRow[]> {
     detail: formatDetail(r.detail),
     created_at: r.created_at,
   }));
-}
-
-/** The live monthly price, for the admin pricing form and its fallback. */
-export async function currentPricing(): Promise<PricingConfig> {
-  const supabase = await createServiceClient();
-  const { data } = await supabase
-    .from('pricing')
-    .select('monthly_cents, currency')
-    .eq('id', 1)
-    .maybeSingle();
-  return data ?? DEFAULT_PRICING;
 }

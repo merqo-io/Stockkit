@@ -260,3 +260,7 @@ The latest migration limits `is_admin(uuid)` to the signed-in user or trusted se
 ## Rate limiter
 
 0024_rate_limits.sql adds `stockkit.rate_limits` (RLS on, no policies, service-role only) and `stockkit.check_rate_limit(key, limit, window_seconds)`, a security-definer fixed-window counter that also deletes windows older than a day on about 2% of calls. Execute is revoked from public, anon and authenticated. Apply it by hand (staging, then prod) before deploying code that calls it: signup, feedback and profile saves fail closed without it. rate-limits.test.sql covers the grants and the window behaviour.
+
+## Merqo entitlements
+
+0025_vendor_entitlements.sql adds `stockkit.vendor_entitlements` (own-row select, service-role writes), `apply_vendor_entitlement` (maps the pushed email to the auth user and upserts only when `issued_at` is newer; service role only), `vendor_is_paid` (tier paid and `valid_until` null or in the future) and redefines `active_product_cap` to read it. 0026_drop_vendor_plan.sql carries `vendors.plan = pro` rows over as paid with no expiry, then drops the column and its grants. 0027_drop_pricing.sql drops `stockkit.pricing`. Apply 0025 to 0027 by hand (staging, then prod) before deploying: the app no longer reads `vendors.plan`. vendor-entitlements.test.sql covers the function and the cap.

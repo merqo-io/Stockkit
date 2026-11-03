@@ -22,9 +22,9 @@ from unnest(array['INSERT', 'DELETE']) as privilege;
 select ok(not has_table_privilege('authenticated', relation, 'UPDATE'),
   relation || ': authenticated update stays column-scoped')
 from unnest(array['stockkit.vendors', 'stockkit.products']) as relation;
-select ok(not has_column_privilege('authenticated', 'stockkit.vendors', 'plan', privilege),
-  'vendors.plan: authenticated lacks ' || privilege)
-from unnest(array['INSERT', 'UPDATE']) as privilege;
+select ok(not has_table_privilege('authenticated', 'stockkit.vendor_entitlements', privilege),
+  'vendor_entitlements: authenticated lacks ' || privilege)
+from unnest(array['INSERT', 'UPDATE', 'DELETE']) as privilege;
 select ok(not has_column_privilege('authenticated', 'stockkit.products', 'on_hand', 'UPDATE'),
   'products.on_hand: authenticated cannot update directly');
 select ok(not has_table_privilege('authenticated', 'stockkit.stock_movements', privilege),

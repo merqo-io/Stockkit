@@ -12,6 +12,9 @@ vi.mock('@/lib/supabase/server', () => ({
   })),
 }));
 
+const { tierMock } = vi.hoisted(() => ({ tierMock: vi.fn() }));
+vi.mock('@/lib/vendor-entitlement', () => ({ readVendorTier: tierMock }));
+
 import { GET } from '@/app/api/merqo/vendor-status/route';
 
 function req(url: string, auth?: string) {
@@ -21,6 +24,7 @@ function req(url: string, auth?: string) {
 describe('GET /api/merqo/vendor-status (stockkit)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    tierMock.mockResolvedValue('pro');
     process.env.MERQO_METRICS_SECRET = 'test-secret';
     listUsersMock.mockResolvedValue({
       data: { users: [{ id: 'u1', email: 'vendor@business.sg' }] },
@@ -51,7 +55,7 @@ describe('GET /api/merqo/vendor-status (stockkit)', () => {
   it('reports active with plan for a vendor with a vendors row', async () => {
     fromMock.mockImplementation(() => ({
       select: () => ({
-        eq: () => ({ maybeSingle: async () => ({ data: { id: 'u1', plan: 'pro' }, error: null }) }),
+        eq: () => ({ maybeSingle: async () => ({ data: { id: 'u1' }, error: null }) }),
       }),
     }));
     const res = await GET(
@@ -82,13 +86,14 @@ describe('GET /api/merqo/vendor-status (stockkit)', () => {
 });
 
 it('queries only the resolved vendor ID', async () => {
+  tierMock.mockResolvedValue('pro');
   listUsersMock.mockResolvedValue({
     data: { users: [{ id: 'u-last', email: 'vendor@business.sg' }] },
     error: null,
   });
   process.env.MERQO_METRICS_SECRET = 'test-secret';
   const eq = vi.fn(() => ({
-    maybeSingle: async () => ({ data: { id: 'u-last', plan: 'pro' }, error: null }),
+    maybeSingle: async () => ({ data: { id: 'u-last' }, error: null }),
   }));
   fromMock.mockReturnValue({ select: () => ({ eq }) });
   const result = await GET(

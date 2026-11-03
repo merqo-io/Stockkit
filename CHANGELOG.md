@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
+
+### Removed
+
+- `vendors.plan` (legacy `pro` rows become paid with no expiry, migration `0026`), the `stockkit.pricing` table (`0027`), `src/lib/pricing.ts`, the admin pricing form and plan toggle, and the upgrade-request CTA. `/dashboard/plan` shows no price and points to the Merqo account.
+
 ### Security
 
 - DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.

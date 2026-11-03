@@ -18,6 +18,9 @@ handler in this app.
 
 - `metrics/` — `GET /api/merqo/metrics`: the platform-aggregate poll for
   merqo's cross-kit revenue/health dashboard.
+- `entitlement/` — `POST /api/merqo/entitlement`: receives merqo's push of a
+  vendor's entitlement into the `vendor_entitlements` cache, the source of every
+  plan decision in this app.
 - `vendor-status/` — `GET /api/merqo/vendor-status?email=`: a single
   vendor's `{active, plan}`.
 - `vendor-provision/` — `POST /api/merqo/vendor-provision`: merqo's

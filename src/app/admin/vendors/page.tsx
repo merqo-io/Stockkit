@@ -18,7 +18,7 @@ export default async function AdminVendorsPage() {
         </p>
         <h1 className="text-3xl font-bold tracking-tight">Vendors</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Grant or remove a vendor&apos;s Pro plan.
+          Each vendor&apos;s plan comes from Merqo.
         </p>
       </div>
 

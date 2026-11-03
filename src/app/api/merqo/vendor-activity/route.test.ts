@@ -12,6 +12,9 @@ vi.mock('@/lib/supabase/server', () => ({
   })),
 }));
 
+const { tierMock } = vi.hoisted(() => ({ tierMock: vi.fn() }));
+vi.mock('@/lib/vendor-entitlement', () => ({ readVendorTier: tierMock }));
+
 import { GET } from '@/app/api/merqo/vendor-activity/route';
 
 function req(url: string, auth?: string) {
@@ -59,6 +62,7 @@ function mockTables(overrides: TableResults) {
 
 describe('GET /api/merqo/vendor-activity (stockkit)', () => {
   beforeEach(() => {
+    tierMock.mockResolvedValue('pro');
     vi.clearAllMocks();
     process.env.MERQO_METRICS_SECRET = 'test-secret';
     listUsersMock.mockResolvedValue({
@@ -108,7 +112,7 @@ describe('GET /api/merqo/vendor-activity (stockkit)', () => {
   it('503 when the products/movements reads fail', async () => {
     mockTables({
       vendors: {
-        data: { id: 'u1', plan: 'pro', created_at: new Date().toISOString() },
+        data: { id: 'u1', created_at: new Date().toISOString() },
         error: null,
       },
       products: { data: null, error: { message: 'boom' } },
@@ -120,7 +124,7 @@ describe('GET /api/merqo/vendor-activity (stockkit)', () => {
   it('returns the full activity payload for an existing vendor', async () => {
     mockTables({
       vendors: {
-        data: { id: 'u1', plan: 'pro', created_at: new Date().toISOString() },
+        data: { id: 'u1', created_at: new Date().toISOString() },
         error: null,
       },
       products: { data: [{ id: 'p1', vendor_id: 'u1' }], error: null },

@@ -52,7 +52,8 @@ product's movement history.
   Pro history and CSV exports use ordered cursor pagination; a failed page
   rejects the complete export. Free history retains its ten-row limit.
   A shared `vendorEntitlement(supabase, vendorId)` helper resolves the
-  vendor's plan via `@/lib/plan`'s `ENTITLEMENTS`/`normalizePlan` and is
+  vendor's tier via `@/lib/vendor-entitlement`'s `readVendorTier` (the merqo
+  entitlement cache) and `@/lib/plan`'s `ENTITLEMENTS`, and is
   used by all three plan-gated actions. It fails **closed** — a plan lookup
   that errors degrades to Free rather than Pro — but logs the error, so a
   DB outage silently downgrading a paying vendor leaves a trace:

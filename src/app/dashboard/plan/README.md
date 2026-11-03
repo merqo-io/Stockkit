@@ -2,59 +2,29 @@
 
 ## Purpose
 
-The vendor-facing Free/Pro plan page — shows the vendor's current tier and
-what it entitles them to, and (on Free) an interest CTA to request Pro.
-stockkit has no self-serve billing yet; Pro is granted manually once a
-request lands in the shared support inbox. Entitlement values (`ENTITLEMENTS`)
-come from `@/lib/plan`, the same source `dashboard/products/actions.ts`'s
-`vendorEntitlement` helper uses to gate product creation and movement
-history/CSV export — this page only displays those limits, it doesn't
-enforce anything itself.
+The vendor-facing plan page. It shows the vendor's current plan, what it
+includes, and "Change plan from your Merqo account". Merqo owns subscriptions
+and pricing, so the page shows no price. It only displays limits; the gates are
+enforced by `dashboard/products/actions.ts` and the database.
 
 ## Contents
 
-- `page.tsx` — `PlanPage()` (server, `revalidate = 0`): auth guard, reads
-  the vendor's `vendors.plan` column, normalizes it via `normalizePlan`, and
-  hands the result to `@/lib/plan`'s `resolvePlanView` — which owns the
-  free-vs-pro branching (card label, feature list, whether the upgrade CTA
-  shows) so that logic is unit-testable without rendering a server
-  component. The page itself is just the markup: it maps the returned
-  `PlanFeature[]`, wrapping every `metric` feature's number in `font-mono`.
-  The monthly price shown in the upgrade paragraph is a live read of the
-  single-row `pricing` table (`stockkit.pricing`, migration
-  `0014_stockkit_pricing.sql`) via the vendor's own RLS-scoped client — not
-  a hardcoded constant — falling back to `@/lib/pricing`'s `DEFAULT_PRICING`
-  if the row can't be read. The "back to Dashboard" nav uses the shared
-  `@merqo/ui`'s `BackButton`, deliberately with no `LinkComponent` override:
-  this is a Server Component, and passing `next/link` in as a prop sends a
-  function across the Server → Client boundary, which Next rejects at
-  render. `BackButton`'s own plain-`<a>` fallback renders instead.
-- `upgrade-cta.tsx` — `UpgradeCta()`, client component. A single button that
-  calls `requestProUpgradeAction` (`@/app/actions/plan`) in a transition and
-  toasts success/error — no payment form, no pricing selection.
-- `upgrade-cta.dom.test.tsx` — Testing-Library coverage for `UpgradeCta`:
-  the button renders, a click files the request, and success/failure each
-  raise the right toast (the action and `sonner` are both mocked).
+- `page.tsx` — `PlanPage()` (server, `revalidate = 0`): auth guard, reads the
+  vendor's tier from the merqo entitlement cache via `readVendorTier`
+  (`@/lib/vendor-entitlement`, failing closed to Free), and hands it to
+  `@/lib/plan`'s `resolvePlanView`, which owns the free-vs-pro branching so it
+  is unit-testable. The page maps the returned `PlanFeature[]`, wrapping every
+  `metric` number in `font-mono`. The "back to Dashboard" nav uses `@merqo/ui`'s
+  `BackButton` without a `LinkComponent` override: this is a Server Component,
+  and passing `next/link` as a prop would send a function across the Server to
+  Client boundary.
 
 ## Connectivity
 
-Routed at `PAGE_ROUTES.PLAN` (`/dashboard/plan`, `@/lib/constants/routes`)
-and reachable from `dashboard-nav.tsx`'s account menu ("Plan").
-`page.tsx` calls `createServerClient()` directly (not `vendorEntitlement` from
-`products/actions.ts`, which is server-action-local) to read the vendor's
-plan row and `ENTITLEMENTS`/`normalizePlan` from `@/lib/plan` to resolve it,
-plus the same `createServerClient()` instance's own read of the public
-`pricing` row (the `pricing_public_select` RLS policy, migration `0014`).
-Admins edit that row from `/admin`'s Pricing section
-(`src/app/admin/pricing-section.tsx`), which calls `setPricing`
-(`src/app/admin/actions.ts`) and revalidates this page.
-`upgrade-cta.tsx` calls `@/app/actions/plan`'s `requestProUpgradeAction`,
-which files a `category: 'billing'` message through the same
-`submitSupportMessage` (`@/lib/merqo-support`) helper the account-menu
-"Get help" flow (`support.ts`) uses.
+Routed at `PAGE_ROUTES.PLAN` (`/dashboard/plan`) and reachable from
+`dashboard-nav.tsx`'s account menu ("Plan"). The cache it reads is filled by
+`POST /api/merqo/entitlement` (`src/app/api/merqo/entitlement`).
 
 ## Parent
 
 [dashboard](../README.md)
-
-The shared `BackButton` receives Next.js `Link` for dashboard navigation.

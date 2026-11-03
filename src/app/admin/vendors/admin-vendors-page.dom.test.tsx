@@ -6,9 +6,6 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 vi.mock('@/lib/admin', () => ({ requireAdmin: vi.fn(async () => ({})) }));
-vi.mock('@/app/admin/actions', () => ({
-  setVendorPlan: vi.fn(),
-}));
 vi.mock('@/lib/admin-data', () => ({
   listVendors: vi.fn(async () => [
     {
@@ -41,7 +38,7 @@ describe('AdminVendorsPage', () => {
     expect(screen.getByText('Plan')).toBeInTheDocument();
     expect(screen.getByText('Products')).toBeInTheDocument();
     expect(screen.getByText('Joined')).toBeInTheDocument();
-    expect(screen.getByText('Action')).toBeInTheDocument();
+    expect(screen.queryByText('Action')).not.toBeInTheDocument();
     expect(screen.getByText('Pro Stall')).toBeInTheDocument();
     expect(screen.getByText('Free Stall')).toBeInTheDocument();
     expect(screen.getByText('healthy')).toBeInTheDocument();
@@ -50,8 +47,7 @@ describe('AdminVendorsPage', () => {
     expect(screen.getByText('Free')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Make Free' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Make Pro' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /make (free|pro)/i })).not.toBeInTheDocument();
   });
 
   it('shows an empty state when there are no vendors', async () => {

@@ -23,9 +23,9 @@ access, 5-year retention) are also summarised in `AGENTS.md`.
   never blocks or fails signup if it errors.
 - `admins`/`admin_audit` (`0013_stockkit_admin.sql`): platform-operator
   allow-list and audit trail — one row per admin- or vendor-initiated action
-  worth reconstructing later (`setVendorPlan`, `setPricing`, a vendor's own
+  worth reconstructing later (a vendor's own
   `delete_product` — see `recordAudit()` in `src/lib/audit.ts`, shared by
-  `src/app/admin/actions.ts` and `src/app/dashboard/products/actions.ts`).
+  `src/app/dashboard/products/actions.ts`).
   RLS is admin-read-only; the service-role client can `select`/`insert` on
   both `admin_audit` and `stock_movements` but not `update`/`delete`
   (`0015_audit_immutability.sql`) — neither table is ever updated or deleted

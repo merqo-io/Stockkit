@@ -24,21 +24,18 @@ export interface Database {
           name: string;
           created_at: string;
           tour_seen_at: string | null;
-          plan: 'free' | 'pro';
         };
         Insert: {
           id: string;
           name: string;
           created_at?: string;
           tour_seen_at?: string | null;
-          plan?: 'free' | 'pro';
         };
         Update: {
           id?: string;
           name?: string;
           created_at?: string;
           tour_seen_at?: string | null;
-          plan?: 'free' | 'pro';
         };
         Relationships: [];
       };
@@ -200,23 +197,32 @@ export interface Database {
         };
         Relationships: [];
       };
-      pricing: {
+      vendor_entitlements: {
         Row: {
-          id: number;
-          monthly_cents: number;
-          currency: string;
+          vendor_id: string;
+          tier: 'free' | 'paid';
+          founder: boolean;
+          stats_window: '24h' | '90d';
+          valid_until: string | null;
+          issued_at: string;
           updated_at: string;
         };
         Insert: {
-          id?: number;
-          monthly_cents?: number;
-          currency?: string;
+          vendor_id: string;
+          tier: 'free' | 'paid';
+          founder?: boolean;
+          stats_window?: '24h' | '90d';
+          valid_until?: string | null;
+          issued_at: string;
           updated_at?: string;
         };
         Update: {
-          id?: number;
-          monthly_cents?: number;
-          currency?: string;
+          vendor_id?: string;
+          tier?: 'free' | 'paid';
+          founder?: boolean;
+          stats_window?: '24h' | '90d';
+          valid_until?: string | null;
+          issued_at?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -270,6 +276,19 @@ export interface Database {
         Args: { p_uid: string };
         Returns: boolean;
       };
+      // Merqo entitlement push (migration 0025); service role only. Returns
+      // 'stored', 'stale' (issued_at not newer, no-op) or 'unknown_vendor'.
+      apply_vendor_entitlement: {
+        Args: {
+          p_email: string;
+          p_tier: string;
+          p_founder: boolean;
+          p_stats_window: string;
+          p_valid_until: string | null;
+          p_issued_at: string;
+        };
+        Returns: string;
+      };
       // Fixed-window limiter (migration 0024); service role only.
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
@@ -305,4 +324,3 @@ export type StockMovement = Database['stockkit']['Tables']['stock_movements']['R
 export type Feedback = Database['stockkit']['Tables']['feedback']['Row'];
 export type Admin = Database['stockkit']['Tables']['admins']['Row'];
 export type AdminAudit = Database['stockkit']['Tables']['admin_audit']['Row'];
-export type Pricing = Database['stockkit']['Tables']['pricing']['Row'];

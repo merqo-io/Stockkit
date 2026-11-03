@@ -16,6 +16,9 @@ vi.mock('@/lib/merqo-vendor-profile', () => ({
 const { recordAuditMock } = vi.hoisted(() => ({ recordAuditMock: vi.fn() }));
 vi.mock('@/lib/audit', () => ({ recordAudit: recordAuditMock }));
 
+const { tierMock } = vi.hoisted(() => ({ tierMock: vi.fn() }));
+vi.mock('@/lib/vendor-entitlement', () => ({ readVendorTier: tierMock }));
+
 import { POST } from '@/app/api/merqo/vendor-provision/route';
 
 const USER_ID = '11111111-1111-4111-8111-111111111111';
@@ -31,15 +34,9 @@ function req(body: unknown, auth?: string) {
   });
 }
 
-function vendorsTable(
-  insertResult: { error: { code?: string; message?: string } | null },
-  selectResult: { data: { plan: string } | null; error: { message: string } | null }
-) {
-  const maybeSingle = () => Promise.resolve(selectResult);
-  const eq = () => ({ maybeSingle });
-  const select = () => ({ eq });
+function vendorsTable(insertResult: { error: { code?: string; message?: string } | null }) {
   const insert = () => Promise.resolve(insertResult);
-  return () => ({ insert, select });
+  return () => ({ insert });
 }
 
 describe('POST /api/merqo/vendor-provision (stockkit)', () => {
@@ -48,9 +45,8 @@ describe('POST /api/merqo/vendor-provision (stockkit)', () => {
     process.env.MERQO_PROVISION_SECRET = 'test-secret';
     getOrCreateVendorProfileMock.mockResolvedValue({ stall_name: 'Kopitiam Cart' });
     recordAuditMock.mockResolvedValue(undefined);
-    fromMock.mockImplementation(
-      vendorsTable({ error: null }, { data: { plan: 'free' }, error: null })
-    );
+    tierMock.mockResolvedValue('free');
+    fromMock.mockImplementation(vendorsTable({ error: null }));
   });
 
   it('401 when the bearer is missing', async () => {
@@ -94,36 +90,29 @@ describe('POST /api/merqo/vendor-provision (stockkit)', () => {
   });
 
   it('treats a unique-violation on insert as already_existed, not a failure', async () => {
-    fromMock.mockImplementation(
-      vendorsTable({ error: { code: '23505' } }, { data: { plan: 'pro' }, error: null })
-    );
+    tierMock.mockResolvedValue('pro');
+    fromMock.mockImplementation(vendorsTable({ error: { code: '23505' } }));
     const res = await POST(req({ user_id: USER_ID }, 'Bearer test-secret'));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true, already_existed: true, plan: 'pro' });
   });
 
   it('400 Unknown user_id on a foreign-key violation', async () => {
-    fromMock.mockImplementation(
-      vendorsTable({ error: { code: '23503' } }, { data: null, error: null })
-    );
+    fromMock.mockImplementation(vendorsTable({ error: { code: '23503' } }));
     const res = await POST(req({ user_id: USER_ID }, 'Bearer test-secret'));
     expect(res.status).toBe(400);
     expect(recordAuditMock).not.toHaveBeenCalled();
   });
 
   it('500 on an unexpected insert error', async () => {
-    fromMock.mockImplementation(
-      vendorsTable({ error: { message: 'connection reset' } }, { data: null, error: null })
-    );
+    fromMock.mockImplementation(vendorsTable({ error: { message: 'connection reset' } }));
     const res = await POST(req({ user_id: USER_ID }, 'Bearer test-secret'));
     expect(res.status).toBe(500);
     expect(recordAuditMock).not.toHaveBeenCalled();
   });
 
-  it('500 when the read-back after insert fails', async () => {
-    fromMock.mockImplementation(
-      vendorsTable({ error: null }, { data: null, error: { message: 'boom' } })
-    );
+  it('500 when the entitlement read after insert fails', async () => {
+    tierMock.mockResolvedValue(null);
     const res = await POST(req({ user_id: USER_ID }, 'Bearer test-secret'));
     expect(res.status).toBe(500);
     expect(recordAuditMock).not.toHaveBeenCalled();

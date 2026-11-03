@@ -5,7 +5,7 @@ const m = vi.hoisted(() => ({
   create: vi.fn(),
   from: vi.fn(),
   page: vi.fn<() => Promise<Page>>(),
-  plan: vi.fn(),
+  tier: vi.fn(),
   order: vi.fn(),
   limit: vi.fn(),
   or: vi.fn(),
@@ -15,6 +15,7 @@ vi.mock('@/lib/supabase/server', () => ({
   createServerClient: m.create,
   createServiceClient: vi.fn(),
 }));
+vi.mock('@/lib/vendor-entitlement', () => ({ readVendorTier: m.tier }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 const productId = '11111111-1111-4111-8111-111111111111';
 const timestamp = '2026-10-08T00:00:00.000Z';
@@ -31,7 +32,7 @@ const first = row('33333333-3333-4333-8333-333333333333');
 const second = row('22222222-2222-4222-8222-222222222222');
 beforeEach(() => {
   vi.resetAllMocks();
-  m.plan.mockResolvedValue({ data: { plan: 'pro' }, error: null });
+  m.tier.mockResolvedValue('pro');
   m.page.mockResolvedValue({ data: [], error: null });
   const query = {
     select: vi.fn(),
@@ -47,10 +48,7 @@ beforeEach(() => {
   m.order.mockReturnValue(query);
   m.limit.mockReturnValue(query);
   m.or.mockReturnValue(query);
-  const vendor = { select: vi.fn(), eq: vi.fn(), single: m.plan };
-  vendor.select.mockReturnValue(vendor);
-  vendor.eq.mockReturnValue(vendor);
-  m.from.mockImplementation((table: string) => (table === 'vendors' ? vendor : query));
+  m.from.mockImplementation(() => query);
   m.create.mockResolvedValue({
     auth: { getUser: async () => ({ data: { user: { id: 'vendor' } } }) },
     from: m.from,
@@ -91,7 +89,7 @@ it('rejects the whole export when a later page fails instead of returning partia
   });
 });
 it('keeps Free history capped at one ten-row request', async () => {
-  m.plan.mockResolvedValue({ data: { plan: 'free' }, error: null });
+  m.tier.mockResolvedValue('free');
   m.page.mockResolvedValueOnce({ data: [first], error: null });
   expect(await getProductMovements(productId)).toEqual({ success: true, movements: [first] });
   expect(m.limit).toHaveBeenCalledWith(10);

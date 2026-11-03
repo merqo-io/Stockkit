@@ -17,7 +17,7 @@ already exist, then reports their plan.
   2. inserts `{ id: user_id, name: stallName }` into `vendors`, treating a
      unique-violation (`23505`) as `already_existed` rather than a failure,
      and a foreign-key violation (`23503`) as a 400 `Unknown user_id`;
-  3. reads back `plan` and records a `merqo_vendor_provision` audit row via
+  3. reads the vendor's tier from the entitlement cache and records a `merqo_vendor_provision` audit row via
      `recordAudit` (`src/lib/audit.ts`), under the `merqo_system` actor
      sentinel so it's distinguishable from a vendor-initiated action in the
      admin Activity tab.
