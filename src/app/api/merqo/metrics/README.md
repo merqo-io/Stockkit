@@ -8,7 +8,7 @@ cross-kit health/revenue dashboard. Bearer-secret gated (`bearerOk`,
 
 ## Contents
 
-- `route.ts` — reads `vendors`, `products`, `stock_movements` and the
+- `route.ts`: reads `vendors`, `products`, `stock_movements` and the
   `vendor_entitlements` cache concurrently (the Free/Pro mix now comes from the
   cache, since `vendors.plan` was dropped), calls `computeStockkitMetrics` (`src/lib/metrics.ts`), and
   returns the result shaped to merqo's `metricsPayloadSchema`. stockkit has
