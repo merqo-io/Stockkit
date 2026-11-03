@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `vercel.json` limits git-triggered Vercel builds to `main`, so PR and branch pushes stop using the Hobby daily deployment cap. Staging still deploys through its deploy hook; ad-hoc previews come from the `vercel` CLI.
 - The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
 
 ## 0.4.1 - 2026-11-02
