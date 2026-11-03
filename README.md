@@ -26,7 +26,7 @@ carries the same rebrand. `admin_audit`'s coverage now extends past `/admin` (a 
 product archiving is recorded too, via a shared `src/lib/audit.ts`) and
 both `admin_audit` and `stock_movements` are append-only at the grant
 level (`service_role` can no longer `UPDATE`/`DELETE` either, only
-`SELECT`/`INSERT`) — see `AGENTS.md`'s data model section for the
+`SELECT`/`INSERT`) — see `docs/DATA-MODEL.md` for the
 retention policy.
 
 See `CHANGELOG.md` for what's shipped, including the "Name | Tagline" Title
