@@ -16,8 +16,8 @@ export const GET = withLogging(async (request: NextRequest): Promise<NextRespons
 
   const supabase = await createServiceClient();
 
-  // Three independent reads — issue them concurrently so endpoint latency is
-  // one round-trip, not the sum of three.
+  // Four independent reads: issue them concurrently so endpoint latency is
+  // one round-trip, not the sum of four.
   const [vendorsRes, productsRes, movementsRes, tiersRes] = await Promise.all([
     readAllRows((after) => {
       const query = supabase
