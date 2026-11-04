@@ -2,11 +2,15 @@ import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
 import { readVendorTier } from '@/lib/vendor-entitlement';
-import { BackButton } from '@merqo/ui';
+import { BackButton, fetchPlanCatalog, PricingLadder } from '@merqo/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 export const revalidate = 0;
+
+function merqoBaseUrl(): string {
+  return process.env.MERQO_BASE_URL ?? 'https://www.merqo.io';
+}
 
 export default async function PlanPage() {
   const supabase = await createServerClient();
@@ -19,6 +23,9 @@ export default async function PlanPage() {
 
   const plan = (await readVendorTier(supabase, user.id)) ?? 'free';
   const view = resolvePlanView(plan, ENTITLEMENTS[plan]);
+  // Prices live only in merqo's catalog; null means merqo is unreachable, and
+  // the page must still render without them.
+  const catalog = await fetchPlanCatalog(merqoBaseUrl());
 
   return (
     <div className="space-y-6 py-8">
@@ -54,6 +61,19 @@ export default async function PlanPage() {
         </ul>
         <p className="text-muted-foreground mt-3 text-sm">Change plan from your Merqo account.</p>
       </div>
+
+      <section aria-labelledby="plans-heading" className="space-y-4">
+        <h2 id="plans-heading" className="text-lg font-semibold tracking-tight">
+          Plans
+        </h2>
+        {catalog ? (
+          <PricingLadder catalog={catalog} highlight="all_access" showEventPass={false} />
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Prices are unavailable right now. Check back shortly.
+          </p>
+        )}
+      </section>
     </div>
   );
 }
