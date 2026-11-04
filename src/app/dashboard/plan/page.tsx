@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/page-header';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
@@ -5,6 +6,7 @@ import { readVendorTier } from '@/lib/vendor-entitlement';
 import { BackButton, fetchPlanCatalog, PricingLadder } from '@merqo/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { RequestProButton } from './request-pro-button';
 
 export const revalidate = 0;
 
@@ -29,19 +31,12 @@ export default async function PlanPage() {
 
   return (
     <div className="space-y-6 py-8">
-      <BackButton LinkComponent={Link} href={PAGE_ROUTES.DASHBOARD} label="Dashboard" />
-      <header>
-        <p className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">
-          Your account
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">Plan</h1>
+      <BackButton LinkComponent={Link} href={PAGE_ROUTES.DASHBOARD} label="Overview" />
+      <header className="mb-1">
+        <PageHeader eyebrow="Your account" title="Plan">
+          You are on the <span className="capitalize">{plan}</span> plan.
+        </PageHeader>
       </header>
-
-      <div className="border-border rounded-xl border p-4">
-        <p className="text-sm font-medium">
-          Current plan: <span className="capitalize">{plan}</span>
-        </p>
-      </div>
 
       <div className="border-border rounded-xl border p-4">
         <p className="text-sm font-medium">{view.label}</p>
@@ -59,7 +54,13 @@ export default async function PlanPage() {
             </li>
           ))}
         </ul>
-        <p className="text-muted-foreground mt-3 text-sm">Change plan from your Merqo account.</p>
+        <div className="mt-4">
+          {plan === 'free' ? (
+            <RequestProButton />
+          ) : (
+            <p className="text-muted-foreground text-sm">You have every stockkit feature.</p>
+          )}
+        </div>
       </div>
 
       <section aria-labelledby="plans-heading" className="space-y-4">

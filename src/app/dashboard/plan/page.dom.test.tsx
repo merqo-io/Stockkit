@@ -15,6 +15,12 @@ vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
 }));
 
+vi.mock('@/app/actions/support', () => ({
+  submitSupportMessageAction: vi.fn(),
+}));
+
+vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+
 vi.mock('@/lib/vendor-entitlement', () => ({
   readVendorTier: readVendorTierMock,
 }));
@@ -58,13 +64,28 @@ describe('PlanPage', () => {
     render(await PlanPage());
 
     expect(screen.getByTestId('pricing-ladder')).toBeTruthy();
-    expect(screen.getByText(/Current plan:/)).toBeTruthy();
+    expect(document.body.textContent).toContain('You are on the free plan.');
     expect(pricingLadderMock).toHaveBeenCalledWith({
       catalog,
       highlight: 'all_access',
       showEventPass: false,
     });
     expect(screen.queryByText(/Prices are unavailable/)).toBeNull();
+  });
+
+  it('offers the Request Pro button on Free', async () => {
+    fetchPlanCatalogMock.mockResolvedValue(null);
+    render(await PlanPage());
+    expect(screen.getByRole('button', { name: 'Request Pro' })).toBeTruthy();
+    expect(screen.queryByText('You have every stockkit feature.')).toBeNull();
+  });
+
+  it('shows the every-feature line instead of the button on Pro', async () => {
+    readVendorTierMock.mockResolvedValue('pro');
+    fetchPlanCatalogMock.mockResolvedValue(null);
+    render(await PlanPage());
+    expect(screen.getByText('You have every stockkit feature.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Request Pro' })).toBeNull();
   });
 
   it('falls back to the default merqo base url', async () => {
@@ -84,7 +105,7 @@ describe('PlanPage', () => {
     fetchPlanCatalogMock.mockResolvedValue(null);
     const { container } = render(await PlanPage());
 
-    expect(screen.getByText(/Current plan:/)).toBeTruthy();
+    expect(document.body.textContent).toContain('You are on the free plan.');
     expect(screen.getByText('Prices are unavailable right now. Check back shortly.')).toBeTruthy();
     expect(screen.queryByTestId('pricing-ladder')).toBeNull();
     expect(container.textContent).not.toContain('S$');

@@ -4,6 +4,7 @@
 
 ### Added
 
+- `/legal/accept` has a "Sign out" exit and a "Tick the box to continue." hint on the disabled button; the plan page has a "Request Pro" button (Free only) that sends a support message, and both pages use the new local `PageHeader`.
 - `/dashboard/plan` renders merqo's shared `PricingLadder` (All-Access highlighted, no Event Pass) from the public `GET /api/plans` catalog via `@merqo/ui` v0.39.0; stockkit stores no price. If merqo is unreachable the page shows the current plan and a calm "Prices are unavailable right now" note.
 - `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
 
@@ -22,6 +23,7 @@
 
 ### Security
 
+- Harness moved to templateCentral 7.2.2: `engines.node >=24.22.1` with CI pinned to Node 24.22.1 (excludes the compromised eMudhra intermediate CAs), a fail-closed `pnpm audit --prod` deps gate (`.claude/deps-gate.sh`, expiring allowlist in `.claude/dep-audit-allow.txt`) in `security.yml`, and the strict `&&` chain fix in `block-no-verify.sh`.
 - DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
 - `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
 - Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
