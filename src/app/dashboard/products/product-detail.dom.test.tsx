@@ -61,6 +61,17 @@ describe('ProductDetail', () => {
     await user.click(screen.getByRole('button', { name: 'Archive fixture product' }));
     expect(onSaved).toHaveBeenLastCalledWith({ ...product, is_active: false });
   });
+  it('shows Archived instead of a stock status for an inactive product', () => {
+    render(
+      <ProductDetail
+        product={{ ...product, is_active: false }}
+        layout="stacked"
+        onSaved={vi.fn()}
+      />
+    );
+    expect(screen.getByText('Archived')).toBeInTheDocument();
+    expect(screen.queryByText('In stock')).not.toBeInTheDocument();
+  });
   it('exposes edit and history in mobile tabs', async () => {
     const user = userEvent.setup();
     render(<ProductDetail product={product} layout="tabs" onSaved={vi.fn()} />);

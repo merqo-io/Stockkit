@@ -8,6 +8,7 @@
 
 ### Fixed
 
+- Archived products in `/dashboard/products` show an "Archived" status (neutral dot) in the list row and detail pane instead of In stock/Low/Out; they stay listed so they can be reactivated.
 - `/dashboard` creates the missing `vendors` row for a vendor signed in through merqo (the auth cookie is shared across `*.merqo.io`, so `/auth/callback` is skipped), instead of failing product creation on `products_vendor_id_fkey`.
 
 ### Removed

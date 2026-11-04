@@ -1,7 +1,7 @@
 'use client';
 
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
-import { stockStatusFor } from '@/lib/stock';
+import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
 import { cn, LEDGER_SM_CLASS } from '@/lib/utils';
 
@@ -13,7 +13,7 @@ interface Props {
 
 /** One product row — shared by the mobile list and the desktop list pane. */
 export function ProductRow({ product, selected, onClick }: Props) {
-  const status = stockStatusFor(product.on_hand, product.low_stock_threshold);
+  const status = productStatusFor(product);
 
   return (
     <button

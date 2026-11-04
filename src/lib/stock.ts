@@ -6,6 +6,7 @@
 import type { StockMovementReason } from './types';
 
 export type StockStatus = 'ok' | 'low' | 'out';
+export type ProductStatus = StockStatus | 'archived';
 
 export function stockMovementReasonLabel(reason: string): string {
   return Object.hasOwn(STOCK_MOVEMENT_REASON_LABEL, reason)
@@ -26,14 +27,30 @@ export function stockStatusFor(onHand: number, lowStockThreshold: number): Stock
   return 'ok';
 }
 
-export const STOCK_STATUS_LABEL: Record<StockStatus, string> = {
+/**
+ * Archived products stay listed so they can be reactivated, but their stock
+ * level is no longer actionable, so archived replaces it.
+ */
+export function productStatusFor(product: {
+  is_active: boolean;
+  on_hand: number;
+  low_stock_threshold: number;
+}): ProductStatus {
+  if (!product.is_active) return 'archived';
+  return stockStatusFor(product.on_hand, product.low_stock_threshold);
+}
+
+export const STOCK_STATUS_LABEL: Record<ProductStatus, string> = {
   ok: 'In stock',
   low: 'Low',
   out: 'Out',
+  archived: 'Archived',
 };
 
-export const STOCK_STATUS_DOT_CLASS: Record<StockStatus, string> = {
+// Neutral on purpose: the green/amber/red tokens are reserved for stock level.
+export const STOCK_STATUS_DOT_CLASS: Record<ProductStatus, string> = {
   ok: 'bg-stock-ok',
   low: 'bg-stock-low',
   out: 'bg-stock-out',
+  archived: 'bg-muted-foreground',
 };
