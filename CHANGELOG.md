@@ -4,6 +4,7 @@
 
 ### Added
 
+- Touch targets: on coarse pointers buttons, inputs, selects, tab triggers and the dialog close button reach 44px, plus a `.tap-area` utility that grows a small control's hit area only. Reduced motion now also stops pulse, spin, float and the dialog/select/tabs enter and exit animations. The dashboard loading state is a page-shaped skeleton (`role="status"`) instead of a spinner, and outline buttons are flat (no shadow).
 - `/dashboard/plan` renders merqo's shared `PricingLadder` (All-Access highlighted, no Event Pass) from the public `GET /api/plans` catalog via `@merqo/ui` v0.39.0; stockkit stores no price. If merqo is unreachable the page shows the current plan and a calm "Prices are unavailable right now" note.
 - `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
 

@@ -9,7 +9,7 @@ repo's AGENTS.md these should not be hand-edited outside the shadcn CLI.
 
 - `alert-dialog.tsx` — Radix `AlertDialog` wrapper (Root/Trigger/Portal/Overlay/Content/Header/Footer/Title/Description/Action/Cancel); confirmation-style modals that block until the vendor picks an action
 - `badge.tsx` — `Badge`/`badgeVariants` (cva variants: default/secondary/destructive/outline/ghost/link), `asChild`-capable via Radix `Slot`; used by the admin console's Free/Pro plan badges
-- `button.tsx` — `Button`/`buttonVariants` (cva variants/sizes), `asChild`-capable via Radix `Slot`
+- `button.tsx` — `Button`/`buttonVariants` (cva variants/sizes), `asChild`-capable via Radix `Slot`; the outline variant is flat (no shadow). Coarse-pointer 44px minimums for buttons, inputs, selects, tab triggers and the dialog close live in `src/app/globals.css` (keyed on `data-slot`/`data-variant`), not in these class strings
 - `card.tsx` — plain-div `Card` composition: `Card`/`CardHeader`/`CardTitle`/`CardDescription`/`CardAction`/`CardContent`/`CardFooter`
 - `command.tsx` — `cmdk`-backed `Command`/`CommandDialog`/`CommandInput`/`CommandList`/`CommandEmpty`/`CommandGroup`/`CommandItem`/`CommandSeparator`/`CommandShortcut`; paired with `popover.tsx` to build the products form's unit combobox (`product-form.tsx`)
 - `dialog.tsx` — Radix `Dialog` wrapper: `Dialog`/`DialogClose`/`DialogContent`/`DialogDescription`/`DialogFooter`/`DialogHeader`/`DialogOverlay`/`DialogPortal`/`DialogTitle`/`DialogTrigger`
