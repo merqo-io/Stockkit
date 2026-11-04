@@ -32,7 +32,7 @@ export default async function PlanPage() {
   return (
     <div className="space-y-6 py-8">
       <BackButton LinkComponent={Link} href={PAGE_ROUTES.DASHBOARD} label="Overview" />
-      <header>
+      <header className="mb-1">
         <PageHeader eyebrow="Your account" title="Plan">
           You are on the <span className="capitalize">{plan}</span> plan.
         </PageHeader>

@@ -144,6 +144,8 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
 `@merqo/ui` is pinned to v0.39.0 (2026-11-04). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
+`/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit.
+
 ## Routes
 
 | Route                 | Who                       | Purpose                                                                                                          |
@@ -154,7 +156,7 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                   |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                         |
 | `/dashboard/products` | vendor (auth)             | product list; log stock, edit products, view movement history                                                    |
-| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; plan changes happen in the Merqo account                                      |
+| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; Free vendors can request Pro (support message, upgraded by hand)              |
 | `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                  |
 | `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                |
 | `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                           |
