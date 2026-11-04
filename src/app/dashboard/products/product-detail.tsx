@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { stockStatusFor } from '@/lib/stock';
+import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
 import { LEDGER_MD_CLASS } from '@/lib/utils';
 import { ExportHistoryButton } from './export-history-button';
@@ -28,7 +28,7 @@ interface Props {
  */
 export function ProductDetail({ product, layout, onSaved }: Props) {
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
-  const status = stockStatusFor(product.on_hand, product.low_stock_threshold);
+  const status = productStatusFor(product);
 
   function onRecorded(updated: Product) {
     onSaved(updated);

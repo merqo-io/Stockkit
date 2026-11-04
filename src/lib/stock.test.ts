@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { stockStatusFor } from './stock';
+import { productStatusFor, stockStatusFor } from './stock';
 
 describe('stockStatusFor', () => {
   it('is out when on_hand is zero', () => {
@@ -43,5 +43,25 @@ describe('stock movement labels', () => {
     expect(stockMovementReasonLabel('restock')).toBe('Restock');
     expect(stockMovementReasonLabel('future')).toBe('future');
     expect(stockMovementReasonLabel('toString')).toBe('toString');
+  });
+});
+
+describe('productStatusFor', () => {
+  const base = { on_hand: 10, low_stock_threshold: 2 };
+
+  it('is archived for an inactive product whatever its stock level', () => {
+    expect(productStatusFor({ ...base, is_active: false })).toBe('archived');
+    expect(productStatusFor({ is_active: false, on_hand: 1, low_stock_threshold: 2 })).toBe(
+      'archived'
+    );
+    expect(productStatusFor({ is_active: false, on_hand: 0, low_stock_threshold: 2 })).toBe(
+      'archived'
+    );
+  });
+
+  it('falls through to the stock status for an active product', () => {
+    expect(productStatusFor({ ...base, is_active: true })).toBe('ok');
+    expect(productStatusFor({ is_active: true, on_hand: 2, low_stock_threshold: 2 })).toBe('low');
+    expect(productStatusFor({ is_active: true, on_hand: 0, low_stock_threshold: 2 })).toBe('out');
   });
 });

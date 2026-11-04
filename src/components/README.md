@@ -42,7 +42,7 @@ popover's Reefer Frost theming are both owned by the shared component
 CSS custom properties, so there's no local `tour.css` to maintain.
 
 `stock-status-indicator.tsx` — `StockStatusIndicator({status, textClassName?})`:
-the dot + label pair for a product's stock status, shared by `product-row.tsx`,
+the dot + label pair for a product's status (stock level, or `archived`), shared by `product-row.tsx`,
 `product-detail.tsx`, and the overview page's low/out-of-stock list —
 previously duplicated inline in all three.
 

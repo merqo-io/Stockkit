@@ -16,7 +16,8 @@ product's movement history.
   `ProductForm`/`ProductDetail`/`ProductRow`, covers the desktop panel's
   three states).
 - `product-row.tsx` — one row in the list (name, unit, on-hand, stock
-  status dot via the shared `StockStatusIndicator`, `@/components`).
+  status dot via the shared `StockStatusIndicator`, `@/components`;
+  inactive products show "Archived" instead of a stock status).
 - `product-form.tsx` — create/edit form. Starting quantity is only
   editable when creating a new product; an existing product's `on_hand`
   only ever moves through `StockLogForm`. The unit field is a
