@@ -2,6 +2,42 @@
 
 Moved out of `AGENTS.md` to keep the always-loaded context small.
 
+## templateCentral 7.2.2 review (2026-11-04)
+
+`harness.json` moved 6.0.4 → 7.2.2 by 3-way merge against merqo's adoption
+(merqo-io/Merqo#128), keeping this repo's local lines. Adopted:
+
+- **6.0.5 `block-no-verify.sh` strict `&&` chain:** `cd <repo> && git commit` is
+  judged only by the directories git runs in, so it passes from a `main`
+  checkout when the `cd` lands on a feature branch. Anything that is not a
+  strict chain of literal `cd`s keeps the starting directory as a candidate.
+  This repo's hook predated merqo's Windows path normalisation (`norm_path`)
+  and quoted-path handling, which the chain logic relies on, so those came
+  with it. Upstream's test cases are added as `block-no-verify.test.sh`.
+- **7.0.0 `session-context.sh`:** no longer prints `head -30 AGENTS.md`
+  (`CLAUDE.md` already imports `@AGENTS.md`); the always-on invariants stay.
+- **7.2.2 security:** `engines.node >=24.22.1` in `package.json` so no runtime
+  trusts the compromised eMudhra intermediate CAs. Every `setup-node` step in
+  `ci.yml` and `security.yml` is pinned to `node-version: 24.22.1`, because a
+  bare `24` does not enforce the floor; bump the pin deliberately.
+- **6.1.0/6.1.1 deps gate:** the `deps` case of upstream `ci-gates.sh` ported
+  as a standalone `.claude/deps-gate.sh` (pnpm branch only; no `ci-gates.sh`
+  here). Fail-closed on high/critical advisories, a missing tool, no network or
+  an unparseable report; rejects pnpm-native suppressions; expiring allowlist in
+  `.claude/dep-audit-allow.txt`. `security.yml` runs it in place of
+  `pnpm audit --prod --audit-level=high` and the informational `|| true` step.
+  `protect-files.sh` asks before edits to the allowlist.
+
+Not adopted:
+
+- Authz helpers: better-auth only; authorization here is RLS.
+- Portal `frame-ancestors`: appCentral only.
+- Azure DevOps and OpenCode items.
+- Template trees, `tc-copy.sh` and scaffold internals.
+- Lefthook-only items (this repo is on husky).
+- Prose prune of upstream docs.
+- Build-artefact `Read` denies and the `skill-usage.log` gitignore entry: already present.
+
 **templateCentral 6.0.4 review (2026-10-12):** `harness.json` moved 5.15.0 →
 6.0.4, porting the harness qkit adopted in its own 6.0.1 and 6.0.4 reviews
 (qkit's `AGENTS.md` holds the full reasoning). The scripts were 3-way merged
