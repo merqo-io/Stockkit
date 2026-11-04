@@ -81,7 +81,7 @@ oversized comment blocks. `pnpm-workspace.yaml`'s `overrides` force-patches
 transitive dependency CVEs, both from Next.js's own bundled deps
 (`sharp`/`postcss`/`nanoid`) and dev-only tooling (`undici`/`fast-uri`/
 `js-yaml`/`brace-expansion`, pulled in via vitest/eslint) — each entry
-comments its advisory ID. `pnpm audit --prod --audit-level=high` hard-gates
+comments its advisory ID. `.claude/deps-gate.sh` (a fail-closed `pnpm audit --prod` high/critical gate) hard-gates
 CI; bump the relevant floor here when a new advisory lands rather than
 waiting on the upstream package to update.
 
@@ -363,9 +363,9 @@ The shared UI dependency is pinned to immutable commit 7b386558af36a1cbf008a9b4c
 
 Component reuse decisions and preserved behavior are documented in [the cleanup spec](docs/meta/2026-10-10-component-reuse-spec.md). Stock reason labels and password fields are shared locally; product details expose the existing Pro CSV export action.
 
-The AI harness follows templateCentral 6.0.4: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in. `docs/meta/templatecentral-adoption-log.md` lists what was adopted. `AGENTS.md` is kept under 200 lines; the file layout and full data model live in `docs/FILE-LAYOUT.md` and `docs/DATA-MODEL.md`.
+The AI harness follows templateCentral 7.2.2: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in (a strict `&&` chain only by the directories git runs in). The dependency audit is the fail-closed `.claude/deps-gate.sh`, with expiring suppressions only in `.claude/dep-audit-allow.txt`. `docs/meta/templatecentral-adoption-log.md` lists what was adopted. `AGENTS.md` is kept under 200 lines; the file layout and full data model live in `docs/FILE-LAYOUT.md` and `docs/DATA-MODEL.md`.
 
-Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@6.0.4`), matching `.claude/harness.json`.
+Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@7.2.2`), matching `.claude/harness.json`.
 
 ## Security headers and MFA
 

@@ -30,9 +30,9 @@ gate) and `security.yml` (gitleaks secret scan, dependency audit, CodeQL).
   (`0 6 * * 1`, CodeQL only). Default job permission `contents: read`. Jobs:
   `gitleaks` ("secret scan" — skipped on the scheduled run; checks out full history, installs the pinned gitleaks release binary with a SHA-256 check
   because gitleaks-action needs a paid license on organization-owned repos, and scans the PR commits); `audit`
-  ("dependency audit (pnpm)" — skipped on the scheduled run; hard-gates on
-  `pnpm audit --prod --audit-level=high`, then runs a full
-  `pnpm audit --audit-level=high || true` informationally for devDeps);
+  ("dependency audit (pnpm)" — skipped on the scheduled run; hard-gates via
+  `.claude/deps-gate.sh`, a fail-closed `pnpm audit --prod` high/critical gate
+  with an expiring allowlist in `.claude/dep-audit-allow.txt`);
   `codeql` ("CodeQL (javascript-typescript)" — only runs
   `if: github.event.repository.private == false`, i.e. self-skips on this
   private repo since code-scanning upload requires GitHub Advanced Security

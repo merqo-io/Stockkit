@@ -8,7 +8,21 @@ input=$(cat)
 # The hook input's `cwd` is the directory the command actually runs in, so a bare `git commit` from a
 # worktree resolves that worktree's branch rather than the main checkout's.
 in_cwd=$(printf '%s' "$input" | node -e "let b='';process.stdin.on('data',c=>b+=c);process.stdin.on('end',()=>{try{process.stdout.write(JSON.parse(b||'{}').cwd||'')}catch(e){process.stdout.write('')}})" 2>/dev/null)
-[ -n "$in_cwd" ] && orig_dir=$in_cwd
+sp=$'\001'
+# Claude Code on Windows hands over `C:\x\y`; Git Bash joins and tests paths reliably only as `/c/x/y`.
+# Also restores spaces that were masked inside quoted paths (see the scan step).
+norm_path() {
+  local p=${1//$sp/ } drive
+  if [[ "$p" =~ ^[A-Za-z]:([\\/]|$) ]]; then
+    drive=$(printf '%s' "${p:0:1}" | tr '[:upper:]' '[:lower:]')
+    p="/$drive/${p:3}"
+    p=${p//\\//}
+    p=${p%/}
+    [ -z "$p" ] && p="/$drive"
+  fi
+  printf '%s' "$p"
+}
+[ -n "$in_cwd" ] && orig_dir=$(norm_path "$in_cwd")
 cmd=$(printf '%s' "$input" | node -e "let b='';process.stdin.on('data',c=>b+=c);process.stdin.on('end',()=>{try{process.stdout.write(((JSON.parse(b||'{}').tool_input)||{}).command||'')}catch(e){process.stdout.write('')}})" 2>/dev/null)
 [ -z "$cmd" ] && exit 0
 # Drop heredoc bodies (a commit message saying "git push --force origin main" is text, not a command):
@@ -32,8 +46,9 @@ cand=("$orig_dir")
 redir=0
 unresolved() { [[ -z "$1" || "$1" == - || "$1" == Q || "$1" == *[\$\`~]* ]]; }
 add_target() {
-  local d=$1 c n=0
+  local d c n=0
   local -a new=()
+  d=$(norm_path "$1")
   # With CDPATH set, a bare relative name may resolve through it rather than through a candidate.
   if unresolved "$d" || { [ -n "${CDPATH:-}" ] && [[ "$d" != /* && "$d" != . && "$d" != .. && "$d" != ./* && "$d" != ../* ]]; }; then
     redir=1; return
@@ -77,9 +92,13 @@ protected_branch() {
 #     -m "…" can't false-trigger. Double quotes are handled before single quotes so an
 #     apostrophe inside "it's done" can't pair with a later ' and swallow real flags.
 sq="'"
+# Quoted absolute paths (drive-letter or `/`) keep their spaces, masked as $sp, so `-C "C:/My Dir/wt"`
+# stays one token instead of collapsing to the Q placeholder and forcing the project-root fallback.
 scan=$(printf '%s' "$cmd" | sed -E \
   -e "s/(^|[[:space:];&|(])(bash|sh|zsh|eval)([[:space:]]+-[a-z]*c)?[[:space:]]+\"([^\"]*)\"/\1 \4 /g" \
   -e "s/(^|[[:space:];&|(])(bash|sh|zsh|eval)([[:space:]]+-[a-z]*c)?[[:space:]]+${sq}([^${sq}]*)${sq}/\1 \4 /g" \
+  -e ":dq" -e "s/(\"([A-Za-z]:[\\\\/]|\/)[^\"\$\`;|&() ]*) /\1${sp}/" -e "tdq" \
+  -e ":sqp" -e "s/(${sq}([A-Za-z]:[\\\\/]|\/)[^${sq}\$\`;|&() ]*) /\1${sp}/" -e "tsqp" \
   -e "s/\"([^\"${sq}[:space:]]+)\"/\1/g" -e "s/\"[^\"]*\"/ Q /g" \
   -e "s/${sq}([^${sq}[:space:]]+)${sq}/\1/g" -e "s/${sq}[^${sq}]*${sq}/ Q /g")
 
@@ -144,6 +163,47 @@ for _ in 1 2 3 4; do
   [ "${#cand[@]}" -eq "$before" ] && { settled=1; break; }
 done
 [ "$settled" -eq 1 ] || redir=1   # still growing at the cap: judge the project root too
+# A strict `&&` chain (no ; || | lone & ( ) ` or newline once N>&M redirections are set aside) reaches
+# each git only after every cd before it succeeded, so the directories its git words run in are known
+# exactly: judge those instead of the whole candidate set. That is what lets `cd repo && git commit`
+# through from a protected checkout. A cd that is not a plain literal at the start of a segment, a git
+# that is not the first word of its segment, or any redir leaves the candidate set as it is.
+chain_dirs() {
+  local chk seg w d cur first sawgit=0
+  local -a t out=()
+  chk=$(printf '%s' "$scan" | sed -E 's/[0-9]*>&[0-9-]*//g; s/&>>?//g; s/&&/ /g')
+  [[ "$chk" == *[\;\|\&\(\)\`]* || "$chk" == *$'\n'* ]] && return 1
+  cur=$orig_dir
+  while IFS= read -r seg; do
+    read -ra t <<< "$seg"
+    [ "${#t[@]}" -eq 0 ] && continue
+    first="${t[0]#\\}"
+    if [[ "$first" == cd || "$first" == pushd ]]; then
+      d=""
+      for w in "${t[@]:1}"; do [[ "$w" == -?* ]] && continue; d=$w; break; done
+      unresolved "$d" && return 1
+      d=$(norm_path "$d")
+      [[ "$d" == /* ]] || d="$cur/$d"
+      cur=$(cd "$d" 2>/dev/null && pwd -P) || return 1
+      continue
+    fi
+    for w in "${t[@]}"; do
+      case "${w#\\}" in cd|pushd|popd|env|sudo|command|builtin|exec) return 1 ;; esac
+    done
+    if [[ "$first" == git || "$first" == */git ]]; then
+      sawgit=1
+      [[ " ${out[*]} " == *" $cur "* ]] || out+=("$cur")
+    else
+      for w in "${t[@]}"; do [[ "${w#\\}" == git || "${w#\\}" == */git ]] && return 1; done
+    fi
+  done <<< "${scan//&&/$'\n'}"
+  [ "$sawgit" -eq 1 ] || return 1
+  printf '%s\n' "${out[@]}"
+}
+if [ "$redir" -eq 0 ] && chain_out=$(chain_dirs); then
+  cand=()
+  while IFS= read -r d; do cand+=("$d"); done <<< "$chain_out"
+fi
 while IFS= read -r seg; do
   read -ra t <<< "$seg"
   n=${#t[@]}; i=0
@@ -159,7 +219,7 @@ while IFS= read -r seg; do
     case "$o" in
       -C)
         # git applies every -C in turn, each relative to the one before.
-        x="${t[$((i + 1))]:-}"
+        x=$(norm_path "${t[$((i + 1))]:-}")
         if [ -z "$cdir" ] || [[ "$x" == /* ]]; then cdir=$x; else cdir="$cdir/$x"; fi
         i=$((i + 2)); continue ;;
       -c|--config-env)
