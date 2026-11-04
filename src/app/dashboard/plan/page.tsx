@@ -4,9 +4,12 @@ import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
 import { readVendorTier } from '@/lib/vendor-entitlement';
 import { BackButton, fetchPlanCatalog, PricingLadder } from '@merqo/ui';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { RequestProButton } from './request-pro-button';
+
+export const metadata: Metadata = { title: 'Plan' };
 
 export const revalidate = 0;
 
@@ -30,7 +33,7 @@ export default async function PlanPage() {
   const catalog = await fetchPlanCatalog(merqoBaseUrl());
 
   return (
-    <div className="space-y-6 py-8">
+    <div className="space-y-6">
       <BackButton LinkComponent={Link} href={PAGE_ROUTES.DASHBOARD} label="Overview" />
       <header className="mb-1">
         <PageHeader eyebrow="Your account" title="Plan">

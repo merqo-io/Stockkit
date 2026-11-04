@@ -36,3 +36,5 @@ unit_cost_cents`, summed, formatted via `formatPrice`), low-stock and
 Active products are read through deterministic ID pagination using the session client, then sorted for presentation. RLS remains the ownership boundary. Read failures surface instead of producing partial stock totals or an empty first-product state; page tests cover the complete-read path.
 
 The product read lists its columns (`PRODUCT_COLUMNS`).
+
+The overview uses `PageHeader` ("Overview"). The Needs attention list shows up to five rows, each linking to `/dashboard/products` (product selection is local state, so no per-product URL exists), plus a "+N more" link. Low/out-of-stock tiles show status as a dot, not a coloured numeral.

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "+N more" link past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
+
 ### Added
 
 - `/legal/accept` has a "Sign out" exit and a "Tick the box to continue." hint on the disabled button; the plan page has a "Request Pro" button (Free only) that sends a support message, and both pages use the new local `PageHeader`.

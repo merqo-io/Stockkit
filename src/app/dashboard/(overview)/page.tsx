@@ -1,8 +1,10 @@
 import { readAllRows } from '@/lib/read-all-rows';
 import { ElevatedCard, StatTile } from '@merqo/ui';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { PageHeader } from '@/components/page-header';
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,8 +22,15 @@ import { stockStatusFor } from '@/lib/stock';
 import { createServerClient } from '@/lib/supabase/server';
 import { cn, LEDGER_LG_CLASS } from '@/lib/utils';
 
+export const metadata: Metadata = { title: 'Overview' };
+
 // Vendor data changes on every stock movement — never statically prerender.
 export const revalidate = 0;
+
+// Stock colours mark status only, via a dot; the numeral stays foreground for
+// contrast.
+const STATUS_DOT_CLASS =
+  'before:mr-2.5 before:inline-block before:size-2.5 before:rounded-full before:align-middle';
 
 export default async function DashboardOverviewPage() {
   const supabase = await createServerClient();
@@ -45,8 +54,10 @@ export default async function DashboardOverviewPage() {
 
   if (products.length === 0) {
     return (
-      <div className="py-12">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <div>
+        <PageHeader eyebrow="Inventory" title="Overview">
+          Your stock at a glance.
+        </PageHeader>
         <Card className="mt-8" data-tour="inventory-value">
           <CardHeader>
             <CardTitle>Add your first product</CardTitle>
@@ -67,12 +78,15 @@ export default async function DashboardOverviewPage() {
   const totalValueCents = products.reduce((sum, p) => sum + p.on_hand * p.unit_cost_cents, 0);
   const lowStock = products.filter((p) => p.on_hand > 0 && p.on_hand <= p.low_stock_threshold);
   const outOfStock = products.filter((p) => p.on_hand <= 0);
-  const urgent = [...outOfStock, ...lowStock].slice(0, 5);
+  const needsAttention = [...outOfStock, ...lowStock];
+  const urgent = needsAttention.slice(0, 5);
+  const moreCount = needsAttention.length - urgent.length;
 
   return (
-    <div className="py-12">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-      <p className="text-muted-foreground mt-2">An overview of your stock.</p>
+    <div>
+      <PageHeader eyebrow="Inventory" title="Overview">
+        Your stock at a glance.
+      </PageHeader>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <ElevatedCard className="p-5" data-tour="inventory-value">
@@ -86,14 +100,14 @@ export default async function DashboardOverviewPage() {
           <StatTile
             label="Low stock"
             value={String(lowStock.length)}
-            valueClassName={cn(LEDGER_LG_CLASS, 'text-stock-low')}
+            valueClassName={cn(LEDGER_LG_CLASS, STATUS_DOT_CLASS, 'before:bg-stock-low')}
           />
         </ElevatedCard>
         <ElevatedCard className="p-5">
           <StatTile
             label="Out of stock"
             value={String(outOfStock.length)}
-            valueClassName={cn(LEDGER_LG_CLASS, 'text-stock-out')}
+            valueClassName={cn(LEDGER_LG_CLASS, STATUS_DOT_CLASS, 'before:bg-stock-out')}
           />
         </ElevatedCard>
       </div>
@@ -108,15 +122,15 @@ export default async function DashboardOverviewPage() {
             {urgent.map((p) => {
               const status = stockStatusFor(p.on_hand, p.low_stock_threshold);
               return (
-                <div
+                <Link
                   key={p.id}
-                  className="border-border flex items-center justify-between gap-4 rounded-lg border px-4 py-3"
+                  href={PAGE_ROUTES.PRODUCTS}
+                  className="border-border hover:bg-accent/50 focus-visible:ring-ring focus-visible:ring-offset-background flex items-center justify-between gap-4 rounded-lg border px-4 py-3 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium">{p.name}</p>
                     <p className="text-muted-foreground text-xs">
-                      Threshold:{' '}
-                      <span className="font-mono tabular-nums">{p.low_stock_threshold}</span>{' '}
+                      Low at <span className="font-mono tabular-nums">{p.low_stock_threshold}</span>{' '}
                       {p.unit}
                     </p>
                   </div>
@@ -126,9 +140,17 @@ export default async function DashboardOverviewPage() {
                       {p.on_hand} {p.unit}
                     </span>
                   </div>
-                </div>
+                </Link>
               );
             })}
+            {moreCount > 0 && (
+              <Link
+                href={PAGE_ROUTES.PRODUCTS}
+                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-block rounded-sm text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                +{moreCount} more
+              </Link>
+            )}
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full">

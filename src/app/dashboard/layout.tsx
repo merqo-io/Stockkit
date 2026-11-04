@@ -58,7 +58,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <div className="contents print:hidden">
         <DashboardNav vendorName={vendorName} avatarUrl={avatarUrl} />
       </div>
-      <main className="mx-auto w-full max-w-7xl flex-1 px-6">{children}</main>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-7">{children}</main>
       <SiteFooter />
       <DashboardTourServer seen={!!vendor?.tour_seen_at} />
     </div>

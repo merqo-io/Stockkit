@@ -75,6 +75,27 @@ describe('inventory overview', () => {
     expect(html).toContain('Needs attention');
     expect(html.indexOf('Empty tea')).toBeLessThan(html.indexOf('Low coffee'));
     expect(html).not.toContain('Healthy milk');
+    expect(html).toContain('>Overview</h1>');
+    expect(html).toContain('Low at');
+    expect(html).not.toContain('Threshold');
+    expect(html).toMatch(/<a [^>]*href="\/dashboard\/products"[^>]*>[^]*?Empty tea/);
+    expect(html).not.toContain('more</a>');
+    expect(html).not.toMatch(/stat[^"]*text-stock-(low|out)/);
+  });
+  it('caps rows at five and links the remainder to Products', async () => {
+    m.order.mockResolvedValue({
+      data: Array.from({ length: 7 }, (_, i) => ({
+        id: `p${i}`,
+        name: `Item ${i}`,
+        on_hand: 0,
+        unit_cost_cents: 100,
+        low_stock_threshold: 1,
+        unit: 'kg',
+      })),
+    });
+    const html = renderToStaticMarkup(await Page());
+    expect(html).toContain('+2 more');
+    expect(html).not.toContain('Item 6');
   });
   it('omits urgent alerts for healthy inventory', async () => {
     m.order.mockResolvedValue({
