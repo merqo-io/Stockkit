@@ -15,7 +15,13 @@ folder's job is entirely to collect the vendor's consent and forward it.
   redirects to, so gating it would loop.
 - `accept-form.tsx` — `AcceptForm`, a client component wrapping `@merqo/ui`'s
   `TermsAcceptanceCheckbox` (just the agree checkbox — no typed name); the
-  submit button is disabled until it's checked. Posts to `acceptLegalTerms`.
+  submit button is disabled until it's checked, with a "Tick the box to
+  continue." hint tied to it by `aria-describedby`. Posts to
+  `acceptLegalTerms`. A ghost "Sign out" button (browser Supabase client, then
+  `/login`) is the only exit, since this page is where the legal gate sends
+  the vendor.
+- `accept-form.dom.test.tsx` — covers the hint and the sign-out success and
+  failure paths.
 - `actions.ts` — `acceptLegalTerms` server action. Re-checks for a signed-in
   user (redirects to `/login` otherwise), reads the vendor's real
   `ip`/`user_agent`, then `POST`s `/api/merqo/legal-accept` on merqo once
