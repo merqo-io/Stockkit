@@ -4,11 +4,19 @@
 
 The vendor-facing plan page. It shows the vendor's current plan, what it
 includes, and "Change plan from your Merqo account". Merqo owns subscriptions
-and pricing, so the page shows no price. It only displays limits; the gates are
+and pricing, so stockkit stores no price: the page fetches merqo's public
+`GET /api/plans` catalog (`fetchPlanCatalog` from `@merqo/ui`, base URL from
+`MERQO_BASE_URL`) and renders the shared `PricingLadder`, highlighting
+All-Access without Event Pass (it does not cover stockkit). When merqo is
+unreachable the page shows the current plan plus a muted "Prices are
+unavailable right now" line. Prices appear only here on the vendor dashboard,
+never on public pages. The limits shown are display-only; the gates are
 enforced by `dashboard/products/actions.ts` and the database.
 
 ## Contents
 
+- `page.dom.test.tsx`: covers the ladder, the null-catalog fallback and the
+  base-URL resolution with `@merqo/ui` mocked.
 - `page.tsx`, `PlanPage()` (server, `revalidate = 0`): auth guard, reads the
   vendor's tier from the merqo entitlement cache via `readVendorTier`
   (`@/lib/vendor-entitlement`, failing closed to Free), and hands it to

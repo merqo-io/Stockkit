@@ -142,7 +142,7 @@ had not. `src/lib/image-upload-adapter.ts` stays local — the Storage
 bucket and object path are stockkit's own. Which kit uses which shared
 export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
-`@merqo/ui` is pinned to v0.36.0 (2026-11-02). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly.
+`@merqo/ui` is pinned to v0.39.0 (2026-11-04). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
 ## Routes
 
@@ -232,7 +232,8 @@ setup, the env model and the rollout checklist live in merqo's
 - `NEXT_PUBLIC_SUPABASE_URL` (team shared), `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
   `SUPABASE_SECRET_KEY`: the staging project.
 - `MERQO_BASE_URL` (`https://staging.merqo.io`) and `MERQO_CUSTOMER_SECRET`:
-  the team shared Preview copies, which hold staging values.
+  the team shared Preview copies, which hold staging values. `MERQO_BASE_URL`
+  is also where `/dashboard/plan` fetches the public plan catalog.
 - `MERQO_METRICS_SECRET`, `MERQO_PROVISION_SECRET`: staging-only values,
   never the production ones, matching stockkit's row in the staging
   `merqo.products` (merqo's `supabase/seed/staging-registry.sql`).
