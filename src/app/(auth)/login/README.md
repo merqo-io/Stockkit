@@ -19,3 +19,5 @@ Both the sign-in/sign-up card and the collapsed forgot-password panel are
 wrapped in `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local).
 
 `completeSignup` is rate limited (5 per hour per user, 20 per hour per IP) and fails closed (the IP bucket is skipped when no client IP is known), answering with "Too many tries. Please wait and try again."
+
+Auth errors never reach the UI raw: every returned Supabase error goes through `authErrorMessage` (`@/lib/auth-error-message`) with an action-specific fallback. The vendor's business is labelled "Business name" in the UI; the local state and DB column keep their existing names.

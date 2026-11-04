@@ -61,7 +61,7 @@ describe('LoginForm', () => {
     searchParamsValue.current = 'mode=signup';
     render(<LoginForm />);
     expect(screen.getByRole('heading', { name: 'Create your account' })).toBeTruthy();
-    expect(screen.getByLabelText('Stall / business name')).toBeTruthy();
+    expect(screen.getByLabelText('Business name')).toBeTruthy();
   });
 
   it('calls signInWithOAuth when Continue with Google is clicked', async () => {
@@ -82,7 +82,9 @@ describe('LoginForm', () => {
     const user = userEvent.setup();
     render(<LoginForm />);
     await user.click(screen.getByRole('button', { name: /Continue with Google/ }));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('OAuth unavailable'));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Could not sign in with Google. Try again.')
+    );
   });
 
   it('shows a generic toast when Google sign-in throws instead of returning an error', async () => {
@@ -91,11 +93,11 @@ describe('LoginForm', () => {
     render(<LoginForm />);
     await user.click(screen.getByRole('button', { name: /Continue with Google/ }));
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.')
+      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Try again.')
     );
   });
 
-  it('rejects signup without a stall name before calling signUp', async () => {
+  it('rejects signup without a business name before calling signUp', async () => {
     searchParamsValue.current = 'mode=signup';
     const user = userEvent.setup();
     render(<LoginForm />);
@@ -110,7 +112,7 @@ describe('LoginForm', () => {
     searchParamsValue.current = 'mode=signup';
     const user = userEvent.setup();
     render(<LoginForm />);
-    await user.type(screen.getByLabelText('Stall / business name'), "Mama's Kitchen");
+    await user.type(screen.getByLabelText('Business name'), "Mama's Kitchen");
     await user.type(screen.getByLabelText('Email'), 'new@example.com');
     await user.type(screen.getByLabelText('Password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Create account' }));
@@ -124,7 +126,7 @@ describe('LoginForm', () => {
     searchParamsValue.current = 'mode=signup';
     const user = userEvent.setup();
     render(<LoginForm />);
-    await user.type(screen.getByLabelText('Stall / business name'), "Mama's Kitchen");
+    await user.type(screen.getByLabelText('Business name'), "Mama's Kitchen");
     await user.type(screen.getByLabelText('Email'), 'new@example.com');
     await user.type(screen.getByLabelText('Password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Create account' }));
@@ -136,17 +138,21 @@ describe('LoginForm', () => {
   it('shows a toast when signUp returns an error', async () => {
     authMock.signUp.mockResolvedValue({
       data: { session: null },
-      error: { message: 'Email taken' },
+      error: { code: 'user_already_exists', message: 'Email taken' },
     });
     searchParamsValue.current = 'mode=signup';
     const user = userEvent.setup();
     render(<LoginForm />);
-    await user.type(screen.getByLabelText('Stall / business name'), "Mama's Kitchen");
+    await user.type(screen.getByLabelText('Business name'), "Mama's Kitchen");
     await user.type(screen.getByLabelText('Email'), 'new@example.com');
     await user.type(screen.getByLabelText('Password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Email taken'));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'That email already has an account. Sign in instead.'
+      )
+    );
     expect(completeSignupMock).not.toHaveBeenCalled();
   });
 
@@ -175,20 +181,26 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.')
+      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Try again.')
     );
     expect(routerPush).not.toHaveBeenCalled();
   });
 
   it('shows a toast when sign-in fails', async () => {
-    authMock.signInWithPassword.mockResolvedValue({ error: { message: 'Invalid credentials' } });
+    authMock.signInWithPassword.mockResolvedValue({
+      error: { code: 'invalid_credentials', message: 'Invalid credentials' },
+    });
     const user = userEvent.setup();
     render(<LoginForm />);
     await user.type(screen.getByLabelText('Email'), 'vendor@example.com');
     await user.type(screen.getByLabelText('Password'), 'wrongpass');
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Invalid credentials'));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'Email or password is wrong. Try again or reset your password.'
+      )
+    );
     expect(routerPush).not.toHaveBeenCalled();
   });
 
@@ -216,13 +228,17 @@ describe('LoginForm', () => {
   });
 
   it('shows a toast when the reset email send returns an error', async () => {
-    authMock.resetPasswordForEmail.mockResolvedValue({ error: { message: 'Rate limited' } });
+    authMock.resetPasswordForEmail.mockResolvedValue({
+      error: { code: 'over_email_send_rate_limit', message: 'Rate limited' },
+    });
     const user = userEvent.setup();
     render(<LoginForm />);
     await user.type(screen.getByLabelText('Email'), 'vendor@example.com');
     await user.click(screen.getByRole('button', { name: 'Forgot password?' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Rate limited'));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Too many tries. Wait a minute and try again.')
+    );
     expect(screen.queryByText('Check your email')).toBeNull();
   });
 
@@ -234,7 +250,7 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Forgot password?' }));
 
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.')
+      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Try again.')
     );
   });
 

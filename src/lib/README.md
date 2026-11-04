@@ -182,3 +182,7 @@ retain failure reporting; cleanup failure cannot reverse completed work.
 local `vendors` row (`ignoreDuplicates`) for the signed-in user; shared by
 `/auth/callback` and `dashboard/layout.tsx` (self-heal for vendors arriving
 via the `*.merqo.io` cookie). Logs and swallows errors.
+
+## Auth error copy
+
+`auth-error-message.ts` exports `authErrorMessage(error, fallback)`, which maps Supabase auth errors (by `code`, else message match) to plain next-step copy and never returns the raw message.
