@@ -72,7 +72,7 @@ active-product cap, mirrored as a hardcoded literal in
 (SQL can't import TypeScript) — change the two together; that one SQL
 function is where both the plan rule and the literal live, so the RLS check
 and the statement-level cap trigger that share it can't drift apart;
-`stock.ts` — stock-status (ok/low/out)
+`stock.ts` — stock-status (ok/low/out) and `productStatusFor` (adds `archived` for inactive products)
 classification (`stockStatusFor`, boundary-tested in `stock.test.ts`:
 `onHand <= 0` is out, `onHand <= lowStockThreshold` is low, otherwise ok);
 `action-result.ts` — `ActionResult<T>` server-action
