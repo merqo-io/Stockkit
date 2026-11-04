@@ -4,6 +4,7 @@
 
 ### Added
 
+- `/legal/accept` has a "Sign out" exit and a "Tick the box to continue." hint on the disabled button; the plan page has a "Request Pro" button (Free only) that sends a support message, and both pages use the new local `PageHeader`.
 - `/dashboard/plan` renders merqo's shared `PricingLadder` (All-Access highlighted, no Event Pass) from the public `GET /api/plans` catalog via `@merqo/ui` v0.39.0; stockkit stores no price. If merqo is unreachable the page shows the current plan and a calm "Prices are unavailable right now" note.
 - `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
 
