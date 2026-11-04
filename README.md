@@ -146,6 +146,8 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
 `/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit.
 
+Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("Business name" instead of stall/shop). Supabase auth errors go through `authErrorMessage` (`src/lib/auth-error-message.ts`) to fixed friendly messages; the raw error text is never shown.
+
 ## Routes
 
 | Route                 | Who                       | Purpose                                                                                                          |
