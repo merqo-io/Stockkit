@@ -81,7 +81,7 @@ oversized comment blocks. `pnpm-workspace.yaml`'s `overrides` force-patches
 transitive dependency CVEs, both from Next.js's own bundled deps
 (`sharp`/`postcss`/`nanoid`) and dev-only tooling (`undici`/`fast-uri`/
 `js-yaml`/`brace-expansion`, pulled in via vitest/eslint) — each entry
-comments its advisory ID. `pnpm audit --prod --audit-level=high` hard-gates
+comments its advisory ID. `.claude/deps-gate.sh` (a fail-closed `pnpm audit --prod` high/critical gate) hard-gates
 CI; bump the relevant floor here when a new advisory lands rather than
 waiting on the upstream package to update.
 
@@ -144,6 +144,8 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
 `@merqo/ui` is pinned to v0.39.0 (2026-11-04). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
+`/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit.
+
 ## Routes
 
 | Route                 | Who                       | Purpose                                                                                                          |
@@ -154,7 +156,7 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                   |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                         |
 | `/dashboard/products` | vendor (auth)             | product list; log stock, edit products, view movement history                                                    |
-| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; plan changes happen in the Merqo account                                      |
+| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; Free vendors can request Pro (support message, upgraded by hand)              |
 | `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                  |
 | `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                |
 | `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                           |
@@ -363,9 +365,9 @@ The shared UI dependency is pinned to immutable commit 7b386558af36a1cbf008a9b4c
 
 Component reuse decisions and preserved behavior are documented in [the cleanup spec](docs/meta/2026-10-10-component-reuse-spec.md). Stock reason labels and password fields are shared locally; product details expose the existing Pro CSV export action.
 
-The AI harness follows templateCentral 6.0.4: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in. `docs/meta/templatecentral-adoption-log.md` lists what was adopted. `AGENTS.md` is kept under 200 lines; the file layout and full data model live in `docs/FILE-LAYOUT.md` and `docs/DATA-MODEL.md`.
+The AI harness follows templateCentral 7.2.2: hook commands are anchored on the project directory, and the guard against committing to `main` reads the branch of the directory a command runs in (a strict `&&` chain only by the directories git runs in). The dependency audit is the fail-closed `.claude/deps-gate.sh`, with expiring suppressions only in `.claude/dep-audit-allow.txt`. `docs/meta/templatecentral-adoption-log.md` lists what was adopted. `AGENTS.md` is kept under 200 lines; the file layout and full data model live in `docs/FILE-LAYOUT.md` and `docs/DATA-MODEL.md`.
 
-Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@6.0.4`), matching `.claude/harness.json`.
+Line 1 of `AGENTS.md` carries the templateCentral version marker (`nextjs@7.2.2`), matching `.claude/harness.json`.
 
 ## Security headers and MFA
 

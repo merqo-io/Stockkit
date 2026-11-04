@@ -13,7 +13,11 @@ harness.
   `git commit`, `HUSKY=0`/`HUSKY_SKIP_HOOKS`/`core.hooksPath=` bypasses,
   direct commits to `main`, force-push to a protected branch,
   `git checkout/restore` on guard-layer files, and recursive-force `rm` on
-  source directories; exit 2 blocks.
+  source directories; exit 2 blocks. A strict `&&` chain
+  (`cd <repo> && git commit`) is judged only by the directories git runs in,
+  so it passes from a `main` checkout when the `cd` lands on a feature branch;
+  anything looser keeps the starting directory as a candidate.
+  `block-no-verify.test.sh` is its regression suite.
 - `post-edit-typecheck.sh` — PostToolUse(Edit|Write), `.ts`/`.tsx` files
   only: runs incremental `tsc --noEmit` and surfaces the last 5 lines;
   feedback-only, never blocks.
@@ -27,8 +31,8 @@ harness.
   secret directories and credentials. Governance and CI/CD writes require
   approval; governance reads are permitted.
 - `session-context.sh` — SessionStart(startup|resume|clear|compact):
-  re-injects the first 30 lines of `AGENTS.md` and a fixed list of
-  always-on invariants (secrets guard, quality gate, feature-branch rule,
+  re-injects a fixed list of always-on invariants (`AGENTS.md` is already
+  loaded through the `CLAUDE.md` import) (secrets guard, quality gate, feature-branch rule,
   protected files, architecture boundaries).
 - `skill-usage-log.sh` — PostToolUse(`Skill`): appends a
   `timestamp\tskill-name` line to `.claude/skill-usage.log`; always exits 0;

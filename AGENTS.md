@@ -1,4 +1,4 @@
-<!-- templateCentral: nextjs@6.0.4 (Supabase variant — shared project, schema per kit) -->
+<!-- templateCentral: nextjs@7.2.2 (Supabase variant — shared project, schema per kit) -->
 
 # AGENTS.md — stockkit
 
@@ -25,7 +25,7 @@ assume any qkit integration exists.
 
 Next.js 16 · App Router · Turbopack · TypeScript strict · Tailwind v4 ·
 shadcn/ui (new-york) · React Hook Form · Zod · Supabase (`@supabase/ssr`) ·
-Vitest · pnpm · Node ≥24
+Vitest · pnpm · Node ≥24.22.1
 
 This app uses Server Components and Server Actions. The unused scaffold dependency `@tanstack/react-query` was removed after source, test and tooling reference checks.
 
@@ -94,7 +94,7 @@ Full schema notes: `docs/DATA-MODEL.md`. Rules that bind every change:
   one deliberate typographic signature (a "ledger" motif). Don't drop it on
   new numeric displays.
 
-The templateCentral 6.0.4 adoption review (2026-10-12) — what was adopted and
+The templateCentral 6.0.4 and 7.2.2 adoption reviews (2026-10-12, 2026-11-04) — what was adopted and
 what was not — is in `docs/meta/templatecentral-adoption-log.md`.
 
 ## AI Harness
@@ -110,7 +110,7 @@ produce advisory context so quoted security research can proceed.
 PostToolUse: `tsc --noEmit --incremental` after every Edit/Write. Feedback-only.
 Stop: exits 0 when `stop_hook_active` (no re-entry loop); else runs the test
 suite, exit 2 feeds failures back, exit 0 on pass.
-SessionStart (startup|resume|compact): re-injects first 30 lines of this file.
+SessionStart (startup|resume|compact): prints the always-on invariants only (AGENTS.md loads through the `CLAUDE.md` import).
 `permissions`: max-privilege — bare-tool `allow` (Bash/Read/Edit/Write/web/Skill/
 Task) so common work doesn't prompt; `deny` covers secret reads/edits and
 irreversible ops (`rm -rf`, `git push --force`/`-f`, `git reset --hard`,
@@ -127,7 +127,7 @@ see `docs/superpowers/specs/2026-08-01-lefthook-to-husky-migration-design.md`.
 CI (GitHub Actions): hard gate on changed-line coverage (`diff-cover`
 ≥80%), lockfile-in-sync (`--frozen-lockfile`), a changelog-touched check, a
 readme-freshness check, harness integrity, a `db` job (pgTAP RLS suite), and
-(via `security.yml`) a full-history gitleaks scan + `pnpm audit` + a
+(via `security.yml`) a full-history gitleaks scan + the fail-closed deps gate `.claude/deps-gate.sh` (`pnpm audit` high/critical; expiring suppressions only in `.claude/dep-audit-allow.txt`) + a
 dormant self-skipping CodeQL job. An `e2e` job ("e2e (public smoke)") runs
 the Playwright specs in `e2e/`. No `mutation` job (no Stryker config), out of
 scope for this pass.

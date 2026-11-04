@@ -3,7 +3,8 @@
 ## Purpose
 
 The vendor-facing plan page. It shows the vendor's current plan, what it
-includes, and "Change plan from your Merqo account". Merqo owns subscriptions
+includes, and (on Free) a "Request Pro" button that files a support message
+for a manual upgrade. Merqo owns subscriptions
 and pricing, so stockkit stores no price: the page fetches merqo's public
 `GET /api/plans` catalog (`fetchPlanCatalog` from `@merqo/ui`, base URL from
 `MERQO_BASE_URL`) and renders the shared `PricingLadder`, highlighting
@@ -17,6 +18,10 @@ enforced by `dashboard/products/actions.ts` and the database.
 
 - `page.dom.test.tsx`: covers the ladder, the null-catalog fallback and the
   base-URL resolution with `@merqo/ui` mocked.
+- `request-pro-button.tsx`, `RequestProButton` (client): calls
+  `submitSupportMessageAction` with the `account` category, toasts the result
+  and disables itself once sent. `request-pro-button.dom.test.tsx` covers both
+  outcomes.
 - `page.tsx`, `PlanPage()` (server, `revalidate = 0`): auth guard, reads the
   vendor's tier from the merqo entitlement cache via `readVendorTier`
   (`@/lib/vendor-entitlement`, failing closed to Free), and hands it to

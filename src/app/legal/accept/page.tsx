@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/page-header';
 import { safeRedirectPath } from '@merqo/ui';
 import { AcceptForm } from './accept-form';
 
@@ -17,10 +18,11 @@ export default async function LegalAcceptPage({
 
   return (
     <div className="mx-auto max-w-md px-5 py-16">
-      <h1 className="mb-4 text-xl font-semibold">Our terms have been updated</h1>
-      <p className="text-muted-foreground mb-6 text-sm">
-        Please review and accept before continuing.
-      </p>
+      <div className="mb-6">
+        <PageHeader eyebrow="Your account" title="Our terms have changed">
+          Review the updated terms and privacy policy to keep using stockkit.
+        </PageHeader>
+      </div>
       <AcceptForm next={safeRedirectPath(next, '/dashboard')} />
     </div>
   );
