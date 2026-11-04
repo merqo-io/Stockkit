@@ -41,3 +41,5 @@ Routed at `PAGE_ROUTES.PLAN` (`/dashboard/plan`) and reachable from
 ## Parent
 
 [dashboard](../README.md)
+
+The page sets `metadata.title` "Plan" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.

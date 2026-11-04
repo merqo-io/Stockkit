@@ -101,3 +101,5 @@ read errors display an alert and retry action instead of an empty ledger.
 `export-history-button.tsx` exposes the existing Pro CSV action in both history layouts. Failed exports show an actionable error and retry; object URLs are revoked after download. Authorization and formula-safe escaping remain in the server action.
 
 Product and stock-movement reads list their columns (`PRODUCT_COLUMNS`, `STOCK_MOVEMENT_COLUMNS`).
+
+The page sets `metadata.title` "Products" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.

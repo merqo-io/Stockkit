@@ -27,10 +27,13 @@ export const metadata: Metadata = { title: 'Overview' };
 // Vendor data changes on every stock movement — never statically prerender.
 export const revalidate = 0;
 
-// Stock colours mark status only, via a dot; the numeral stays foreground for
-// contrast.
-const STATUS_DOT_CLASS =
-  'before:mr-2.5 before:inline-block before:size-2.5 before:rounded-full before:align-middle';
+// StatTile only accepts string label/value, so the status dot is a sibling
+// element positioned in the card rather than part of the tile.
+function StatusDot({ className }: { className: string }) {
+  return (
+    <span aria-hidden="true" className={cn('inline-block size-2.5 rounded-full', className)} />
+  );
+}
 
 export default async function DashboardOverviewPage() {
   const supabase = await createServerClient();
@@ -96,18 +99,20 @@ export default async function DashboardOverviewPage() {
             valueClassName={LEDGER_LG_CLASS}
           />
         </ElevatedCard>
-        <ElevatedCard className="p-5">
+        <ElevatedCard className="relative p-5">
+          <StatusDot className="bg-stock-low absolute top-5 right-5" />
           <StatTile
             label="Low stock"
             value={String(lowStock.length)}
-            valueClassName={cn(LEDGER_LG_CLASS, STATUS_DOT_CLASS, 'before:bg-stock-low')}
+            valueClassName={LEDGER_LG_CLASS}
           />
         </ElevatedCard>
-        <ElevatedCard className="p-5">
+        <ElevatedCard className="relative p-5">
+          <StatusDot className="bg-stock-out absolute top-5 right-5" />
           <StatTile
             label="Out of stock"
             value={String(outOfStock.length)}
-            valueClassName={cn(LEDGER_LG_CLASS, STATUS_DOT_CLASS, 'before:bg-stock-out')}
+            valueClassName={LEDGER_LG_CLASS}
           />
         </ElevatedCard>
       </div>
@@ -130,8 +135,15 @@ export default async function DashboardOverviewPage() {
                   <div className="min-w-0">
                     <p className="truncate font-medium">{p.name}</p>
                     <p className="text-muted-foreground text-xs">
-                      Low at <span className="font-mono tabular-nums">{p.low_stock_threshold}</span>{' '}
-                      {p.unit}
+                      {p.on_hand <= 0 ? (
+                        'Out of stock'
+                      ) : (
+                        <>
+                          Low at{' '}
+                          <span className="font-mono tabular-nums">{p.low_stock_threshold}</span>{' '}
+                          {p.unit}
+                        </>
+                      )}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
@@ -143,18 +155,12 @@ export default async function DashboardOverviewPage() {
                 </Link>
               );
             })}
-            {moreCount > 0 && (
-              <Link
-                href={PAGE_ROUTES.PRODUCTS}
-                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-block rounded-sm text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                +{moreCount} more
-              </Link>
-            )}
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full">
-              <Link href={PAGE_ROUTES.PRODUCTS}>View all products</Link>
+              <Link href={PAGE_ROUTES.PRODUCTS}>
+                {moreCount > 0 ? `View all (${moreCount} more)` : 'View all products'}
+              </Link>
             </Button>
           </CardFooter>
         </Card>

@@ -94,7 +94,7 @@ describe('inventory overview', () => {
       })),
     });
     const html = renderToStaticMarkup(await Page());
-    expect(html).toContain('+2 more');
+    expect(html).toContain('View all (2 more)');
     expect(html).not.toContain('Item 6');
   });
   it('omits urgent alerts for healthy inventory', async () => {

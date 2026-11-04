@@ -10,6 +10,9 @@ const { metadata } = await import('./layout');
 
 describe('root layout metadata', () => {
   it('sets the browser-tab title', () => {
-    expect(metadata.title).toBe('stockkit | Inventory Tracking');
+    expect(metadata.title).toEqual({
+      default: 'stockkit | Inventory Tracking',
+      template: '%s | stockkit',
+    });
   });
 });

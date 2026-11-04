@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "+N more" link past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
+- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
 
 ### Added
 
