@@ -59,23 +59,23 @@ describe('ProfileForm', () => {
     uploadMock.mockResolvedValue({ error: null });
   });
 
-  it('saves the stall name independently of other sections', async () => {
+  it('saves the business name independently of other sections', async () => {
     const user = userEvent.setup();
     render(<ProfileForm {...defaultProps} />);
-    const input = screen.getByLabelText(/stall\/shop name/i);
+    const input = screen.getByLabelText(/^business name$/i);
     await user.clear(input);
     await user.type(input, 'New Name');
-    await user.click(screen.getByRole('button', { name: /^save$/i }));
+    await user.click(screen.getByRole('button', { name: /^save name$/i }));
     expect(updateStallName).toHaveBeenCalledWith({ name: 'New Name' });
     expect(routerRefresh).toHaveBeenCalled();
   });
 
-  it('rejects an empty stall name client-side without calling the server action', async () => {
+  it('rejects an empty business name client-side without calling the server action', async () => {
     const user = userEvent.setup();
     render(<ProfileForm {...defaultProps} />);
-    const input = screen.getByLabelText(/stall\/shop name/i);
+    const input = screen.getByLabelText(/^business name$/i);
     await user.clear(input);
-    await user.click(screen.getByRole('button', { name: /^save$/i }));
+    await user.click(screen.getByRole('button', { name: /^save name$/i }));
     expect(updateStallName).not.toHaveBeenCalled();
   });
 
@@ -101,14 +101,14 @@ describe('ProfileForm', () => {
     expect(toast.success).toHaveBeenCalledWith('Links saved');
   });
 
-  it('shows an error toast when saving the stall name returns a failure', async () => {
+  it('shows an error toast when saving the business name returns a failure', async () => {
     updateStallName.mockResolvedValueOnce({ success: false, error: 'Server error' });
     const user = userEvent.setup();
     render(<ProfileForm {...defaultProps} />);
-    const input = screen.getByLabelText(/stall\/shop name/i);
+    const input = screen.getByLabelText(/^business name$/i);
     await user.clear(input);
     await user.type(input, 'New Name');
-    await user.click(screen.getByRole('button', { name: /^save$/i }));
+    await user.click(screen.getByRole('button', { name: /^save name$/i }));
     const { toast } = await import('sonner');
     expect(toast.error).toHaveBeenCalledWith('Server error');
   });
@@ -221,16 +221,16 @@ describe('ProfileForm', () => {
     expect(toast.error).toHaveBeenCalledWith('Network error');
   });
 
-  it('shows an error toast when saving the stall name throws instead of returning an error', async () => {
+  it('shows an error toast when saving the business name throws instead of returning an error', async () => {
     updateStallName.mockRejectedValueOnce(new Error('network down'));
     const user = userEvent.setup();
     render(<ProfileForm {...defaultProps} />);
-    const input = screen.getByLabelText(/stall\/shop name/i);
+    const input = screen.getByLabelText(/^business name$/i);
     await user.clear(input);
     await user.type(input, 'New Name');
-    await user.click(screen.getByRole('button', { name: /^save$/i }));
+    await user.click(screen.getByRole('button', { name: /^save name$/i }));
     const { toast } = await import('sonner');
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
+    expect(toast.error).toHaveBeenCalledWith('Could not save business name. Try again.');
   });
 
   it('rolls back avatar state when the avatar save throws instead of returning an error', async () => {
@@ -251,6 +251,6 @@ describe('ProfileForm', () => {
     expect(screen.getByText(/add photo/i)).toBeTruthy();
 
     const { toast } = await import('sonner');
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
+    expect(toast.error).toHaveBeenCalledWith('Could not save profile icon. Try again.');
   });
 });
