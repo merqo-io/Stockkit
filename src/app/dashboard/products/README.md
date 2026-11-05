@@ -7,6 +7,7 @@ product's movement history.
 
 - `page.tsx` — server fetch of the vendor's products, renders
   `ProductsWorkspace`.
+- The "All" filter lists active products only; archived products appear under "Archived".
 - `page.tsx` also reads the vendor tier for the Free "N of 20 active" meter and the optional `?product=<id>` preselect (linked from the overview "Needs attention" rows).
 - `products-workspace.tsx` — client state/shell (PageHeader, All/Low/Out/Archived filter, name search, one Add button, one list for both breakpoints): holds the product list,
   selected product, and which panel (`ProductForm`/`StockLogForm`/

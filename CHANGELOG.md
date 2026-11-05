@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
 
 ### Added
@@ -16,7 +16,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Sign-in, sign-up, reset-password and two-step pages use plain sentence-case copy, call the vendor's business "Business name", and show the wordmark in the display font. Supabase auth errors map to short next-step messages via `authErrorMessage` instead of showing the raw text.
 
 ### Fixed
@@ -37,7 +37,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Pin Vercel functions to `sin1` (Singapore) in `vercel.json` for data residency, matching the Supabase region.
 - `vercel.json` limits git-triggered Vercel builds to `main`, so PR and branch pushes stop using the Hobby daily deployment cap. Staging still deploys through its deploy hook; ad-hoc previews come from the `vercel` CLI.
 - The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
@@ -46,7 +46,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - The onboarding tour welcome reads "Welcome to stockkit." in lowercase; only the logo mark is PascalCase.
 
 ## 0.4.0 - 2026-11-02
@@ -59,7 +59,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - The public landing states readiness ("In build", "Built, not yet tried with vendors.") and publishes no pricing; the FAQ carries the pilot notice instead.
 - Signed-out signup CTAs read "Join the waitlist" and link to the merqo waitlist. `/login` and `/dashboard` stay reachable directly.
 - Landing and metadata copy no longer promises low-stock alerts, since nothing is sent; the dashboard flags low stock.
@@ -76,7 +76,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Migration `0023_fk_indexes.sql` indexes the unindexed foreign keys the Supabase advisor flagged: `admin_audit.admin_id`, `feedback.vendor_id`, `products.vendor_id`, `stock_movements.vendor_id`. A pgTAP test (`db-hygiene.test.sql`) checks them and that every stockkit table has RLS on.
 - `.claude/skill-usage.log` is git-ignored, matching the other kits (the skill-usage hook writes it locally on every skill call).
 
@@ -108,7 +108,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Lint config now consumes the shared `@merqo/ui/eslint` preset (`@merqo/ui` v0.35.0): comment and directive hygiene, size and complexity limits, a ban on colour literals and the em dash in `src`. `eslint-plugin-sonarjs` 4.2.2 and `@eslint-community/eslint-plugin-eslint-comments` 4.8.1 pinned. `eslint.config.test.ts` asserts the key rules resolve to `error`.
 - `LoginForm`, `ProductForm`, the vendor-activity route and `buildVendorHealth` split into smaller helpers to meet the complexity limit. No behaviour change. Em dashes removed from two user-facing messages.
 
@@ -136,7 +136,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Use the shared `@merqo/ui` components the way qkit and loopkit do. The unit-cost fields on the product form and the restock form are now `MoneyInput`: a cost that cannot be read as a non-negative amount is no longer accepted or flagged with an inline error, the field snaps back to the last valid amount when you leave it. The low-stock threshold and the restock cost gain an info icon (`InfoTooltip`) explaining them. The three overview tiles (inventory value, low stock, out of stock) are `StatTile` inside an `ElevatedCard`. Removed the now-unused `parseDollarsToCents` and `centsToDollarString` helpers. The dashboard already ends with the family footer and tour, so nothing changes there.
 - Pin `@merqo/ui` to commit `7b386558af36a1cbf008a9b4c4073c07ffc105ba` (tag `v0.34.2`) with matching build permission. From this revision the shared `useAsyncAction` and `AccountMenu` treat a Next.js `redirect()` from an action as navigation, so a redirecting sign-out no longer flashes "NEXT_REDIRECT" under the menu item. This app signs out on the client and navigates with the router, so sign-out was not affected and nothing changes for vendors. `v0.33.0` and `v0.34.0` only add `DataCollectionNotice`, which this app does not render.
 - Internal: the AI harness follows templateCentral 6.0.4. Hook commands no
@@ -159,7 +159,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Sign-in, sign-up, reset-password and two-step pages use plain sentence-case copy, call the vendor's business "Business name", and show the wordmark in the display font. Supabase auth errors map to short next-step messages via `authErrorMessage` instead of showing the raw text.
 
 ### Fixed
@@ -178,7 +178,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Removed the unused scaffold dependency `@tanstack/react-query` and its query-core transitive dependency after source, test and tooling reference checks, reducing unused install and maintenance overhead.
 
 - Removed unused local UI primitives, widget exports and forwarded-origin helper after reference checks; retained active components and added profile, service-client, RPC and product-detail regressions.
@@ -225,7 +225,7 @@
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Sign-in, sign-up, reset-password and two-step pages use plain sentence-case copy, call the vendor's business "Business name", and show the wordmark in the display font. Supabase auth errors map to short next-step messages via `authErrorMessage` instead of showing the raw text.
 
 ### Fixed
@@ -520,7 +520,7 @@ design.md`: `{active, plan, status, metrics, lastActivityAt}`, reusing
 
 ### Changed
 
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it.
+- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
 - Bumped `@merqo/ui` to `v0.31.2`, which drops the package-wide
   `"use client"` banner in favour of per-module directives. Plain-data
   exports are now real values in a Server Component instead of
