@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Admin: a "Back to dashboard" link in the admin nav, pages use `PageHeader` with consistent spacing, stat tiles and panels are flat bordered surfaces, timestamps are monospace, and missing values read "None" instead of an em dash.
 - Release flow is now `feat/*`|`fix/*` -> `staging` -> `main`: PRs merge into `staging`, which deploys to `stockkit-staging.merqo.io` through Vercel's git integration, and `staging` is promoted to `main` with a merge commit. `vercel.json` enables git deploys for `staging` alongside `main`, `.github/workflows/ci.yml` also runs on pushes to `staging`, and `.github/workflows/staging-sync.yml` only fast-forwards `staging` onto `main` (the deploy-hook step and the `VERCEL_STAGING_DEPLOY_HOOK` secret are no longer used).
 - Profile page: uses `PageHeader` (eyebrow "Your account") without a nested `<main>` or double gutter, sections are flat bordered cards, the field is called "Business name" everywhere, saves read "Save name" / "Save links" with matching accessible names and only the business-name save is filled, and failure toasts say which save failed.
 - Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.

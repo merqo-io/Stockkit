@@ -9,10 +9,10 @@ vendors/products/stock_movements domain (no "programs" concept here).
 
 ## Contents
 
-- `admin-nav.tsx` — `AdminNav` client component: the Overview/Vendors/Activity tab bar, highlighting the active section by path.
+- `admin-nav.tsx` — `AdminNav` client component: a Back to dashboard link and the Overview/Vendors/Activity tab bar, highlighting the active section by path.
 - `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders the header (`BrandText` wordmark, Admin badge, sign-out) and `AdminNav`.
-- `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (wrapped in `@merqo/ui`'s `ElevatedCard`), and nothing else: pricing and plan changes live in merqo.
-- `stat.tsx` — `Stat`: a small labeled-value tile (built on `@merqo/ui`'s `ElevatedCard` and `StatTile` for the shell and label/value content, both promoted 2026-09-16 — `ElevatedCard` was stockkit-local before, `StatTile` already shared — `font-mono` value per this app's ledger typographic convention) used on the admin overview page.
+- `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (in a flat bordered panel), and nothing else: pricing and plan changes live in merqo.
+- `stat.tsx` — `Stat`: a small labeled-value tile (a flat bordered tile around `@merqo/ui`'s `StatTile`; `font-mono` value per this app's ledger typographic convention) used on the admin overview page.
 - `vendors/`, vendor list with each vendor's plan badge (own README).
 - `activity/` — the `admin_audit` viewer, rendered via `@merqo/ui`'s shared
   `AuditLogTable` (own README).

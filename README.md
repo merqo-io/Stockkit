@@ -41,6 +41,8 @@ small standalone controls. Reduced-motion users get no pulse, spin or dialog
 animations, and `/dashboard` shows a page-shaped loading skeleton instead of a
 spinner.
 
+The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
+
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
 not just fire-and-forget from the client — the tour's own nav-link step
