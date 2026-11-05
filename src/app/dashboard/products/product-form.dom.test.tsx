@@ -218,5 +218,48 @@ describe('ProductForm', () => {
 
     expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
     expect(toast.success).toHaveBeenCalledWith('Product saved');
+    expect(screen.queryByRole('button', { name: /restore product/i })).toBeNull();
+  });
+
+  it('restores an archived product through saveProduct with is_active true', async () => {
+    saveProductMock.mockClear();
+    vi.mocked(toast.success).mockClear();
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ProductForm
+        product={{ ...product, id: '11111111-1111-4111-8111-111111111111', is_active: false }}
+        onSaved={onSaved}
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /archive product/i })).toBeNull();
+    await user.click(screen.getByRole('button', { name: /restore product/i }));
+
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+    expect(toast.success).toHaveBeenCalledWith('Product restored');
+    expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+  });
+
+  it('surfaces the Free cap error when a restore is blocked', async () => {
+    saveProductMock.mockClear();
+    vi.mocked(toast.error).mockClear();
+    saveProductMock.mockResolvedValueOnce({
+      success: false,
+      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
+    });
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ProductForm
+        product={{ ...product, id: '11111111-1111-4111-8111-111111111111', is_active: false }}
+        onSaved={onSaved}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: /restore product/i }));
+
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Free plan limit'));
+    expect(onSaved).not.toHaveBeenCalled();
   });
 });

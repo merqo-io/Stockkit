@@ -27,7 +27,7 @@ interface Props {
  */
 export function ProductDetail({ product, layout, onSaved }: Props) {
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
-  const [historyCapped, setHistoryCapped] = useState(false);
+  const [historyCapped, setHistoryCapped] = useState<boolean | null>(null);
   const status = productStatusFor(product);
 
   function onRecorded(updated: Product) {

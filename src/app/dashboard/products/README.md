@@ -45,7 +45,8 @@ product's movement history.
   Log stock / Edit / History tabs on both desktop and mobile; the History tab
   holds `export-history-button.tsx` ("Download CSV", a lock link to
   `/dashboard/plan` on Free) above the ledger. The Active switch is gone from
-  the product form; Archive is the only way to deactivate. Form validation
+  the product form; Archive is the only way to deactivate, and an archived
+  product's Edit tab shows a Restore product button (cap-checked on Free). Form validation
   errors render inline under the field (`aria-describedby`); toasts are for
   server results only. `getProductMovements` also returns the plan's
   `limit`, so Free history shows a "Pro keeps full history" notice; stock status via the shared

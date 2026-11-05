@@ -8,8 +8,9 @@ import { exportProductMovementsCsv } from './actions';
 
 interface Props {
   productId: string;
-  // True on the Free plan, where export is unavailable.
-  locked?: boolean;
+  // True on the Free plan, where export is unavailable. null while the plan
+  // is unknown or failed to load, which keeps the control disabled.
+  locked?: boolean | null;
 }
 
 export function ExportHistoryButton({ productId, locked = false }: Props) {
@@ -45,12 +46,20 @@ export function ExportHistoryButton({ productId, locked = false }: Props) {
       setPending(false);
     }
   }
+  if (locked === null) {
+    return (
+      <Button type="button" variant="outline" size="sm" disabled>
+        Download CSV
+      </Button>
+    );
+  }
   if (locked) {
     return (
       <Button asChild type="button" variant="outline" size="sm">
-        <Link href="/dashboard/plan">
-          <Lock className="size-3.5" />
-          Download CSV (Pro)
+        <Link href="/dashboard/plan" title="CSV download needs Pro">
+          <Lock className="size-3.5" aria-hidden="true" />
+          Download CSV
+          <span className="sr-only">(needs Pro)</span>
         </Link>
       </Button>
     );

@@ -91,7 +91,7 @@ describe('MovementHistory', () => {
     await waitFor(() => expect(getProductMovementsMock).toHaveBeenCalledTimes(2));
   });
 
-  it('shows the Free cap notice linking to the Plan page when the cap is reached', async () => {
+  it('shows the Free cap notice linking to the Plan page', async () => {
     getProductMovementsMock.mockResolvedValueOnce({
       success: true,
       movements: [movement({ id: 'm1', delta: 1 }), movement({ id: 'm2', delta: 2 })],
@@ -100,12 +100,26 @@ describe('MovementHistory', () => {
     const onCappedChange = vi.fn();
     render(<MovementHistory productId="p1" refreshKey={0} onCappedChange={onCappedChange} />);
 
-    expect(await screen.findByText(/showing the last 2 changes/i)).toBeTruthy();
-    expect(screen.getByRole('link', { name: /plan page/i })).toHaveAttribute(
-      'href',
-      '/dashboard/plan'
-    );
+    expect(await screen.findByText(/free plan keeps the last 2 changes/i)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Pro' })).toHaveAttribute('href', '/dashboard/plan');
     expect(onCappedChange).toHaveBeenCalledWith(true);
+  });
+
+  it('shows the cap notice before the cap is reached and reports null on failure', async () => {
+    getProductMovementsMock.mockResolvedValueOnce({
+      success: true,
+      movements: [movement({ id: 'm1', delta: 1 })],
+      limit: 10,
+    });
+    const { unmount } = render(<MovementHistory productId="p1" refreshKey={0} />);
+    expect(await screen.findByText(/free plan keeps the last 10 changes/i)).toBeTruthy();
+    unmount();
+
+    getProductMovementsMock.mockResolvedValueOnce({ success: false, error: 'boom' });
+    const onCappedChange = vi.fn();
+    render(<MovementHistory productId="p1" refreshKey={0} onCappedChange={onCappedChange} />);
+    await screen.findByRole('alert');
+    expect(onCappedChange).toHaveBeenLastCalledWith(null);
   });
 
   it('shows no cap notice on an uncapped plan', async () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import { InfoTooltip, MoneyInput } from '@merqo/ui';
-import { Archive, Check, ChevronsUpDown } from 'lucide-react';
+import { Archive, ArchiveRestore, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 
@@ -188,6 +188,12 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
+    return save(product?.is_active ?? true);
+  }
+
+  function save(isActive: boolean) {
+    let savedMessage = isNew ? 'Product added' : 'Product saved';
+    if (isActive && product?.is_active === false) savedMessage = 'Product restored';
     const candidate = {
       id: product?.id,
       name,
@@ -195,7 +201,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       unit_cost_cents: unitCostCents ?? 0,
       on_hand: Number(onHand),
       low_stock_threshold: Number(lowStockThreshold),
-      is_active: product?.is_active ?? true,
+      is_active: isActive,
     };
     const parsed = productFormSchema.safeParse(candidate);
     if (!parsed.success) {
@@ -211,7 +217,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           toast.error(result.error);
           return;
         }
-        toast.success(isNew ? 'Product added' : 'Product saved');
+        toast.success(savedMessage);
         onSaved(savedProduct(product, parsed.data, result.productId));
       } catch {
         toast.error('Could not save the product. Try again.');
@@ -339,7 +345,20 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
         )}
       </div>
 
-      {!isNew && (
+      {product && !product.is_active && (
+        <div className="space-y-2 rounded-lg border p-4">
+          <p className="text-xs font-semibold tracking-wider uppercase">Restore product</p>
+          <p className="text-muted-foreground text-sm">
+            This product is archived. Restoring it puts it back in active inventory.
+          </p>
+          <Button type="button" variant="outline" disabled={saving} onClick={() => save(true)}>
+            <ArchiveRestore className="size-4" />
+            Restore product
+          </Button>
+        </div>
+      )}
+
+      {product?.is_active && (
         <div className="border-destructive/30 bg-destructive/[0.03] space-y-2 rounded-lg border p-4">
           <p className="text-destructive text-xs font-semibold tracking-wider uppercase">
             Archive product
@@ -363,7 +382,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Archive &ldquo;{product?.name}&rdquo;?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  You can reactivate this product later. Its stock history stays available.
+                  You can restore it later from its Edit tab. Its stock history stays available.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

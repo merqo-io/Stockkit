@@ -1,21 +1,20 @@
 'use client';
 
-import { stockMovementReasonLabel } from '@/lib/stock';
-
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { stockMovementReasonLabel } from '@/lib/stock';
 import type { StockMovement } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { getProductMovements } from './actions';
 
 interface Props {
   productId: string;
   // Bumped by the parent after a new movement is recorded, to trigger a refetch.
   refreshKey: number;
-  // Reports whether the plan caps history, so siblings (the CSV download)
-  // can reflect the Free plan. Must be a stable callback (a state setter).
-  onCappedChange?: (capped: boolean) => void;
+  // Reports whether the plan caps history (true on Free), or null while
+  // unknown or after a failed load, so siblings (the CSV download) can reflect
+  // the plan. Must be a stable callback (a state setter).
+  onCappedChange?: (capped: boolean | null) => void;
 }
 
 /** Plan-limited stock movements for a product, newest first. */
@@ -32,6 +31,7 @@ export function MovementHistory({ productId, refreshKey, onCappedChange }: Props
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset must run before the async fetch
     setMovements(null);
     setFailed(false);
+    onCappedChange?.(null);
     getProductMovements(productId)
       .then((result) => {
         if (cancelled) return;
@@ -50,8 +50,6 @@ export function MovementHistory({ productId, refreshKey, onCappedChange }: Props
       cancelled = true;
     };
   }, [productId, refreshKey, retryKey, onCappedChange]);
-
-  const capped = limit !== null && movements !== null && movements.length >= limit;
 
   if (failed) {
     return (
@@ -88,19 +86,20 @@ export function MovementHistory({ productId, refreshKey, onCappedChange }: Props
             <span
               aria-hidden="true"
               data-testid="delta-dot"
-              className={cn('size-2 rounded-full', m.delta > 0 ? 'bg-stock-ok' : 'bg-stock-out')}
+              className="bg-muted-foreground size-2 rounded-full"
             />
             {m.delta > 0 ? '+' : ''}
             {m.delta}
           </span>
         </div>
       ))}
-      {capped && (
+      {limit !== null && (
         <p className="text-muted-foreground pt-1 text-xs">
-          Showing the last {limit} changes. Pro keeps full history.{' '}
+          Free plan keeps the last {limit} changes.{' '}
           <Link href="/dashboard/plan" className="text-foreground underline">
-            See the Plan page
-          </Link>
+            Pro
+          </Link>{' '}
+          keeps full history.
         </p>
       )}
     </div>

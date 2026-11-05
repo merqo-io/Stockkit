@@ -37,13 +37,13 @@ async function vendorEntitlement(
 }
 
 /**
- * Reactivation (currently inactive â†’ is_active: true) is cap-gated the same
+ * Reactivation (currently inactive → is_active: true) is cap-gated the same
  * as a fresh insert; editing an already-active product's other fields must
  * never be blocked just because the vendor is at/over cap on other rows, so
  * this only checks when the flip is actually happening. RLS
  * (products_vendor_update) scopes both reads/writes to this vendor's own
  * products; the DB-level trigger (migration 0012) is the real guarantee
- * against a raw multi-row update bypassing this check â€” this is the fast,
+ * against a raw multi-row update bypassing this check — this is the fast,
  * friendly-error first line of defence only.
  */
 async function reactivationCapError(
@@ -170,7 +170,7 @@ export async function archiveProduct(productId: string): Promise<ActionResult> {
 type RecordMovementResult = ActionResult<{ product: Product }>;
 
 /**
- * The one write path for a stock change â€” calls stockkit.record_stock_movement
+ * The one write path for a stock change — calls stockkit.record_stock_movement
  * (migration 0002). Postgres error messages are mapped to friendlier,
  * user-facing text rather than surfaced raw.
  */
@@ -301,7 +301,7 @@ export async function exportProductMovementsCsv(productId: string): Promise<Expo
 /**
  * RFC 4180 field escaping: a field containing a comma, double-quote, or
  * newline is wrapped in double quotes, with embedded double-quotes doubled.
- * Applied uniformly to all CSV fields (not just the free-text ones) â€”
+ * Applied uniformly to all CSV fields (not just the free-text ones) —
  * simpler and safer than special-casing which columns need it.
  */
 function csvField(value: string): string {

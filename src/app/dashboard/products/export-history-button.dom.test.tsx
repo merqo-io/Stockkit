@@ -63,10 +63,17 @@ describe('ExportHistoryButton', () => {
   it('shows a lock state linking to the Plan page on Free', () => {
     render(<ExportHistoryButton productId="product-id" locked />);
 
-    expect(screen.getByRole('link', { name: /download csv/i })).toHaveAttribute(
-      'href',
-      '/dashboard/plan'
-    );
+    const link = screen.getByRole('link', { name: /download csv/i });
+    expect(link).toHaveAttribute('href', '/dashboard/plan');
+    expect(link).toHaveAttribute('title', 'CSV download needs Pro');
+    expect(link).toHaveTextContent('Download CSV');
     expect(mocks.exportCsv).not.toHaveBeenCalled();
+  });
+
+  it('stays disabled while the plan is unknown', () => {
+    render(<ExportHistoryButton productId="product-id" locked={null} />);
+
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeDisabled();
+    expect(screen.queryByRole('link')).toBeNull();
   });
 });
