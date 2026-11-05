@@ -14,3 +14,5 @@ product count, and a per-row Free/Pro toggle, sorted most-urgent first.
 ## Parent
 
 [admin](../README.md)
+
+The "Joined" column renders in `font-mono`, matching the ledger convention for numeric cells.
