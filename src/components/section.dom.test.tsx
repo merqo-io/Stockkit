@@ -5,18 +5,15 @@ import { describe, expect, it } from 'vitest';
 import { Section } from './section';
 
 describe('Section', () => {
-  it("renders inside stockkit's own ElevatedCard shell, not the shared default section shell", () => {
+  it('renders inside a flat bordered shell with no shadow', () => {
     const { container } = render(
-      <Section icon={<span />} title="Stall name" description="desc">
+      <Section icon={<span />} title="Business name" description="desc">
         <p>content</p>
       </Section>
     );
-    // ElevatedCard's distinguishing marker: rounded-[20px]. The shared
-    // Section's own default shell (bg-card border shadow-sm, no wrapper)
-    // must NOT apply once a wrapper is supplied.
-    const shell = container.querySelector('.rounded-\\[20px\\]');
+    const shell = container.querySelector('section.rounded-2xl');
     expect(shell).not.toBeNull();
-    expect(shell?.className).not.toMatch(/shadow-sm\b/);
+    expect(shell?.className).not.toMatch(/shadow/);
   });
 
   it('renders the icon, title, and description via the shared Section header', () => {

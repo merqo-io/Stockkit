@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Vendor account profile page — stall/shop name, social links, profile icon,
+Vendor account profile page — business name, social links, profile icon,
 display name, and sign-in password, each saved independently through the
 channel that owns that data (shared `merqo.vendor_profile` for stall
 name/social links vs. the Supabase auth user for icon/display
@@ -28,12 +28,12 @@ name/password), per
 displayName, email, avatarUrl })`, client component, five independently
   saved `@/components/section.tsx` `Section`s laid out via `@merqo/ui`'s
   `TwoColumnSections` (two independent `flex flex-col` stacks, never a CSS
-  grid — see the standard's §2.3). Column 1: stall name, profile icon
+  grid — see the standard's §2.3). Column 1: business name, profile icon
   (`@merqo/ui`'s `ImageUploader`, backed by `@/lib/image-upload-adapter.ts`'s
   `uploadVendorAvatar`), change password. Column 2: display name, social
   links (`@merqo/ui`'s `SocialLinksFields` — real brand icons per
   field, not plain unlabeled inputs). Column order and layout mechanism
-  match the standard exactly. The stall-name and avatar saves call
+  match the standard exactly. The business-name and avatar saves call
   `router.refresh()` on success so `dashboard-nav.tsx` — which renders
   both, once, in the persistent dashboard layout — picks up the change
   immediately instead of showing stale data until a hard reload.
@@ -67,3 +67,5 @@ Shared name and social-link writes use field-specific patch_vendor_profile updat
 Controlled password fields share markup with the recovery form while this page retains its vendor-session save flow. The shared back button uses Next.js `Link`.
 
 `updateStallName` and `updateSocialLinks` share a 10 per hour per user rate limit and fail closed. Avatar uploads go straight to Storage; the `vendor-avatars` bucket caps (5 MB, jpeg/png/webp) are the server-side enforcement.
+
+The page uses the local `PageHeader` (eyebrow "Your account", display-font h1) with no nested `<main>` or extra gutter, since the dashboard layout owns page padding. Sections are flat bordered cards. Only "Save name" is a filled button; the other saves are outline. Failure toasts name the action (for example "Could not save business name. Try again.").

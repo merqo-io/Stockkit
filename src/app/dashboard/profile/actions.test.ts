@@ -83,7 +83,7 @@ describe('profile actions', () => {
       mocks.upsert.mockRejectedValue(error);
       expect(await updateStallName({ name: 'New' })).toEqual({
         success: false,
-        error: 'Could not save stall name',
+        error: 'Could not save business name. Try again.',
       });
       expect(await updateSocialLinks({})).toEqual({
         success: false,

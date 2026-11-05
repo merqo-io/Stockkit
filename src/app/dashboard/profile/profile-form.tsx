@@ -74,7 +74,7 @@ export function ProfileForm({
   function saveName() {
     const parsed = profileNameSchema.safeParse({ name });
     if (!parsed.success) {
-      setNameError(parsed.error.issues[0]?.message ?? 'Invalid stall name');
+      setNameError(parsed.error.issues[0]?.message ?? 'Enter a business name');
       return;
     }
     setNameError(null);
@@ -85,10 +85,10 @@ export function ProfileForm({
           toast.error(res.error);
           return;
         }
-        toast.success('Stall name saved');
+        toast.success('Business name saved');
         router.refresh();
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not save business name. Try again.');
       }
     });
   }
@@ -109,7 +109,7 @@ export function ProfileForm({
         }
         toast.success('Links saved');
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not save links. Try again.');
       }
     });
   }
@@ -133,7 +133,7 @@ export function ProfileForm({
         router.refresh();
       } catch {
         setAvatar(previousAvatar);
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not save profile icon. Try again.');
       }
     });
   }
@@ -156,7 +156,7 @@ export function ProfileForm({
         }
         toast.success('Display name saved');
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not save display name. Try again.');
       }
     });
   }
@@ -179,7 +179,7 @@ export function ProfileForm({
         setPassword('');
         setConfirm('');
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not update password. Try again.');
       }
     });
   }
@@ -191,30 +191,30 @@ export function ProfileForm({
           <Section
             icon={<Store className="size-5" />}
             eyebrow="Shown to customers"
-            title="Stall/shop name"
+            title="Business name"
             description="The name vendors and Merqo kits see for your business."
           >
             <div className="space-y-2">
-              <Label htmlFor="stall-name" className={FORM_LABEL_CLASS}>
-                Stall/shop name
+              <Label htmlFor="business-name" className={FORM_LABEL_CLASS}>
+                Business name
               </Label>
               <Input
-                id="stall-name"
+                id="business-name"
                 value={name}
                 maxLength={100}
                 onChange={(e) => setName(e.target.value)}
                 aria-invalid={!!nameError}
-                aria-describedby={nameError ? 'stall-name-error' : undefined}
+                aria-describedby={nameError ? 'business-name-error' : undefined}
               />
               {nameError && (
-                <p id="stall-name-error" className={FORM_ERROR_CLASS}>
+                <p id="business-name-error" className={FORM_ERROR_CLASS}>
                   {nameError}
                 </p>
               )}
             </div>
             <div className="flex justify-end">
-              <Button onClick={saveName} disabled={savingName}>
-                {savingName ? 'Saving…' : 'Save'}
+              <Button onClick={saveName} disabled={savingName} aria-label="Save name">
+                {savingName ? 'Saving…' : 'Save name'}
               </Button>
             </div>
           </Section>
@@ -272,7 +272,11 @@ export function ProfileForm({
               error={pwError}
             />
             <div className="flex justify-end">
-              <Button onClick={savePassword} disabled={savingPw || !password || !confirm}>
+              <Button
+                variant="outline"
+                onClick={savePassword}
+                disabled={savingPw || !password || !confirm}
+              >
                 {savingPw ? 'Updating…' : 'Update password'}
               </Button>
             </div>
@@ -307,11 +311,12 @@ export function ProfileForm({
             </div>
             <div className="flex justify-end">
               <Button
+                variant="outline"
                 onClick={saveDisplayName}
                 disabled={savingDisplay}
                 aria-label="Save display name"
               >
-                {savingDisplay ? 'Saving…' : 'Save'}
+                {savingDisplay ? 'Saving…' : 'Save display name'}
               </Button>
             </div>
           </Section>
@@ -325,8 +330,13 @@ export function ProfileForm({
             <SocialLinksFields value={links} onChange={setLinks} idPrefix="profile" />
             {linksError && <p className={FORM_ERROR_CLASS}>{linksError}</p>}
             <div className="flex justify-end">
-              <Button onClick={saveLinks} disabled={savingLinks} aria-label="Save links">
-                {savingLinks ? 'Saving…' : 'Save'}
+              <Button
+                variant="outline"
+                onClick={saveLinks}
+                disabled={savingLinks}
+                aria-label="Save links"
+              >
+                {savingLinks ? 'Saving…' : 'Save links'}
               </Button>
             </div>
           </Section>
