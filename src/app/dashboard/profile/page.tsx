@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/page-header';
 import { getOrCreateVendorProfile } from '@/lib/merqo-vendor-profile';
 import { createServerClient } from '@/lib/supabase/server';
 import { BackButton } from '@merqo/ui';
@@ -37,19 +38,15 @@ export default async function ProfilePage() {
   const avatarUrl = typeof rawAvatarUrl === 'string' ? rawAvatarUrl : null;
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6 p-6 md:max-w-4xl">
-      <div>
-        <BackButton LinkComponent={Link} href="/dashboard" label="Dashboard" />
+    <div className="mx-auto max-w-2xl space-y-7 md:max-w-4xl">
+      <div className="space-y-6">
+        <BackButton LinkComponent={Link} href="/dashboard" label="Overview" />
+        <header>
+          <PageHeader eyebrow="Your account" title="Profile">
+            Your business name and social links are shared with every Merqo kit you use.
+          </PageHeader>
+        </header>
       </div>
-      <header>
-        <p className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">
-          Your account
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">Profile</h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Your stall/shop name and social links are shared with every Merqo kit you use.
-        </p>
-      </header>
       <ProfileForm
         vendorId={user.id}
         stallName={profile.stall_name}
@@ -58,6 +55,6 @@ export default async function ProfilePage() {
         email={user.email ?? ''}
         avatarUrl={avatarUrl}
       />
-    </main>
+    </div>
   );
 }

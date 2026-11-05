@@ -16,10 +16,7 @@ Used by the plan and legal-accept pages.
 per-field-group shell: icon chip + eyebrow + title + description),
 used by the profile page's five sections, per
 `docs/business/2026-07-21-profile-settings-page-standard.md` §2.1.
-Injects `@merqo/ui`'s own `ElevatedCard` (2026-09-16 — was a stockkit-local
-copy, promoted after being found byte-identical to qkit's/paykit's own;
-still not qkit's Ticket motif) via `Section`'s `wrapper` render-prop, fully
-replacing the shared default `bg-card`/`border`/`shadow-sm` shell.
+Wraps the content in a flat bordered card (`rounded-2xl border`, no shadow) via `Section`'s `wrapper` render-prop, replacing the shared default shell.
 `ElevatedCard` is also used directly (not via `Section`) on the public auth
 pages, `/admin`, `/error`, and `/not-found`.
 
