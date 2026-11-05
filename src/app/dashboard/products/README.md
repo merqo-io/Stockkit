@@ -7,7 +7,8 @@ product's movement history.
 
 - `page.tsx` — server fetch of the vendor's products, renders
   `ProductsWorkspace`.
-- `products-workspace.tsx` — client state/shell: holds the product list,
+- `page.tsx` also reads the vendor tier for the Free "N of 20 active" meter and the optional `?product=<id>` preselect (linked from the overview "Needs attention" rows).
+- `products-workspace.tsx` — client state/shell (PageHeader, All/Low/Out/Archived filter, name search, one Add button, one list for both breakpoints): holds the product list,
   selected product, and which panel (`ProductForm`/`StockLogForm`/
   `ProductDetail`) is open. The desktop two-pane layout's detail panel
   (empty placeholder / new-product form / selected product) is picked by
@@ -16,7 +17,7 @@ product's movement history.
   `ProductForm`/`ProductDetail`/`ProductRow`, covers the desktop panel's
   three states).
 - `product-row.tsx` — one row in the list (name, unit, on-hand, stock
-  status dot via the shared `StockStatusIndicator`, `@/components`;
+  status dot via the shared `StockStatusIndicator`, `@/components`; `aria-pressed` marks the selected row; "Low at N unit" threshold line;
   inactive products show "Archived" instead of a stock status).
 - `product-form.tsx` — create/edit form. Starting quantity is only
   editable when creating a new product; an existing product's `on_hand`

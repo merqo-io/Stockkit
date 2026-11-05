@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import { PRODUCT_COLUMNS } from '@/lib/columns';
+import { ENTITLEMENTS } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
+import { readVendorTier } from '@/lib/vendor-entitlement';
 import { ProductsWorkspace } from './products-workspace';
 
 export const metadata: Metadata = { title: 'Products' };
@@ -12,12 +14,19 @@ export const metadata: Metadata = { title: 'Products' };
 // statically prerender.
 export const revalidate = 0;
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ product?: string | string[] }>;
+}) {
   const supabase = await createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  const { product } = await searchParams;
+  const tier = (await readVendorTier(supabase, user.id)) ?? 'free';
 
   const { data, error } = await readAllRows((after) => {
     const query = supabase
@@ -31,8 +40,10 @@ export default async function ProductsPage() {
   data?.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 
   return (
-    <div>
-      <ProductsWorkspace initialProducts={data ?? []} />
-    </div>
+    <ProductsWorkspace
+      initialProducts={data ?? []}
+      maxActiveProducts={ENTITLEMENTS[tier].maxActiveProducts}
+      initialSelectedId={typeof product === 'string' ? product : null}
+    />
   );
 }
