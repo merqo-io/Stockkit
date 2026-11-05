@@ -81,7 +81,7 @@ export function DashboardNav({ vendorName, avatarUrl = null }: Props) {
       navLinks={NAV_LINKS}
       isActiveHref={(href) => isActive(pathname, href)}
       tourAnchor={tourAnchor}
-      vendor={{ name: vendorName, avatarUrl: avatarUrl ?? undefined, subtitle: vendorName }}
+      vendor={{ name: vendorName, avatarUrl: avatarUrl ?? undefined }}
       signOutAction={signOutAction}
       switchKits={getSwitchKits('stockkit')}
       getHelp={{

@@ -29,7 +29,8 @@ numeric signature), and `Fraunces` (`--font-display`, the family-wide shared
 serif face — see `docs/business/2026-08-13-typography-family-standard.md`),
 used on every wordmark plus the marketing hero's `<h1>`; dashboard/admin page
 headings stay on the plain body sans, a deliberate Persuade/Operate split.
-Its `metadata.title` ("stockkit | Inventory Tracking") follows every sibling
+Its `metadata.title` is a default ("stockkit | Inventory Tracking") plus a
+`%s | stockkit` template for per-page titles; the default follows every sibling
 kit's "Name | Tagline" browser-tab shape.
 
 `layout.tsx` also wraps the app in next-themes' `ThemeProvider`

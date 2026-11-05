@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
+
 ### Added
 
 - Touch targets: on coarse pointers buttons, inputs, selects, tab triggers and the dialog close button reach 44px, plus a `.tap-area` utility that grows a small control's hit area only. Reduced motion now also stops pulse, spin, float and the dialog/select/tabs enter and exit animations. The dashboard loading state is a page-shaped skeleton (`role="status"`) instead of a spinner, and outline buttons are flat (no shadow).

@@ -1,9 +1,12 @@
 import { readAllRows } from '@/lib/read-all-rows';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import { PRODUCT_COLUMNS } from '@/lib/columns';
 import { createServerClient } from '@/lib/supabase/server';
 import { ProductsWorkspace } from './products-workspace';
+
+export const metadata: Metadata = { title: 'Products' };
 
 // Product list + on-hand quantities change on every stock movement — never
 // statically prerender.
@@ -28,7 +31,7 @@ export default async function ProductsPage() {
   data?.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 
   return (
-    <div className="py-8">
+    <div>
       <ProductsWorkspace initialProducts={data ?? []} />
     </div>
   );

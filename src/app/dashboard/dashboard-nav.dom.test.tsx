@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -92,10 +92,16 @@ describe('DashboardNav', () => {
     expect(productsLink.className).toMatch(/text-primary/);
   });
 
-  it('shows the real vendor name in the account trigger, not a static label', () => {
+  it('marks the active link with aria-current, not colour alone', () => {
+    pathnameMock.mockReturnValue('/dashboard/products');
     render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
-    const trigger = screen.getByRole('button', { name: /account menu/i });
-    expect(within(trigger).getByText('Ah Huat Chicken Rice')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('does not repeat the vendor name as a subtitle', () => {
+    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    expect(screen.queryByText('Ah Huat Chicken Rice')).toBeNull();
   });
 
   it('has data-tour="nav-account" on the account trigger and "nav-menu" on the burger', () => {

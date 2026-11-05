@@ -26,7 +26,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: 'stockkit | Inventory Tracking',
+  title: { default: 'stockkit | Inventory Tracking', template: '%s | stockkit' },
   description:
     'Inventory tracking for small vendors: add products, log stock in and out, and see inventory value and low-stock flags on your dashboard.',
 };
