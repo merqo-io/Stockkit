@@ -53,9 +53,11 @@ once by the persistent layout, so without an explicit refresh it would
 keep showing stale data until a hard reload even though the underlying
 write succeeded.
 
-`loading.tsx` — a centered spinner shown while this segment (and every
-nested page below it — overview, products, profile, all `revalidate = 0`)
-is loading, matching qkit's `dashboard/loading.tsx` pattern. Its test is
+`loading.tsx` — a page-shaped skeleton (header, three stat tiles, list rows;
+`role="status"`, pulse off under reduced motion) shown while this segment (and
+every nested page below it — overview, products, profile, all
+`revalidate = 0`) is loading, matching qkit's `dashboard/loading.tsx`
+pattern. Its test is
 `loading.dom.test.tsx` — the `.dom.test.tsx` suffix for full RTL+jsdom
 component-render tests, per this project's own convention.
 

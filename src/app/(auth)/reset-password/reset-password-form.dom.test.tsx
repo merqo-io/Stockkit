@@ -74,7 +74,9 @@ describe('ResetPasswordForm', () => {
 
   it('shows a toast when updateUser returns an error', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
-    updateUserMock.mockResolvedValueOnce({ error: { message: 'Password too weak' } });
+    updateUserMock.mockResolvedValueOnce({
+      error: { code: 'weak_password', message: 'Password too weak' },
+    });
     const user = userEvent.setup();
     render(<ResetPasswordForm />);
     await screen.findByLabelText('New password');
@@ -82,7 +84,7 @@ describe('ResetPasswordForm', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Password too weak'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Pick a longer password.'));
     expect(routerPush).not.toHaveBeenCalled();
   });
 
@@ -97,7 +99,7 @@ describe('ResetPasswordForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.')
+      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Try again.')
     );
     expect(routerPush).not.toHaveBeenCalled();
   });

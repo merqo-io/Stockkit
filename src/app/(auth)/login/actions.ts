@@ -16,13 +16,13 @@ import { headers } from 'next/headers';
  * Finish setting up a newly signed-up vendor: create their `vendors` row (the
  * stall name they entered on the sign-up form) and best-effort register them
  * into the shared `merqo.vendor_profile` table via `stockkit.sync_vendor_profile`
- * (migration 0003). The shared-profile sync never fails the caller — a missed
+ * (migration 0003). The shared-profile sync never fails the caller â€” a missed
  * sync is fixable later; failing signup over it would be worse.
  */
 export async function completeSignup(stallName: string): Promise<ActionResult> {
   const parsed = vendorSchema.safeParse({ name: stallName });
   if (!parsed.success)
-    return { success: false, error: parsed.error.issues[0]?.message ?? 'Enter your stall name' };
+    return { success: false, error: parsed.error.issues[0]?.message ?? 'Enter your business name' };
 
   const supabase = await createServerClient();
   const {

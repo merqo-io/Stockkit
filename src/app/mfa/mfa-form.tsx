@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { authErrorMessage } from '@/lib/auth-error-message';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -58,7 +59,9 @@ export function MfaForm({ verifiedFactorId, staleFactorIds }: Props) {
     });
     if (verifyError) {
       setBusy(false);
-      setError('That code did not work. Check the time on your phone and try again.');
+      setError(
+        authErrorMessage(verifyError, "That code didn't work. Enter the latest code from your app.")
+      );
       return;
     }
     router.replace('/admin');

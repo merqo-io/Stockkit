@@ -218,9 +218,69 @@
 .fade-rise {
   animation: fade-rise 0.4s ease-out both;
 }
+/* tw-animate-css drives dialog/tabs/select enter and exit through
+   animation-name utilities (animate-in/out, data-[state=...]:animate-*), so
+   they are switched off here along with the app's own keyframes. Spinners
+   stop turning, which is why they are paired with a text label where the
+   state matters. */
 @media (prefers-reduced-motion: reduce) {
-  .fade-rise {
-    animation: none;
+  .fade-rise,
+  .animate-float,
+  .animate-pulse,
+  .animate-spin,
+  .animate-in,
+  .animate-out,
+  [data-slot='dialog-overlay'],
+  [data-slot='dialog-content'],
+  [data-slot='select-content'],
+  [data-slot='tabs-content'],
+  [data-slot='tabs-trigger'] {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch targets: desktop sizes are kept; coarse pointers (phones, tablets)
+   get at least 44px so controls are reachable with a thumb. Inputs already
+   render at 16px below md, which stops iOS from zooming on focus. */
+@media (pointer: coarse) {
+  :is(button, a)[data-variant][data-size]:not([data-variant='link']),
+  [data-slot='input'],
+  [data-slot='select-trigger'],
+  [data-slot='tabs-trigger'] {
+    min-height: 2.75rem;
+  }
+  :is(button, a)[data-variant][data-size^='icon'] {
+    min-width: 2.75rem;
+  }
+  [data-slot='select-item'] {
+    min-height: 2.75rem;
+  }
+  /* A standalone small control keeps its drawn size and only grows its hit
+     area. Not for controls packed beside others (the box would overlap a
+     neighbour) or positioned elements (this sets position: relative). */
+  .tap-area {
+    position: relative;
+  }
+  .tap-area::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 2.75rem);
+    height: max(100%, 2.75rem);
+    transform: translate(-50%, -50%);
+  }
+  /* The small X that closes a dialog is already positioned in its corner, so
+     it only needs the larger hit box. */
+  [data-slot='dialog-content'] > [data-slot='dialog-close']::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    transform: translate(-50%, -50%);
   }
 }
 

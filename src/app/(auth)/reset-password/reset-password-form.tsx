@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { navigatingAway, useAsyncAction } from '@/hooks';
+import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { passwordChangeSchema } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
@@ -62,7 +63,7 @@ export function ResetPasswordForm() {
           password: parsed.data.password,
         });
         if (updateError) {
-          toast.error(updateError.message);
+          toast.error(authErrorMessage(updateError, 'Could not update your password. Try again.'));
           return;
         }
         toast.success('Password updated');
@@ -70,7 +71,7 @@ export function ResetPasswordForm() {
         router.refresh();
         await navigatingAway();
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Try again.');
       }
     });
   }
@@ -78,7 +79,7 @@ export function ResetPasswordForm() {
   if (state === 'failed') {
     return (
       <ElevatedCard className="px-7 py-8">
-        <p role="alert">Could not check your reset link. Please try again.</p>
+        <p role="alert">Could not check your reset link. Try again.</p>
         <Button
           type="button"
           className="mt-4"
@@ -95,7 +96,7 @@ export function ResetPasswordForm() {
   if (state === 'checking') {
     return (
       <ElevatedCard className="px-7 py-8">
-        <p className="text-muted-foreground text-center text-sm">Checking your reset link…</p>
+        <p className="text-muted-foreground text-center text-sm">Checking your reset linkâ€¦</p>
       </ElevatedCard>
     );
   }
@@ -105,8 +106,7 @@ export function ResetPasswordForm() {
       <ElevatedCard className="px-7 py-8">
         <h1 className="text-2xl leading-tight font-semibold">This link has expired</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Password reset links can only be used once, and they expire after a short while. Request a
-          fresh one from the sign-in page.
+          Reset links work once and expire quickly. Request a new one from the sign-in page.
         </p>
         <Button asChild variant="outline" className="mt-6 w-full rounded-xl">
           <Link href={PAGE_ROUTES.LOGIN}>Back to sign in</Link>
@@ -142,7 +142,7 @@ export function ResetPasswordForm() {
           disabled={pending || !password || !confirm}
           className="h-12 w-full rounded-xl text-base font-semibold"
         >
-          {pending ? 'Updating…' : 'Update password'}
+          {pending ? 'Updatingâ€¦' : 'Update password'}
         </Button>
       </form>
     </ElevatedCard>
