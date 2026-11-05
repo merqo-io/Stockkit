@@ -7,9 +7,10 @@ import type { StockMovement } from '@/lib/types';
 
 const { getProductMovementsMock } = vi.hoisted(() => ({
   getProductMovementsMock: vi.fn(
-    async (): Promise<ActionResult<{ movements: StockMovement[] }>> => ({
+    async (): Promise<ActionResult<{ movements: StockMovement[]; limit: number | null }>> => ({
       success: true,
       movements: [],
+      limit: null,
     })
   ),
 }));
@@ -33,7 +34,7 @@ const movement = (overrides: Partial<StockMovement> = {}): StockMovement => ({
 
 afterEach(() => {
   getProductMovementsMock.mockReset();
-  getProductMovementsMock.mockResolvedValue({ success: true, movements: [] });
+  getProductMovementsMock.mockResolvedValue({ success: true, movements: [], limit: null });
 });
 
 describe('MovementHistory', () => {
@@ -41,7 +42,7 @@ describe('MovementHistory', () => {
     render(<MovementHistory productId="p1" refreshKey={0} />);
 
     expect(screen.getByText(/loading history/i)).toBeTruthy();
-    expect(await screen.findByText(/no stock movements yet/i)).toBeTruthy();
+    expect(await screen.findByText(/no stock changes yet/i)).toBeTruthy();
     expect(getProductMovementsMock).toHaveBeenCalledWith('p1');
   });
 
@@ -52,6 +53,7 @@ describe('MovementHistory', () => {
         movement({ id: 'm1', delta: 5, reason: 'restock' }),
         movement({ id: 'm2', delta: -2, reason: 'waste', note: 'spoiled' }),
       ],
+      limit: null,
     });
     render(<MovementHistory productId="p1" refreshKey={0} />);
 
@@ -66,9 +68,9 @@ describe('MovementHistory', () => {
     getProductMovementsMock.mockResolvedValueOnce({ success: false, error: 'boom' });
     render(<MovementHistory productId="p1" refreshKey={0} />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not load stock history.');
-    expect(screen.queryByText(/no stock movements yet/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no stock changes yet/i)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText(/no stock movements yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/no stock changes yet/i)).toBeInTheDocument();
     expect(getProductMovementsMock).toHaveBeenCalledTimes(2);
   });
 
@@ -77,7 +79,7 @@ describe('MovementHistory', () => {
     const { rerender } = render(<MovementHistory productId="p1" refreshKey={0} />);
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     rerender(<MovementHistory productId="p2" refreshKey={0} />);
-    expect(await screen.findByText(/no stock movements yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/no stock changes yet/i)).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
@@ -87,5 +89,34 @@ describe('MovementHistory', () => {
 
     rerender(<MovementHistory productId="p1" refreshKey={1} />);
     await waitFor(() => expect(getProductMovementsMock).toHaveBeenCalledTimes(2));
+  });
+
+  it('shows the Free cap notice linking to the Plan page when the cap is reached', async () => {
+    getProductMovementsMock.mockResolvedValueOnce({
+      success: true,
+      movements: [movement({ id: 'm1', delta: 1 }), movement({ id: 'm2', delta: 2 })],
+      limit: 2,
+    });
+    const onCappedChange = vi.fn();
+    render(<MovementHistory productId="p1" refreshKey={0} onCappedChange={onCappedChange} />);
+
+    expect(await screen.findByText(/showing the last 2 changes/i)).toBeTruthy();
+    expect(screen.getByRole('link', { name: /plan page/i })).toHaveAttribute(
+      'href',
+      '/dashboard/plan'
+    );
+    expect(onCappedChange).toHaveBeenCalledWith(true);
+  });
+
+  it('shows no cap notice on an uncapped plan', async () => {
+    getProductMovementsMock.mockResolvedValueOnce({
+      success: true,
+      movements: [movement({ id: 'm1', delta: 1 })],
+      limit: null,
+    });
+    render(<MovementHistory productId="p1" refreshKey={0} />);
+
+    await screen.findByText('+1');
+    expect(screen.queryByText(/pro keeps full history/i)).toBeNull();
   });
 });

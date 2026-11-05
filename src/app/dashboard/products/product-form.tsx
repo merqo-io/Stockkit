@@ -28,11 +28,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
 import { useAsyncAction } from '@/hooks';
 import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import { archiveProduct, saveProduct } from './actions';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];
@@ -42,7 +41,45 @@ function submitLabel(saving: boolean, isNew: boolean) {
   return isNew ? 'Add product' : 'Save changes';
 }
 
-function UnitPicker({ unit, onChange }: { unit: string; onChange: (unit: string) => void }) {
+type FieldKey = 'name' | 'unit' | 'unit_cost_cents' | 'on_hand' | 'low_stock_threshold';
+
+const FIELD_KEYS: readonly string[] = [
+  'name',
+  'unit',
+  'unit_cost_cents',
+  'on_hand',
+  'low_stock_threshold',
+];
+
+function fieldErrors(
+  issues: readonly { path: readonly PropertyKey[]; message: string }[]
+): Partial<Record<FieldKey, string>> {
+  const out: Partial<Record<FieldKey, string>> = {};
+  for (const issue of issues) {
+    const key = String(issue.path[0]);
+    if (FIELD_KEYS.includes(key) && !out[key as FieldKey]) out[key as FieldKey] = issue.message;
+  }
+  return out;
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} role="alert" className={FORM_ERROR_CLASS}>
+      {message}
+    </p>
+  );
+}
+
+function UnitPicker({
+  unit,
+  onChange,
+  errorId,
+}: {
+  unit: string;
+  onChange: (unit: string) => void;
+  errorId?: string;
+}) {
   const [unitOpen, setUnitOpen] = useState(false);
   return (
     <Popover open={unitOpen} onOpenChange={setUnitOpen}>
@@ -53,6 +90,7 @@ function UnitPicker({ unit, onChange }: { unit: string; onChange: (unit: string)
           variant="outline"
           role="combobox"
           aria-expanded={unitOpen}
+          aria-describedby={errorId}
           className="w-full justify-between font-normal"
         >
           {unit || 'Select unit'}
@@ -130,7 +168,6 @@ function initialDraft(product: Product | undefined) {
     unitCostCents: product?.unit_cost_cents ?? 0,
     onHand: String(product?.on_hand ?? 0),
     lowStockThreshold: String(product?.low_stock_threshold ?? 0),
-    isActive: product?.is_active ?? true,
   };
 }
 
@@ -145,7 +182,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
   const [unitCostCents, setUnitCostCents] = useState<number | undefined>(initial.unitCostCents);
   const [onHand, setOnHand] = useState(initial.onHand);
   const [lowStockThreshold, setLowStockThreshold] = useState(initial.lowStockThreshold);
-  const [isActive, setIsActive] = useState(initial.isActive);
+  const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const { pending: saving, run: runSave } = useAsyncAction();
   const { pending: archiving, run: runArchive } = useAsyncAction();
 
@@ -158,13 +195,14 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       unit_cost_cents: unitCostCents ?? 0,
       on_hand: Number(onHand),
       low_stock_threshold: Number(lowStockThreshold),
-      is_active: isActive,
+      is_active: product?.is_active ?? true,
     };
     const parsed = productFormSchema.safeParse(candidate);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? 'Check the product details');
+      setErrors(fieldErrors(parsed.error.issues));
       return;
     }
+    setErrors({});
 
     return runSave(async () => {
       try {
@@ -176,7 +214,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
         toast.success(isNew ? 'Product added' : 'Product saved');
         onSaved(savedProduct(product, parsed.data, result.productId));
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not save the product. Try again.');
       }
     });
   }
@@ -191,10 +229,9 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           return;
         }
         toast.success('Product archived');
-        setIsActive(false);
         onSaved({ ...product, is_active: false });
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not archive the product. Try again.');
       }
     });
   }
@@ -202,36 +239,53 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="product-name">Name</Label>
+        <Label htmlFor="product-name" className={FORM_LABEL_CLASS}>
+          Name
+        </Label>
         <Input
           id="product-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Chicken thigh"
-          required
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? 'product-name-error' : undefined}
         />
+        <FieldError id="product-name-error" message={errors.name} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="product-unit">Unit</Label>
-          <UnitPicker unit={unit} onChange={setUnit} />
+          <Label htmlFor="product-unit" className={FORM_LABEL_CLASS}>
+            Unit
+          </Label>
+          <UnitPicker
+            unit={unit}
+            onChange={setUnit}
+            errorId={errors.unit ? 'product-unit-error' : undefined}
+          />
+          <FieldError id="product-unit-error" message={errors.unit} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="product-cost">Unit cost ($)</Label>
+          <Label htmlFor="product-cost" className={FORM_LABEL_CLASS}>
+            Unit cost ($)
+          </Label>
           <MoneyInput
             id="product-cost"
             className="font-mono"
             cents={unitCostCents}
             onCommit={setUnitCostCents}
+            aria-describedby={errors.unit_cost_cents ? 'product-cost-error' : undefined}
           />
+          <FieldError id="product-cost-error" message={errors.unit_cost_cents} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {isNew && (
           <div className="space-y-2">
-            <Label htmlFor="product-on-hand">Starting quantity</Label>
+            <Label htmlFor="product-on-hand" className={FORM_LABEL_CLASS}>
+              Starting quantity
+            </Label>
             <Input
               id="product-on-hand"
               type="number"
@@ -241,12 +295,17 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
               className="font-mono"
               value={onHand}
               onChange={(e) => setOnHand(e.target.value)}
+              aria-invalid={Boolean(errors.on_hand)}
+              aria-describedby={errors.on_hand ? 'product-on-hand-error' : undefined}
             />
+            <FieldError id="product-on-hand-error" message={errors.on_hand} />
           </div>
         )}
         <div className="space-y-2">
           <div className="flex items-center gap-1">
-            <Label htmlFor="product-threshold">Low-stock threshold</Label>
+            <Label htmlFor="product-threshold" className={FORM_LABEL_CLASS}>
+              Low-stock threshold
+            </Label>
             <InfoTooltip
               content="The product shows as low stock once its quantity drops to this number or below. Leave it at 0 to flag it only when it runs out."
               ariaLabel="About low-stock threshold"
@@ -262,19 +321,12 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
             className="font-mono"
             value={lowStockThreshold}
             onChange={(e) => setLowStockThreshold(e.target.value)}
+            aria-invalid={Boolean(errors.low_stock_threshold)}
+            aria-describedby={errors.low_stock_threshold ? 'product-threshold-error' : undefined}
           />
+          <FieldError id="product-threshold-error" message={errors.low_stock_threshold} />
         </div>
       </div>
-
-      <label className="border-border flex items-center justify-between rounded-lg border px-4 py-3">
-        <span className="text-sm">
-          <span className="font-medium">Active</span>
-          <span className="text-muted-foreground block text-xs">
-            Inactive products are hidden from the dashboard overview.
-          </span>
-        </span>
-        <Switch checked={isActive} onCheckedChange={setIsActive} />
-      </label>
 
       <div className="flex items-center gap-3">
         <Button type="submit" className="flex-1" disabled={saving}>

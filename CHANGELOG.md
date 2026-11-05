@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Product detail: Log stock, Edit and History are tabs on desktop as well as mobile. The product form drops the Active switch (Archive covers it) and shows field errors inline, the stock form labels Quantity, shows inline errors and a "Log restock of 1 kg" submit with "Restock logged" toasts, history reads "No stock changes yet" with a dot for the direction of each change, Free history shows "Showing the last 10 changes. Pro keeps full history." with a Plan page link, and "Download CSV" is a lock linking to the Plan page on Free. Product-limit and generic error copy now says what to do next.
 - Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
 
 ### Added

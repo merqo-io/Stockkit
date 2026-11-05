@@ -42,7 +42,7 @@ describe('ExportHistoryButton', () => {
     await userEvent.click(screen.getByRole('button'));
     expect(await screen.findByRole('alert')).toHaveTextContent('Pro feature');
     await userEvent.click(screen.getByRole('button'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Please try again');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Try again');
     expect(screen.getByRole('button')).toBeEnabled();
     expect(createUrl).not.toHaveBeenCalled();
   });
@@ -53,10 +53,20 @@ describe('ExportHistoryButton', () => {
     });
     render(<ExportHistoryButton productId="product-id" />);
     await userEvent.click(screen.getByRole('button'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Please try again');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Try again');
     await waitFor(() => expect(revokeUrl).toHaveBeenCalledWith('blob:fixture'), { timeout: 2000 });
     expect(document.querySelector('a[download]')).toBeNull();
     expect(screen.getByRole('button')).toBeEnabled();
     click.mockRestore();
+  });
+
+  it('shows a lock state linking to the Plan page on Free', () => {
+    render(<ExportHistoryButton productId="product-id" locked />);
+
+    expect(screen.getByRole('link', { name: /download csv/i })).toHaveAttribute(
+      'href',
+      '/dashboard/plan'
+    );
+    expect(mocks.exportCsv).not.toHaveBeenCalled();
   });
 });

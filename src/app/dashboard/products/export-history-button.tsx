@@ -1,8 +1,18 @@
 'use client';
-import { Button } from '@/components/ui/button';
+import { Lock } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { exportProductMovementsCsv } from './actions';
-export function ExportHistoryButton({ productId }: { productId: string }) {
+
+interface Props {
+  productId: string;
+  // True on the Free plan, where export is unavailable.
+  locked?: boolean;
+}
+
+export function ExportHistoryButton({ productId, locked = false }: Props) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   async function download() {
@@ -26,7 +36,7 @@ export function ExportHistoryButton({ productId }: { productId: string }) {
         link.remove();
       }
     } catch {
-      setError('Could not export history. Please try again.');
+      setError('Could not download the CSV. Try again.');
     } finally {
       if (url) {
         const downloadUrl = url;
@@ -35,10 +45,20 @@ export function ExportHistoryButton({ productId }: { productId: string }) {
       setPending(false);
     }
   }
+  if (locked) {
+    return (
+      <Button asChild type="button" variant="outline" size="sm">
+        <Link href="/dashboard/plan">
+          <Lock className="size-3.5" />
+          Download CSV (Pro)
+        </Link>
+      </Button>
+    );
+  }
   return (
     <div>
       <Button type="button" variant="outline" size="sm" disabled={pending} onClick={download}>
-        {pending ? 'Exporting…' : 'Export CSV (Pro)'}
+        {pending ? 'Preparing…' : 'Download CSV'}
       </Button>
       {error && (
         <p role="alert" className="text-destructive mt-2 text-sm">
