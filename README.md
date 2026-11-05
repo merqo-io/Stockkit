@@ -35,6 +35,12 @@ restoring card/background contrast in light mode after the Reefer Frost
 rebrand had accidentally collapsed them to the same color, plus a later
 brightness bump to the (already-correct) dark-mode card.
 
+On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
+grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
+small standalone controls. Reduced-motion users get no pulse, spin or dialog
+animations, and `/dashboard` shows a page-shaped loading skeleton instead of a
+spinner.
+
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
 not just fire-and-forget from the client — the tour's own nav-link step
