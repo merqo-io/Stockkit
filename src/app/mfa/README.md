@@ -19,3 +19,5 @@ password alone.
 ## Connectivity
 
 Needs TOTP enrolment and verification enabled in Supabase Auth.
+
+A failed verify is mapped through `authErrorMessage`, falling back to "That code didn't work. Enter the latest code from your app."

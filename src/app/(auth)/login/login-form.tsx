@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BrandText } from '@/components/widgets';
 import { navigatingAway, useAsyncAction } from '@/hooks';
+import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
@@ -23,8 +24,10 @@ import { completeSignup } from './actions';
 
 type Mode = 'signin' | 'signup';
 
+const GENERIC_ERROR = 'Something went wrong. Try again.';
+
 function submitLabel(loading: boolean, isSignin: boolean) {
-  if (loading) return 'Please wait…';
+  if (loading) return 'Please waitâ€¦';
   return isSignin ? 'Sign in' : 'Create account';
 }
 
@@ -36,7 +39,10 @@ function SentNotice({ sent, onBack }: { sent: Sent; onBack: () => void }) {
     <main className="flex min-h-screen items-center justify-center p-5">
       <div className="w-full max-w-md text-center">
         <ElevatedCard className="px-7 py-10">
-          <Link href={PAGE_ROUTES.HOME} className="text-2xl font-bold tracking-tight">
+          <Link
+            href={PAGE_ROUTES.HOME}
+            className="font-display text-2xl font-semibold tracking-tight"
+          >
             <BrandText />
           </Link>
           <h1 className="mt-6 text-3xl leading-tight font-semibold">Check your email</h1>
@@ -76,8 +82,8 @@ export function LoginForm() {
   const [mode, setMode] = useState<Mode>(
     searchParams.get('mode') === 'signup' ? 'signup' : 'signin'
   );
-  const [stallName, setStallName] = useState('');
-  const [stallNameError, setStallNameError] = useState<string | null>(null);
+  const [businessName, setBusinessName] = useState('');
+  const [businessNameError, setBusinessNameError] = useState<string | null>(null);
   const { pending: loading, run } = useAsyncAction();
   const [sent, setSent] = useState<Sent | null>(null);
 
@@ -98,27 +104,28 @@ export function LoginForm() {
             queryParams: { hl: 'en' },
           },
         });
-        if (error) toast.error(error.message);
+        if (error)
+          toast.error(authErrorMessage(error, 'Could not sign in with Google. Try again.'));
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(GENERIC_ERROR);
       }
     });
   }
 
   function onSubmit(data: LoginInput) {
     if (mode === 'signup') {
-      const parsedName = vendorSchema.safeParse({ name: stallName });
+      const parsedName = vendorSchema.safeParse({ name: businessName });
       if (!parsedName.success) {
-        setStallNameError(parsedName.error.issues[0]?.message ?? 'Enter your stall name');
+        setBusinessNameError(parsedName.error.issues[0]?.message ?? 'Enter your business name');
         return;
       }
     }
-    setStallNameError(null);
+    setBusinessNameError(null);
 
     return run(async () => {
       try {
         if (mode === 'signup') {
-          // Land the confirmation-email link back on stockkit — the shared
+          // Land the confirmation-email link back on stockkit â€” the shared
           // Supabase project's Site URL may point at another kit, so without
           // this the confirm link would bounce the vendor to the wrong app.
           const { data: result, error } = await supabase.auth.signUp({
@@ -126,14 +133,14 @@ export function LoginForm() {
             options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
           });
           if (error) {
-            toast.error(error.message);
+            toast.error(authErrorMessage(error, 'Could not create your account. Try again.'));
             return;
           }
           if (!result.session) {
             setSent({ email: data.email, kind: 'signup' });
             return;
           }
-          const signupResult = await completeSignup(stallName);
+          const signupResult = await completeSignup(businessName);
           if (!signupResult.success) toast.error(signupResult.error);
           router.push(PAGE_ROUTES.DASHBOARD);
           router.refresh();
@@ -143,14 +150,14 @@ export function LoginForm() {
 
         const { error } = await supabase.auth.signInWithPassword(data);
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error, 'Could not sign in. Try again.'));
           return;
         }
         router.push(PAGE_ROUTES.DASHBOARD);
         router.refresh();
         await navigatingAway();
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(GENERIC_ERROR);
       }
     });
   }
@@ -168,12 +175,12 @@ export function LoginForm() {
           redirectTo: `${window.location.origin}/auth/callback?next=${PAGE_ROUTES.RESET_PASSWORD}`,
         });
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error, 'Could not send the reset link. Try again.'));
           return;
         }
         setSent({ email, kind: 'reset' });
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(GENERIC_ERROR);
       }
     });
   }
@@ -196,7 +203,10 @@ export function LoginForm() {
     <main className="flex min-h-screen items-center justify-center p-5">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <Link href={PAGE_ROUTES.HOME} className="text-3xl font-bold tracking-tight">
+          <Link
+            href={PAGE_ROUTES.HOME}
+            className="font-display text-3xl font-semibold tracking-tight"
+          >
             <BrandText />
           </Link>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -212,7 +222,7 @@ export function LoginForm() {
             <p className="text-muted-foreground mt-1.5 text-sm">
               {isSignin
                 ? 'Sign in to your vendor dashboard.'
-                : 'Set up a vendor account in seconds.'}
+                : 'Create an account to start tracking stock.'}
             </p>
 
             <Button
@@ -237,21 +247,21 @@ export function LoginForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {mode === 'signup' && (
                 <div className="space-y-2">
-                  <Label htmlFor="stallName" className={FORM_LABEL_CLASS}>
-                    Stall / business name
+                  <Label htmlFor="businessName" className={FORM_LABEL_CLASS}>
+                    Business name
                   </Label>
                   <Input
-                    id="stallName"
-                    value={stallName}
-                    onChange={(e) => setStallName(e.target.value)}
+                    id="businessName"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="Mama's Kitchen"
                     className="h-11 rounded-xl"
-                    aria-invalid={!!stallNameError}
-                    aria-describedby={stallNameError ? 'stallName-error' : undefined}
+                    aria-invalid={!!businessNameError}
+                    aria-describedby={businessNameError ? 'businessName-error' : undefined}
                   />
-                  {stallNameError && (
-                    <p id="stallName-error" role="alert" className={FORM_ERROR_CLASS}>
-                      {stallNameError}
+                  {businessNameError && (
+                    <p id="businessName-error" role="alert" className={FORM_ERROR_CLASS}>
+                      {businessNameError}
                     </p>
                   )}
                 </div>
@@ -294,7 +304,7 @@ export function LoginForm() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   className="h-11 rounded-xl"
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'password-error' : undefined}

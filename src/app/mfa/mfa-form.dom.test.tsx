@@ -57,7 +57,7 @@ it('shows a wrong-code error and stays on the page', async () => {
   render(<MfaForm verifiedFactorId="f1" staleFactorIds={[]} />);
   await user.type(screen.getByLabelText('6-digit code'), '000000');
   await user.click(screen.getByRole('button', { name: 'Verify' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('That code did not work');
+  expect(await screen.findByRole('alert')).toHaveTextContent("That code didn't work");
   expect(mocks.replace).not.toHaveBeenCalled();
 });
 
