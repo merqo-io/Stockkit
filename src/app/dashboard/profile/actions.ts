@@ -24,7 +24,7 @@ export async function updateStallName(input: ProfileNameInput): Promise<ActionRe
   if (!parsed.success)
     return {
       success: false,
-      error: parsed.error.issues[0]?.message ?? 'Invalid stall name',
+      error: parsed.error.issues[0]?.message ?? 'Enter a business name',
     };
 
   const supabase = await createServerClient();
@@ -42,7 +42,7 @@ export async function updateStallName(input: ProfileNameInput): Promise<ActionRe
     await patchVendorProfile(supabase, user.id, { stallName: parsed.data.name });
   } catch (err) {
     console.error('updateStallName failed', err instanceof Error ? err.message : err);
-    return { success: false, error: 'Could not save stall name' };
+    return { success: false, error: 'Could not save business name. Try again.' };
   }
 
   // Secondary sync-write: keep the local vendors.name display cache in step
