@@ -24,7 +24,7 @@ const columns: DataTableColumn<VendorRow>[] = [
   {
     header: 'Joined',
     cell: (v) => new Date(v.created_at).toLocaleDateString(),
-    className: 'text-muted-foreground',
+    className: 'text-muted-foreground font-mono',
   },
 ];
 
