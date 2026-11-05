@@ -5,6 +5,7 @@
 ### Changed
 
 - Admin: a "Back to dashboard" link in the admin nav, pages use `PageHeader` with consistent spacing, stat tiles and panels are flat bordered surfaces, timestamps are monospace, and missing values read "None" instead of an em dash.
+- Profile page: uses `PageHeader` (eyebrow "Your account") without a nested `<main>` or double gutter, sections are flat bordered cards, the field is called "Business name" everywhere, saves read "Save name" / "Save links" with matching accessible names and only the business-name save is filled, and failure toasts say which save failed.
 - Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
 
 ### Added

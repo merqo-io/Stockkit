@@ -30,7 +30,7 @@ export function tourSteps(isMobile: boolean, exampleLowStockIndicator: string): 
       element: sel('nav-account'),
       title: 'Your account',
       description:
-        'Update your stall name, profile icon, and social links here. Check your plan from the same menu. Shared across every Merqo kit you use.',
+        'Update your business name, profile icon, and social links here. Check your plan from the same menu. Shared across every Merqo kit you use.',
     },
     {
       element: sel('tour-replay'),
