@@ -29,7 +29,7 @@ describe('computeVendorActivity', () => {
     expect(activity.metrics).toEqual([
       { label: 'Products', value: '2' },
       { label: 'Stock movements (30d)', value: '2' },
-      { label: 'Waste ratio (30d)', value: '—' },
+      { label: 'Waste ratio (30d)', value: 'None' },
     ]);
     expect(activity.lastActivityAt).toBe(iso(1 * DAY));
   });
@@ -59,7 +59,7 @@ describe('computeVendorActivity', () => {
     expect(activity.metrics).toEqual([
       { label: 'Products', value: '0' },
       { label: 'Stock movements (30d)', value: '0' },
-      { label: 'Waste ratio (30d)', value: '—' },
+      { label: 'Waste ratio (30d)', value: 'None' },
     ]);
     expect(activity.lastActivityAt).toBeNull();
   });

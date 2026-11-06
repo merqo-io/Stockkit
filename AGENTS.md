@@ -51,6 +51,18 @@ dashboard, and products all have real coverage now; it's not yet
 comprehensive everywhere (mutation testing, `db` RLS-adjacent coverage,
 and a few older paths are still ahead of it).
 
+## Git Workflow
+
+- Branch `feat/*` or `fix/*` from `staging`; open the PR into `staging`
+  (squash is fine). CI runs on it.
+- After merge, Vercel's git integration deploys `stockkit-staging.merqo.io`
+  (Preview env, staging Supabase). Test there, not on `*.vercel.app`: the
+  sign-in cookie only works on merqo.io hosts and branch previews are disabled.
+- Promote with a PR `staging` -> `main` merged as a MERGE COMMIT (never
+  squash or rebase) so the staging-sync workflow can fast-forward `staging`
+  onto `main`.
+- Never commit directly to `main` or `staging`.
+
 ## File Layout
 
 Source tree map: `docs/FILE-LAYOUT.md`.
