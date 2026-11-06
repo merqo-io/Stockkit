@@ -1,9 +1,8 @@
-import { Stat } from '@/app/admin/stat';
-import { PageHeader } from '@/components/page-header';
 import { requireAdmin } from '@/lib/admin';
 import { platformTotals, recentActivity } from '@/lib/admin-data';
 import { stockMovementReasonLabel } from '@/lib/stock';
 import { cn } from '@/lib/utils';
+import { PageHeader, StatCard } from '@merqo/ui';
 
 export const revalidate = 0;
 
@@ -14,17 +13,31 @@ export default async function AdminOverviewPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-7">
-      <div className="mb-7">
-        <PageHeader eyebrow="Internal" title="Overview" />
-      </div>
+      <PageHeader eyebrow="Internal" title="Overview" />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <Stat label="Vendors" value={totals.vendors} />
-        <Stat label="Free vendors" value={totals.freeVendors} />
-        <Stat label="Pro vendors" value={totals.proVendors} />
-        <Stat label="Products" value={totals.products} />
-        <Stat label="Active products" value={totals.activeProducts} />
-        <Stat label="Stock movements" value={totals.stockMovements} />
+        <StatCard label="Vendors" value={String(totals.vendors)} valueClassName="font-mono" />
+        <StatCard
+          label="Free vendors"
+          value={String(totals.freeVendors)}
+          valueClassName="font-mono"
+        />
+        <StatCard
+          label="Pro vendors"
+          value={String(totals.proVendors)}
+          valueClassName="font-mono"
+        />
+        <StatCard label="Products" value={String(totals.products)} valueClassName="font-mono" />
+        <StatCard
+          label="Active products"
+          value={String(totals.activeProducts)}
+          valueClassName="font-mono"
+        />
+        <StatCard
+          label="Stock movements"
+          value={String(totals.stockMovements)}
+          valueClassName="font-mono"
+        />
       </div>
 
       <section className="mt-8 space-y-3">
