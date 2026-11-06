@@ -37,4 +37,4 @@ Active products are read through deterministic ID pagination using the session c
 
 The product read lists its columns (`PRODUCT_COLUMNS`).
 
-The overview uses `PageHeader` ("Overview"). The Needs attention list shows up to five rows, each linking to `/dashboard/products` (product selection is local state, so no per-product URL exists), with the footer button reading "View all (N more)" when more exist. Low/out-of-stock tiles show status as a dot, not a coloured numeral.
+The overview uses `PageHeader` ("Overview"). The Needs attention list shows up to five rows, each deep-linking to `/dashboard/products?product=<id>` (the products page preselects that product), with the footer button reading "View all (N more)" when more exist. Low/out-of-stock tiles show status as a dot, not a coloured numeral.

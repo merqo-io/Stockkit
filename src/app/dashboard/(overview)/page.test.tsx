@@ -78,7 +78,7 @@ describe('inventory overview', () => {
     expect(html).toContain('>Overview</h1>');
     expect(html).toContain('Low at');
     expect(html).not.toContain('Threshold');
-    expect(html).toMatch(/<a [^>]*href="\/dashboard\/products"[^>]*>[^]*?Empty tea/);
+    expect(html).toMatch(/<a [^>]*href="\/dashboard\/products\?product=out"[^>]*>[^]*?Empty tea/);
     expect(html).not.toContain('more</a>');
     expect(html).not.toMatch(/stat[^"]*text-stock-(low|out)/);
   });

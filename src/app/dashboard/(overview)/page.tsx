@@ -129,7 +129,7 @@ export default async function DashboardOverviewPage() {
               return (
                 <Link
                   key={p.id}
-                  href={PAGE_ROUTES.PRODUCTS}
+                  href={`${PAGE_ROUTES.PRODUCTS}?product=${p.id}`}
                   className="border-border hover:bg-accent/50 focus-visible:ring-ring focus-visible:ring-offset-background flex items-center justify-between gap-4 rounded-lg border px-4 py-3 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   <div className="min-w-0">

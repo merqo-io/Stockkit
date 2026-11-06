@@ -81,3 +81,63 @@ it('lets a vendor create their first product from the empty desktop workspace', 
   await user.click(buttons[buttons.length - 1]);
   expect(screen.getByTestId('product-form')).toBeInTheDocument();
 });
+
+describe('ProductsWorkspace filter and search', () => {
+  const items = [
+    product({ id: 'a', name: 'Rice', on_hand: 10 }),
+    product({ id: 'b', name: 'Beans', on_hand: 1, low_stock_threshold: 3 }),
+    product({ id: 'c', name: 'Salt', on_hand: 0 }),
+    product({ id: 'd', name: 'Old tin', is_active: false }),
+  ];
+
+  it('lists active products under All and hides archived ones', () => {
+    render(<ProductsWorkspace initialProducts={items} />);
+    expect(screen.getByRole('button', { name: 'Rice' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Old tin' })).toBeNull();
+  });
+
+  it('filters by Low, Out and Archived', async () => {
+    const user = userEvent.setup();
+    render(<ProductsWorkspace initialProducts={items} />);
+
+    await user.click(screen.getByRole('button', { name: 'Low' }));
+    expect(screen.getByRole('button', { name: 'Beans' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Rice' })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'Out' }));
+    expect(screen.getByRole('button', { name: 'Salt' })).toBeTruthy();
+
+    await user.click(screen.getByRole('button', { name: 'Archived' }));
+    expect(screen.getByRole('button', { name: 'Old tin' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Archived' }).getAttribute('aria-pressed')).toBe(
+      'true'
+    );
+  });
+
+  it('searches by name and shows an empty state with no match', async () => {
+    const user = userEvent.setup();
+    render(<ProductsWorkspace initialProducts={items} />);
+
+    await user.type(screen.getByRole('searchbox', { name: 'Search products' }), 'bea');
+    expect(screen.getByRole('button', { name: 'Beans' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Rice' })).toBeNull();
+
+    await user.type(screen.getByRole('searchbox', { name: 'Search products' }), 'zzz');
+    expect(screen.getByText('No matching products')).toBeTruthy();
+  });
+
+  it('shows the active-product meter only when a cap applies', () => {
+    const { rerender } = render(
+      <ProductsWorkspace initialProducts={items} maxActiveProducts={20} />
+    );
+    expect(screen.getByRole('meter', { name: 'Active products used' })).toBeTruthy();
+    expect(screen.getByText('active', { exact: false })).toBeTruthy();
+    rerender(<ProductsWorkspace initialProducts={items} maxActiveProducts={null} />);
+    expect(screen.queryByRole('meter')).toBeNull();
+  });
+
+  it('preselects the product named by initialSelectedId', () => {
+    render(<ProductsWorkspace initialProducts={items} initialSelectedId="b" />);
+    expect(screen.getByTestId('product-detail')).toHaveTextContent('Beans');
+  });
+});

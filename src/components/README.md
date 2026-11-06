@@ -10,6 +10,8 @@ muted sentence at the top of a page. It renders no wrapper so each page keeps
 its own layout, which keeps it a drop-in for a future `@merqo/ui` export.
 Used by the plan and legal-accept pages.
 
+`segmented-control.tsx` — `SegmentedControl`, a labelled group of `aria-pressed` pills for view switches (the products filter); a local stand-in for qkit's pill group until `@merqo/ui` exports one.
+
 `section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the
 per-field-group shell: icon chip + eyebrow + title + description),
 used by the profile page's five sections, per
