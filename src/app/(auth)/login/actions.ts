@@ -16,7 +16,7 @@ import { headers } from 'next/headers';
  * Finish setting up a newly signed-up vendor: create their `vendors` row (the
  * stall name they entered on the sign-up form) and best-effort register them
  * into the shared `merqo.vendor_profile` table via `stockkit.sync_vendor_profile`
- * (migration 0003). The shared-profile sync never fails the caller â€” a missed
+ * (migration 0003). The shared-profile sync never fails the caller — a missed
  * sync is fixable later; failing signup over it would be worse.
  */
 export async function completeSignup(stallName: string): Promise<ActionResult> {
