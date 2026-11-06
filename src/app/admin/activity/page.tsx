@@ -1,7 +1,6 @@
-import type { AuditLogEntry } from '@merqo/ui';
+import { PageHeader, type AuditLogEntry } from '@merqo/ui';
 
 import { AdminActivityLog } from '@/app/admin/activity/activity-log';
-import { PageHeader } from '@/components/page-header';
 import { requireAdmin } from '@/lib/admin';
 import { auditLog } from '@/lib/admin-data';
 
@@ -22,11 +21,9 @@ export default async function AdminActivityPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-7">
-      <div className="mb-7">
-        <PageHeader eyebrow="Internal" title="Activity">
-          The most recent admin- and vendor-initiated actions worth reconstructing later.
-        </PageHeader>
-      </div>
+      <PageHeader eyebrow="Internal" title="Activity">
+        The most recent admin- and vendor-initiated actions worth reconstructing later.
+      </PageHeader>
 
       <AdminActivityLog entries={entries} />
     </main>

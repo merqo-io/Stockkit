@@ -1,5 +1,4 @@
-import { PageHeader } from '@/components/page-header';
-import { safeRedirectPath } from '@merqo/ui';
+import { PageHeader, safeRedirectPath } from '@merqo/ui';
 import { AcceptForm } from './accept-form';
 
 export const revalidate = 0;
@@ -18,11 +17,9 @@ export default async function LegalAcceptPage({
 
   return (
     <div className="mx-auto max-w-md px-5 py-16">
-      <div className="mb-6">
-        <PageHeader eyebrow="Your account" title="Our terms have changed">
-          Review the updated terms and privacy policy to keep using stockkit.
-        </PageHeader>
-      </div>
+      <PageHeader eyebrow="Your account" title="Our terms have changed" className="mb-6">
+        Review the updated terms and privacy policy to keep using stockkit.
+      </PageHeader>
       <AcceptForm next={safeRedirectPath(next, '/dashboard')} />
     </div>
   );

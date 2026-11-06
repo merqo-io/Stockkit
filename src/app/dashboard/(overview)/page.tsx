@@ -1,10 +1,9 @@
 import { readAllRows } from '@/lib/read-all-rows';
-import { ElevatedCard, StatTile } from '@merqo/ui';
+import { ElevatedCard, PageHeader, StatTile } from '@merqo/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { PageHeader } from '@/components/page-header';
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
 import { Button } from '@/components/ui/button';
 import {
@@ -58,7 +57,7 @@ export default async function DashboardOverviewPage() {
   if (products.length === 0) {
     return (
       <div>
-        <PageHeader eyebrow="Inventory" title="Overview">
+        <PageHeader eyebrow="Inventory" title="Overview" className="mb-0">
           Your stock at a glance.
         </PageHeader>
         <Card className="mt-8" data-tour="inventory-value">
@@ -87,7 +86,7 @@ export default async function DashboardOverviewPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Inventory" title="Overview">
+      <PageHeader eyebrow="Inventory" title="Overview" className="mb-0">
         Your stock at a glance.
       </PageHeader>
 

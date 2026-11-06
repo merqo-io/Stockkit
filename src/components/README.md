@@ -5,11 +5,6 @@ hand-edit); `widgets/` are small app-wide bits (brand mark, theme toggle,
 link list); `layout/` is site chrome; `landing/` is the marketing page's
 section components.
 
-`page-header.tsx` — `PageHeader`, the eyebrow + display-font `h1` + optional
-muted sentence at the top of a page. It renders no wrapper so each page keeps
-its own layout, which keeps it a drop-in for a future `@merqo/ui` export.
-Used by the plan and legal-accept pages.
-
 `segmented-control.tsx` — `SegmentedControl`, a labelled group of `aria-pressed` pills for view switches (the products filter); a local stand-in for qkit's pill group until `@merqo/ui` exports one.
 
 `section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the

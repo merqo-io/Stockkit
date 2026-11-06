@@ -3,7 +3,6 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { PageHeader } from '@/components/page-header';
 import { SegmentedControl } from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
+import { PageHeader } from '@merqo/ui';
 import { ProductDetail } from './product-detail';
 import { ProductForm } from './product-form';
 import { ProductRow } from './product-row';
@@ -175,7 +175,7 @@ export function ProductsWorkspace({
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <PageHeader eyebrow="Inventory" title="Products" responsive>
+          <PageHeader eyebrow="Inventory" title="Products" responsive className="mb-0">
             {products.length} product{products.length === 1 ? '' : 's'}
           </PageHeader>
         </div>

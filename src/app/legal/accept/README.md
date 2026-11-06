@@ -43,3 +43,5 @@ folder's job is entirely to collect the vendor's consent and forward it.
 The `next` form field is length-checked by Zod before `safeRedirectPath` runs.
 
 The request IP recorded for the acceptance comes from `clientIp` in `src/lib/rate-limit.ts` (`x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first).
+
+The page heading is `@merqo/ui`'s `PageHeader`.
