@@ -262,7 +262,7 @@ Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
 merqo's and qkit's, not with `supabase db push`: every kit shares one
 migration history table and reuses the same version numbers. `0006` drops and
 recreates `vendor_avatars_public_read`, so it no longer clashes with merqo's
-`0015`.
+`0015`. Migration `0028` (prod-only `product_components` drop) is a no-op on staging.
 
 #### Migration-bearing PRs: staging first
 

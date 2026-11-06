@@ -266,3 +266,7 @@ The latest migration limits `is_admin(uuid)` to the signed-in user or trusted se
 ## Merqo entitlements
 
 0025_vendor_entitlements.sql adds `stockkit.vendor_entitlements` (own-row select, service-role writes), `apply_vendor_entitlement` (maps the pushed email to the auth user and upserts only when `issued_at` is newer; service role only), `vendor_is_paid` (tier paid and `valid_until` null or in the future) and redefines `active_product_cap` to read it. 0026_drop_vendor_plan.sql carries `vendors.plan = pro` rows over as paid with no expiry, then drops the column and its grants. 0027_drop_pricing.sql drops `stockkit.pricing`. Apply 0025 to 0027 by hand (staging, then prod) before deploying: the app no longer reads `vendors.plan`. vendor-entitlements.test.sql covers the function and the cap.
+
+## Prod-only objects
+
+0028_drop_prod_only_product_components.sql drops `product_components`, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions that existed only on prod (SK-01). It raises if any `linked_movement_id` is set, and is a no-op on databases that never had them. drop-product-components.test.sql asserts they are gone. Apply by hand (staging, then prod).

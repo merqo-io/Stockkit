@@ -63,6 +63,9 @@ what the app _asks_ the database for, never what the database _permits_.
     (unknown email, stored, stale and equal `issued_at` no-ops) and the cap
     reading the cache, including a lapsed `valid_until` and an open-ended
     paid row.
+  - **`drop-product-components.test.sql`**, asserts the prod-only
+    `product_components` table, `stock_movements.linked_movement_id` and the
+    two component functions are gone (migration `0028`).
   - **`admin_audit`/`stock_movements` stay append-only even for service_role**
     (migration `0015`) — since service_role carries BYPASSRLS, this is the
     one place the suite deliberately runs `set local role service_role` to

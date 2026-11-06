@@ -8,6 +8,10 @@
 - Sign-in no longer loops back to /login on stockkit.merqo.io: the browser, vendor server and middleware Supabase clients now write auth cookies on `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io`), matching merqo and loopkit, instead of host-only copies whose chunks mixed with theirs. Unset locally, cookies stay host-only.
 - Restored UTF-8 characters (em dashes, ellipses, arrows, bullets) that had been garbled by double encoding in the login and reset-password forms, validation messages and this changelog.
 
+### Removed
+
+- Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
+
 ### Changed
 
 - `@merqo/ui` v0.39.0 -> v0.42.1. Deletes the local `PageHeader`, `Stat` and `components/ui/alert-dialog.tsx` in favour of the shared `PageHeader`, `StatCard` and `ConfirmDialog`. Visual differences: admin overview stat cards now use the shared elevated card shell (rounded corners and shadow instead of a flat bordered tile); `PageHeader` renders a `<header>` with its own bottom margin (call sites zero or override it so page spacing is unchanged); the archive confirmation stays open and shows `Archiving...` on the button until the archive call settles, instead of closing on click.
