@@ -1,9 +1,8 @@
-import { PageHeader } from '@/components/page-header';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
 import { readVendorTier } from '@/lib/vendor-entitlement';
-import { BackButton, fetchPlanCatalog, PricingLadder } from '@merqo/ui';
+import { BackButton, fetchPlanCatalog, PageHeader, PricingLadder } from '@merqo/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -35,11 +34,9 @@ export default async function PlanPage() {
   return (
     <div className="space-y-6">
       <BackButton LinkComponent={Link} href={PAGE_ROUTES.DASHBOARD} label="Overview" />
-      <header className="mb-1">
-        <PageHeader eyebrow="Your account" title="Plan">
-          You are on the <span className="capitalize">{plan}</span> plan.
-        </PageHeader>
-      </header>
+      <PageHeader eyebrow="Your account" title="Plan" className="mb-1">
+        You are on the <span className="capitalize">{plan}</span> plan.
+      </PageHeader>
 
       <div className="border-border rounded-xl border p-4">
         <p className="text-sm font-medium">{view.label}</p>

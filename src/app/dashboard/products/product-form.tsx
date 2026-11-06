@@ -1,21 +1,10 @@
 'use client';
 
-import { InfoTooltip, MoneyInput } from '@merqo/ui';
+import { ConfirmDialog, InfoTooltip, MoneyInput } from '@merqo/ui';
 import { Archive, ArchiveRestore, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -366,8 +355,8 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           <p className="text-muted-foreground text-sm">
             Archiving keeps stock history and removes the product from active inventory.
           </p>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
+          <ConfirmDialog
+            trigger={
               <Button
                 type="button"
                 variant="outline"
@@ -377,26 +366,15 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
                 <Archive className="size-4" />
                 {archiving ? 'Archiving…' : 'Archive product'}
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Archive &ldquo;{product?.name}&rdquo;?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You can restore it later from its Edit tab. Its stock history stays available.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel disabled={archiving}>Keep product</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onArchive}
-                  disabled={archiving}
-                  className="bg-destructive hover:bg-destructive/90 text-white"
-                >
-                  Archive product
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            }
+            title={<>Archive &ldquo;{product?.name}&rdquo;?</>}
+            description="You can restore it later from its Edit tab. Its stock history stays available."
+            confirmLabel="Archive product"
+            cancelLabel="Keep product"
+            pendingLabel="Archiving…"
+            variant="destructive"
+            onConfirm={onArchive}
+          />
         </div>
       )}
     </form>
