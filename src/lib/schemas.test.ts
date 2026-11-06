@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -127,5 +130,14 @@ describe('movement direction boundary', () => {
         delta,
       }).success
     ).toBe(valid);
+  });
+});
+
+describe('schemas source encoding', () => {
+  it('contains no double-encoded UTF-8 sequences', () => {
+    const source = readFileSync(join(__dirname, 'schemas.ts'), 'utf8');
+    const lead = String.fromCharCode(0xe2);
+    const euro = String.fromCharCode(0x20ac);
+    expect(source).not.toContain(lead + euro);
   });
 });

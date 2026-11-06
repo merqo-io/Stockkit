@@ -397,3 +397,5 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 ## Dashboard layout
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
+
+Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.

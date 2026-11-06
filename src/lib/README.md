@@ -186,3 +186,5 @@ via the `*.merqo.io` cookie). Logs and swallows errors.
 ## Auth error copy
 
 `auth-error-message.ts` exports `authErrorMessage(error, fallback)`, which maps Supabase auth errors (by `code`, else message match) to plain next-step copy and never returns the raw message.
+
+`schemas.ts` is UTF-8 and its user-facing messages must keep real characters (em dash, ellipsis); `schemas.test.ts` fails on double-encoded text.
