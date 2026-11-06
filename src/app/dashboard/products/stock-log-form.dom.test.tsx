@@ -99,7 +99,7 @@ describe('StockLogForm', () => {
 
     await user.click(screen.getByRole('button', { name: /restock/i }));
 
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
+    expect(toast.error).toHaveBeenCalledWith('Could not log the stock change. Try again.');
   });
 
   it('sends a negative delta for a waste movement', async () => {
@@ -127,5 +127,37 @@ describe('StockLogForm', () => {
     expect(recordStockMovementMock).toHaveBeenCalledWith(
       expect.objectContaining({ reason: 'adjustment', delta: -1 })
     );
+  });
+
+  it('labels the quantity input and writes the verb, amount and unit on the submit', async () => {
+    const user = userEvent.setup();
+    render(<StockLogForm product={product} onRecorded={vi.fn()} />);
+
+    expect(screen.getByLabelText('Quantity')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log restock of 1 kg' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Increase quantity' }));
+    expect(screen.getByRole('button', { name: 'Log restock of 2 kg' })).toBeInTheDocument();
+  });
+
+  it('logs with a per-type toast', async () => {
+    const user = userEvent.setup();
+    render(<StockLogForm product={product} onRecorded={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /log restock/i }));
+
+    expect(toast.success).toHaveBeenCalledWith('Restock logged');
+  });
+
+  it('shows an inline quantity error for a zero quantity', async () => {
+    const user = userEvent.setup();
+    render(<StockLogForm product={product} onRecorded={vi.fn()} />);
+
+    await user.clear(screen.getByLabelText('Quantity'));
+    await user.type(screen.getByLabelText('Quantity'), '0');
+    await user.click(screen.getByRole('button', { name: /log restock/i }));
+
+    const alert = await screen.findByRole('alert');
+    expect(screen.getByLabelText('Quantity').getAttribute('aria-describedby')).toBe(alert.id);
+    expect(recordStockMovementMock).not.toHaveBeenCalled();
   });
 });

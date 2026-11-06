@@ -111,7 +111,7 @@ describe('ProductForm', () => {
     await user.type(screen.getByLabelText(/^name$/i), 'Chicken thigh');
     await user.click(screen.getByRole('button', { name: /add product/i }));
 
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
+    expect(toast.error).toHaveBeenCalledWith('Could not save the product. Try again.');
   });
 
   it('shows a generic toast when deleting throws instead of returning an error', async () => {
@@ -123,7 +123,7 @@ describe('ProductForm', () => {
     const dialog = await screen.findByRole('alertdialog');
     await user.click(within(dialog).getByRole('button', { name: /archive product/i }));
 
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
+    expect(toast.error).toHaveBeenCalledWith('Could not archive the product. Try again.');
   });
 
   it('archives a product and calls onSaved', async () => {
@@ -184,5 +184,82 @@ describe('ProductForm', () => {
     await user.click(custom);
 
     expect(trigger).toHaveTextContent('crate');
+  });
+
+  it('shows an inline error tied to the field instead of a toast', async () => {
+    vi.mocked(toast.error).mockClear();
+    saveProductMock.mockClear();
+    const user = userEvent.setup();
+    render(<ProductForm onSaved={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /add product/i }));
+
+    const name = screen.getByLabelText(/^name$/i);
+    const alert = await screen.findByRole('alert');
+    expect(name).toHaveAttribute('aria-invalid', 'true');
+    expect(name.getAttribute('aria-describedby')).toBe(alert.id);
+    expect(saveProductMock).not.toHaveBeenCalled();
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('has no Active switch and keeps an existing product active on save', async () => {
+    saveProductMock.mockClear();
+    vi.mocked(toast.success).mockClear();
+    const user = userEvent.setup();
+    render(
+      <ProductForm
+        product={{ ...product, id: '11111111-1111-4111-8111-111111111111' }}
+        onSaved={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByRole('switch')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+    expect(toast.success).toHaveBeenCalledWith('Product saved');
+    expect(screen.queryByRole('button', { name: /restore product/i })).toBeNull();
+  });
+
+  it('restores an archived product through saveProduct with is_active true', async () => {
+    saveProductMock.mockClear();
+    vi.mocked(toast.success).mockClear();
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ProductForm
+        product={{ ...product, id: '11111111-1111-4111-8111-111111111111', is_active: false }}
+        onSaved={onSaved}
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /archive product/i })).toBeNull();
+    await user.click(screen.getByRole('button', { name: /restore product/i }));
+
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+    expect(toast.success).toHaveBeenCalledWith('Product restored');
+    expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+  });
+
+  it('surfaces the Free cap error when a restore is blocked', async () => {
+    saveProductMock.mockClear();
+    vi.mocked(toast.error).mockClear();
+    saveProductMock.mockResolvedValueOnce({
+      success: false,
+      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
+    });
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ProductForm
+        product={{ ...product, id: '11111111-1111-4111-8111-111111111111', is_active: false }}
+        onSaved={onSaved}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: /restore product/i }));
+
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Free plan limit'));
+    expect(onSaved).not.toHaveBeenCalled();
   });
 });

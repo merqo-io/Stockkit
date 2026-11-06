@@ -101,7 +101,7 @@ mirroring qkit/paykit's own resolver exactly; `merqo-vendor-activity.ts` —
 `computeVendorActivity`: pure aggregation behind
 `GET /api/merqo/vendor-activity`, reusing `vendor-health.ts`'s
 `buildVendorHealth` for the per-vendor triage `status` instead of
-duplicating its logic; `supabase/` — browser/server/service
+duplicating its logic (an empty 30-day waste ratio reads "None", not a dash); `supabase/` — browser/server/service
 clients, plus `middleware.ts`'s `updateSession`: session refresh/redirect
 for both `/dashboard` and `/admin` (see `middleware.test.ts`) — everything
 else (landing page, login) is public and skips the auth round-trip.

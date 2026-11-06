@@ -19,6 +19,7 @@ export function ProductRow({ product, selected, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={selected ?? false}
       className={cn(
         'flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors',
         selected ? 'border-primary bg-primary/5' : 'border-border hover:bg-accent/50',
@@ -32,12 +33,12 @@ export function ProductRow({ product, selected, onClick }: Props) {
         </div>
       </div>
       <div className="shrink-0 text-right">
-        <p className={LEDGER_SM_CLASS}>
+        <p className={cn(LEDGER_SM_CLASS, 'text-foreground')}>
           {product.on_hand}{' '}
           <span className="text-muted-foreground text-xs font-normal">{product.unit}</span>
         </p>
         <p className="text-muted-foreground font-mono text-xs tabular-nums">
-          thr. {product.low_stock_threshold}
+          Low at {product.low_stock_threshold} {product.unit}
         </p>
       </div>
     </button>

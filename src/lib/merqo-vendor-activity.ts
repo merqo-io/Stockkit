@@ -47,7 +47,8 @@ export function computeVendorActivity(
       { label: 'Stock movements (30d)', value: String(health.movements30d) },
       {
         label: 'Waste ratio (30d)',
-        value: health.wasteRatio30d === null ? '—' : `${Math.round(health.wasteRatio30d * 100)}%`,
+        value:
+          health.wasteRatio30d === null ? 'None' : `${Math.round(health.wasteRatio30d * 100)}%`,
       },
     ],
     lastActivityAt: health.lastMovementAt,

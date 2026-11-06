@@ -75,6 +75,7 @@ it('returns all Pro history and scopes each page to the requested product', asyn
   expect(await getProductMovements(productId)).toEqual({
     success: true,
     movements: [first, second],
+    limit: null,
   });
   expect(m.eq).toHaveBeenCalledTimes(3);
   expect(m.eq).toHaveBeenCalledWith('product_id', productId);
@@ -91,7 +92,11 @@ it('rejects the whole export when a later page fails instead of returning partia
 it('keeps Free history capped at one ten-row request', async () => {
   m.tier.mockResolvedValue('free');
   m.page.mockResolvedValueOnce({ data: [first], error: null });
-  expect(await getProductMovements(productId)).toEqual({ success: true, movements: [first] });
+  expect(await getProductMovements(productId)).toEqual({
+    success: true,
+    movements: [first],
+    limit: 10,
+  });
   expect(m.limit).toHaveBeenCalledWith(10);
   expect(m.page).toHaveBeenCalledOnce();
   expect(m.or).not.toHaveBeenCalled();

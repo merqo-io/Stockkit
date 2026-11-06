@@ -35,11 +35,15 @@ restoring card/background contrast in light mode after the Reefer Frost
 rebrand had accidentally collapsed them to the same color, plus a later
 brightness bump to the (already-correct) dark-mode card.
 
+A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and points to the Plan page.
+
 On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
 grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
 small standalone controls. Reduced-motion users get no pulse, spin or dialog
 animations, and `/dashboard` shows a page-shaped loading skeleton instead of a
 spinner.
+
+The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
 
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
@@ -163,7 +167,7 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 | `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                   |
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                   |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                         |
-| `/dashboard/products` | vendor (auth)             | product list; log stock, edit products, view movement history                                                    |
+| `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                             |
 | `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; Free vendors can request Pro (support message, upgraded by hand)              |
 | `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                  |
 | `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                |

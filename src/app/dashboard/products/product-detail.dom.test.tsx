@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { ProductDetail } from './product-detail';
 vi.mock('./export-history-button', () => ({
-  ExportHistoryButton: () => <button>Export CSV (Pro)</button>,
+  ExportHistoryButton: () => <button>Download CSV</button>,
 }));
 vi.mock('./stock-log-form', () => ({
   StockLogForm: ({
@@ -54,10 +54,11 @@ describe('ProductDetail', () => {
     const onSaved = vi.fn();
     render(<ProductDetail product={product} layout="stacked" onSaved={onSaved} />);
     expect(screen.getByRole('heading', { name: 'Coffee' })).toBeInTheDocument();
-    expect(screen.getByText('History p1: 0')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Record restock' }));
     expect(onSaved).toHaveBeenCalledWith({ ...product, on_hand: 12 });
+    await user.click(screen.getByRole('tab', { name: 'History' }));
     expect(screen.getByText('History p1: 1')).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: 'Edit' }));
     await user.click(screen.getByRole('button', { name: 'Archive fixture product' }));
     expect(onSaved).toHaveBeenLastCalledWith({ ...product, is_active: false });
   });
@@ -72,6 +73,21 @@ describe('ProductDetail', () => {
     expect(screen.getByText('Archived')).toBeInTheDocument();
     expect(screen.queryByText('In stock')).not.toBeInTheDocument();
   });
+  it('uses tabs on the desktop layout too, showing one section at a time', async () => {
+    const user = userEvent.setup();
+    render(<ProductDetail product={product} layout="stacked" onSaved={vi.fn()} />);
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual([
+      'Log stock',
+      'Edit',
+      'History',
+    ]);
+    expect(screen.getByRole('button', { name: 'Record restock' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Archive fixture product' })).toBeNull();
+    await user.click(screen.getByRole('tab', { name: 'Edit' }));
+    expect(screen.getByRole('button', { name: 'Archive fixture product' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Record restock' })).toBeNull();
+  });
+
   it('exposes edit and history in mobile tabs', async () => {
     const user = userEvent.setup();
     render(<ProductDetail product={product} layout="tabs" onSaved={vi.fn()} />);

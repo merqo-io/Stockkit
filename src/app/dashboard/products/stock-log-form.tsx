@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAsyncAction } from '@/hooks';
 import { stockMovementFormSchema } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
+import { cn, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import { recordStockMovement } from './actions';
 
 type Reason = 'restock' | 'waste' | 'adjustment';
@@ -28,6 +29,12 @@ type Reason = 'restock' | 'waste' | 'adjustment';
 interface Props {
   product: Product;
   onRecorded: (product: Product) => void;
+}
+
+function submitLabel(reason: Reason, sign: 1 | -1, quantity: number, unit: string): string {
+  let amount = String(quantity);
+  if (reason === 'adjustment') amount = `${sign === 1 ? '+' : '-'}${quantity}`;
+  return `Log ${reason} of ${amount} ${unit}`;
 }
 
 function resolveSign(reason: Reason, adjustmentSign: 1 | -1): 1 | -1 {
@@ -44,6 +51,7 @@ export function StockLogForm({ product, onRecorded }: Props) {
   const [adjustmentSign, setAdjustmentSign] = useState<1 | -1>(1);
   const [note, setNote] = useState('');
   const [unitCostCents, setUnitCostCents] = useState<number | undefined>(product.unit_cost_cents);
+  const [errors, setErrors] = useState<{ quantity?: string; cost?: string }>({});
   const { pending, run } = useAsyncAction();
 
   const sign = resolveSign(reason, adjustmentSign);
@@ -66,9 +74,16 @@ export function StockLogForm({ product, onRecorded }: Props) {
     };
     const parsed = stockMovementFormSchema.safeParse(candidate);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? 'Check the movement details');
+      const next: { quantity?: string; cost?: string } = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0];
+        if (key === 'unit_cost_cents') next.cost ??= issue.message;
+        else next.quantity ??= issue.message;
+      }
+      setErrors(next);
       return;
     }
+    setErrors({});
 
     return run(async () => {
       try {
@@ -77,12 +92,12 @@ export function StockLogForm({ product, onRecorded }: Props) {
           toast.error(result.error);
           return;
         }
-        toast.success(`${STOCK_MOVEMENT_REASON_LABEL[reason]} recorded`);
+        toast.success(`${STOCK_MOVEMENT_REASON_LABEL[reason]} logged`);
         setQuantity(1);
         setNote('');
         onRecorded(result.product);
       } catch {
-        toast.error('Something went wrong. Please try again.');
+        toast.error('Could not log the stock change. Try again.');
       }
     });
   }
@@ -90,7 +105,9 @@ export function StockLogForm({ product, onRecorded }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="movement-reason">Reason</Label>
+        <Label htmlFor="movement-reason" className={FORM_LABEL_CLASS}>
+          Reason
+        </Label>
         <Select value={reason} onValueChange={(v) => setReason(v as Reason)}>
           <SelectTrigger id="movement-reason" className="w-full">
             <SelectValue />
@@ -108,7 +125,9 @@ export function StockLogForm({ product, onRecorded }: Props) {
           <Button
             type="button"
             size="sm"
-            variant={adjustmentSign === 1 ? 'default' : 'outline'}
+            variant="outline"
+            aria-pressed={adjustmentSign === 1}
+            className={cn(adjustmentSign === 1 && 'border-foreground')}
             onClick={() => setAdjustmentSign(1)}
           >
             Add stock
@@ -116,7 +135,9 @@ export function StockLogForm({ product, onRecorded }: Props) {
           <Button
             type="button"
             size="sm"
-            variant={adjustmentSign === -1 ? 'default' : 'outline'}
+            variant="outline"
+            aria-pressed={adjustmentSign === -1}
+            className={cn(adjustmentSign === -1 && 'border-foreground')}
             onClick={() => setAdjustmentSign(-1)}
           >
             Remove stock
@@ -125,7 +146,9 @@ export function StockLogForm({ product, onRecorded }: Props) {
       )}
 
       <div className="space-y-2">
-        <Label>Quantity</Label>
+        <Label htmlFor="movement-quantity" className={FORM_LABEL_CLASS}>
+          Quantity
+        </Label>
         <div className="flex items-center gap-3">
           <Button
             type="button"
@@ -138,6 +161,7 @@ export function StockLogForm({ product, onRecorded }: Props) {
             <Minus className="size-4" />
           </Button>
           <Input
+            id="movement-quantity"
             type="number"
             min={0}
             step="any"
@@ -145,10 +169,12 @@ export function StockLogForm({ product, onRecorded }: Props) {
             className="h-11 w-24 text-center font-mono text-lg font-semibold tabular-nums"
             value={quantity}
             onChange={(e) => setQuantity(Math.max(0, Number(e.target.value) || 0))}
-            aria-label="Quantity"
+            aria-invalid={Boolean(errors.quantity)}
+            aria-describedby={errors.quantity ? 'movement-quantity-error' : undefined}
           />
           <Button
             type="button"
+            variant="outline"
             size="icon"
             className="size-11 rounded-lg"
             onClick={() => step(1)}
@@ -158,12 +184,19 @@ export function StockLogForm({ product, onRecorded }: Props) {
           </Button>
           <span className="text-muted-foreground text-sm">{product.unit}</span>
         </div>
+        {errors.quantity && (
+          <p id="movement-quantity-error" role="alert" className={FORM_ERROR_CLASS}>
+            {errors.quantity}
+          </p>
+        )}
       </div>
 
       {reason === 'restock' && (
         <div className="space-y-2">
           <div className="flex items-center gap-1">
-            <Label htmlFor="movement-unit-cost">Unit cost this restock ($)</Label>
+            <Label htmlFor="movement-unit-cost" className={FORM_LABEL_CLASS}>
+              Unit cost this restock ($)
+            </Label>
             <InfoTooltip
               content="Saved with this restock in the stock history only. It does not change the product's unit cost."
               ariaLabel="About cost on the ledger"
@@ -175,12 +208,20 @@ export function StockLogForm({ product, onRecorded }: Props) {
             className="font-mono"
             cents={unitCostCents}
             onCommit={setUnitCostCents}
+            aria-describedby={errors.cost ? 'movement-cost-error' : undefined}
           />
+          {errors.cost && (
+            <p id="movement-cost-error" role="alert" className={FORM_ERROR_CLASS}>
+              {errors.cost}
+            </p>
+          )}
         </div>
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="movement-note">Note (optional)</Label>
+        <Label htmlFor="movement-note" className={FORM_LABEL_CLASS}>
+          Note (optional)
+        </Label>
         <Textarea
           id="movement-note"
           value={note}
@@ -190,10 +231,8 @@ export function StockLogForm({ product, onRecorded }: Props) {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={pending || quantity <= 0}>
-        {pending
-          ? 'Saving…'
-          : `${STOCK_MOVEMENT_REASON_LABEL[reason]} · ${quantity} ${product.unit}`}
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? 'Saving…' : submitLabel(reason, adjustmentSign, quantity, product.unit)}
       </Button>
     </form>
   );

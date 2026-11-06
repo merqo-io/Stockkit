@@ -7,7 +7,9 @@ product's movement history.
 
 - `page.tsx` — server fetch of the vendor's products, renders
   `ProductsWorkspace`.
-- `products-workspace.tsx` — client state/shell: holds the product list,
+- The "All" filter lists active products only; archived products appear under "Archived".
+- `page.tsx` also reads the vendor tier for the Free "N of 20 active" meter and the optional `?product=<id>` preselect (linked from the overview "Needs attention" rows).
+- `products-workspace.tsx` — client state/shell (PageHeader, All/Low/Out/Archived filter, name search, one Add button, one list for both breakpoints): holds the product list,
   selected product, and which panel (`ProductForm`/`StockLogForm`/
   `ProductDetail`) is open. The desktop two-pane layout's detail panel
   (empty placeholder / new-product form / selected product) is picked by
@@ -16,7 +18,7 @@ product's movement history.
   `ProductForm`/`ProductDetail`/`ProductRow`, covers the desktop panel's
   three states).
 - `product-row.tsx` — one row in the list (name, unit, on-hand, stock
-  status dot via the shared `StockStatusIndicator`, `@/components`;
+  status dot via the shared `StockStatusIndicator`, `@/components`; `aria-pressed` marks the selected row; "Low at N unit" threshold line;
   inactive products show "Archived" instead of a stock status).
 - `product-form.tsx` — create/edit form. Starting quantity is only
   editable when creating a new product; an existing product's `on_hand`
@@ -41,8 +43,15 @@ product's movement history.
 - `movement-history.tsx` — read-only ledger view for a product. Tested in
   `movement-history.dom.test.tsx` (loading/empty/error/populated states,
   refetch on `refreshKey` change).
-- `product-detail.tsx` — product detail panel (stats + movement history +
-  entry points into the two forms above); stock status via the shared
+- `product-detail.tsx` — product detail panel: header (status, on-hand) over
+  Log stock / Edit / History tabs on both desktop and mobile; the History tab
+  holds `export-history-button.tsx` ("Download CSV", a lock link to
+  `/dashboard/plan` on Free) above the ledger. The Active switch is gone from
+  the product form; Archive is the only way to deactivate, and an archived
+  product's Edit tab shows a Restore product button (cap-checked on Free). Form validation
+  errors render inline under the field (`aria-describedby`); toasts are for
+  server results only. `getProductMovements` also returns the plan's
+  `limit`, so Free history shows a "Pro keeps full history" notice; stock status via the shared
   `StockStatusIndicator`, same as `product-row.tsx`.
 - `actions.ts` provides `saveProduct`, `archiveProduct`,
   `recordStockMovement`, `getProductMovements` and `exportProductMovementsCsv`.
@@ -80,8 +89,7 @@ product's movement history.
     (`date,reason,delta,note` header + one row per movement) or a friendly
     rejection on Free. Fields are RFC 4180-escaped (`csvField` helper) so a
     note containing a comma, double quote, or newline can't corrupt the
-    output. Not yet wired to a download button in `product-detail.tsx` —
-    action only, UI follow-up.
+    output. The History tab's "Download CSV" button calls it.
 
   Tested in `actions.test.ts`.
 

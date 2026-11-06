@@ -1,8 +1,10 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { PageHeader } from '@/components/page-header';
+import { SegmentedControl } from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
 import { ProductDetail } from './product-detail';
 import { ProductForm } from './product-form';
@@ -18,24 +22,53 @@ import { ProductRow } from './product-row';
 
 interface Props {
   initialProducts: Product[];
+  // The plan's active-product cap; null or omitted means unlimited, so no meter.
+  maxActiveProducts?: number | null;
+  initialSelectedId?: string | null;
 }
 
 type MobileDialogState = { kind: 'product'; productId: string } | { kind: 'new' } | null;
 
+type Filter = 'all' | 'low' | 'out' | 'archived';
+
+const FILTER_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'low', label: 'Low' },
+  { value: 'out', label: 'Out' },
+  { value: 'archived', label: 'Archived' },
+] as const;
+
+const DESKTOP_QUERY = '(min-width: 768px)';
+
+// Tailwind's md breakpoint. Without matchMedia (tests, old browsers) the
+// desktop two-pane flow is the safe default.
+function isDesktop(): boolean {
+  return typeof window.matchMedia !== 'function' || window.matchMedia(DESKTOP_QUERY).matches;
+}
+
+function matchesFilter(product: Product, filter: Filter): boolean {
+  const status = productStatusFor(product);
+  if (filter === 'all') return status !== 'archived';
+  return status === filter;
+}
+
 /**
- * Products list + detail. One component drives both breakpoints — mobile
- * (< md) shows a single-column list where tapping a row opens a Dialog;
- * tablet/desktop (md+) shows a two-pane layout (list + a persistent detail
- * panel), toggled purely via `hidden md:block` / `md:hidden`, so there is one
- * source of truth for selection and save state (mirrors the
- * "server passes `initial` data, client owns state" pattern from qkit's
- * booth-form.tsx).
+ * Products list + detail. One list drives both breakpoints: below md a row
+ * tap opens a Dialog, at md+ the detail panel sits beside the list. Selection
+ * and save state live here once (mirrors the "server passes `initial` data,
+ * client owns state" pattern from qkit's booth-form.tsx).
  */
-export function ProductsWorkspace({ initialProducts }: Props) {
+export function ProductsWorkspace({
+  initialProducts,
+  maxActiveProducts = null,
+  initialSelectedId = null,
+}: Props) {
   const [products, setProducts] = useState(initialProducts);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId);
   const [mode, setMode] = useState<'view' | 'new'>('view');
   const [mobileDialog, setMobileDialog] = useState<MobileDialogState>(null);
+  const [filter, setFilter] = useState<Filter>('all');
+  const [query, setQuery] = useState('');
 
   // Server actions revalidatePath, which re-fetches this page's server data
   // and passes a fresh `initialProducts` array down — sync local state to it.
@@ -45,6 +78,11 @@ export function ProductsWorkspace({ initialProducts }: Props) {
   }, [initialProducts]);
 
   const selected = products.find((p) => p.id === selectedId) ?? null;
+  const activeCount = products.filter((p) => p.is_active).length;
+  const needle = query.trim().toLowerCase();
+  const visible = products.filter(
+    (p) => matchesFilter(p, filter) && (needle === '' || p.name.toLowerCase().includes(needle))
+  );
 
   function upsertLocal(product: Product) {
     setProducts((prev) => {
@@ -63,25 +101,16 @@ export function ProductsWorkspace({ initialProducts }: Props) {
     setMobileDialog(null);
   }
 
-  function openMobileForProduct(productId: string) {
+  function selectProduct(productId: string) {
     setSelectedId(productId);
     setMode('view');
-    setMobileDialog({ kind: 'product', productId });
+    if (!isDesktop()) setMobileDialog({ kind: 'product', productId });
   }
 
-  function openMobileForNew() {
+  function startNew() {
     setMode('new');
-    setMobileDialog({ kind: 'new' });
-  }
-
-  function selectDesktop(productId: string) {
-    setSelectedId(productId);
-    setMode('view');
-  }
-
-  function startNewDesktop() {
-    setSelectedId(null);
-    setMode('new');
+    if (isDesktop()) setSelectedId(null);
+    else setMobileDialog({ kind: 'new' });
   }
 
   function renderDetailPanel() {
@@ -107,63 +136,112 @@ export function ProductsWorkspace({ initialProducts }: Props) {
     );
   }
 
-  return (
-    <div>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
+  function renderList() {
+    if (products.length === 0) {
+      return (
+        <div className="border-border rounded-xl border border-dashed px-6 py-16 text-center">
+          <p className="font-display text-xl font-semibold">No products yet</p>
           <p className="text-muted-foreground mt-1 text-sm">
-            {products.length} product{products.length === 1 ? '' : 's'}
+            Add your first product to start tracking stock.
           </p>
         </div>
-        <Button className="md:hidden" onClick={openMobileForNew}>
-          <Plus className="size-4" />
-          Add product
-        </Button>
-        <Button className="hidden md:inline-flex" onClick={startNewDesktop}>
+      );
+    }
+    if (visible.length === 0) {
+      return (
+        <div className="border-border rounded-xl border border-dashed px-6 py-12 text-center">
+          <p className="font-display text-xl font-semibold">No matching products</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Try another search or switch the filter.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-2">
+        {visible.map((p) => (
+          <ProductRow
+            key={p.id}
+            product={p}
+            selected={p.id === selectedId && mode === 'view'}
+            onClick={() => selectProduct(p.id)}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <PageHeader eyebrow="Inventory" title="Products" responsive>
+            {products.length} product{products.length === 1 ? '' : 's'}
+          </PageHeader>
+        </div>
+        <Button onClick={startNew} className="self-start sm:self-auto">
           <Plus className="size-4" />
           Add product
         </Button>
       </div>
 
-      {products.length === 0 ? (
-        <div className="border-border mt-12 rounded-xl border border-dashed py-16 text-center">
-          <p className="text-lg font-semibold">No products yet</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Add your first product to start tracking stock.
-          </p>
-        </div>
-      ) : (
-        <>
-          {/* Mobile: single-column list, tap a row to open the dialog */}
-          <div className="mt-6 space-y-2 md:hidden">
-            {products.map((p) => (
-              <ProductRow key={p.id} product={p} onClick={() => openMobileForProduct(p.id)} />
-            ))}
-          </div>
-
-          {/* Tablet/desktop: two-pane layout, no dialog */}
-          <div className="mt-6 hidden gap-6 md:grid md:grid-cols-[minmax(0,42%)_1fr]">
-            <div className="max-h-[calc(100vh-14rem)] space-y-2 overflow-y-auto pr-1">
-              {products.map((p) => (
-                <ProductRow
-                  key={p.id}
-                  product={p}
-                  selected={p.id === selectedId && mode === 'view'}
-                  onClick={() => selectDesktop(p.id)}
-                />
-              ))}
+      {products.length > 0 && (
+        <div className="mt-6 space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <SegmentedControl
+              ariaLabel="Filter products"
+              options={FILTER_OPTIONS}
+              value={filter}
+              onChange={setFilter}
+            />
+            <div className="relative sm:w-64">
+              <Search
+                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
+                aria-hidden="true"
+              />
+              <Input
+                type="search"
+                aria-label="Search products"
+                placeholder="Search products"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9"
+              />
             </div>
-            <div className="border-border bg-card rounded-xl border p-6">{renderDetailPanel()}</div>
           </div>
-        </>
+          {maxActiveProducts !== null && (
+            <div>
+              <p className="text-muted-foreground text-xs">
+                <span className="text-foreground font-mono tabular-nums">{activeCount}</span> of{' '}
+                <span className="text-foreground font-mono tabular-nums">{maxActiveProducts}</span>{' '}
+                active
+              </p>
+              <div
+                role="meter"
+                aria-label="Active products used"
+                aria-valuemin={0}
+                aria-valuemax={maxActiveProducts}
+                aria-valuenow={Math.min(activeCount, maxActiveProducts)}
+                className="bg-muted mt-1 h-1 w-full max-w-48 overflow-hidden rounded-full"
+              >
+                <div
+                  className="bg-primary h-full"
+                  style={{
+                    width: `${Math.min(100, (activeCount / maxActiveProducts) * 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
-      {products.length === 0 && mode === 'new' && mobileDialog === null && (
-        <div className="border-border bg-card mt-6 hidden rounded-xl border p-6 md:block">
+      <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,42%)_1fr]">
+        <div>{renderList()}</div>
+        <div className="border-border bg-card hidden self-start rounded-xl border p-6 md:block">
           {renderDetailPanel()}
         </div>
-      )}
+      </div>
 
       {/* Mobile dialog — add / log / edit / history */}
       <Dialog open={mobileDialog !== null} onOpenChange={(open) => !open && setMobileDialog(null)}>

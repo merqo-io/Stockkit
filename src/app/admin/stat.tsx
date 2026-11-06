@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
-import { ElevatedCard, StatTile } from '@merqo/ui';
+import { StatTile } from '@merqo/ui';
 
-/** A back-office figure tile: wraps @merqo/ui's shared StatTile in stockkit's own card shell. */
+/** A back-office figure tile: wraps @merqo/ui's shared StatTile in a flat bordered tile. */
 export function Stat({
   label,
   value,
@@ -12,8 +12,8 @@ export function Stat({
   className?: string;
 }) {
   return (
-    <ElevatedCard className={cn('p-4', className)}>
+    <div className={cn('border-border bg-card rounded-xl border p-4', className)}>
       <StatTile label={label} value={String(value)} valueClassName="font-mono" />
-    </ElevatedCard>
+    </div>
   );
 }

@@ -29,4 +29,10 @@ describe('ProductRow', () => {
     expect(screen.getByText('Archived')).toBeInTheDocument();
     expect(screen.queryByText('In stock')).not.toBeInTheDocument();
   });
+
+  it('marks the selected row pressed and shows the low threshold in plain words', () => {
+    render(<ProductRow product={product} selected onClick={vi.fn()} />);
+    expect(screen.getByRole('button').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText('Low at 2 kg')).toBeInTheDocument();
+  });
 });
