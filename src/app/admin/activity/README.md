@@ -22,3 +22,5 @@ vendor, rendered with `@merqo/ui`'s shared `AuditLogTable`.
 ## Parent
 
 [admin](../README.md)
+
+The page header now uses the shared local `PageHeader` (eyebrow, display-font title, muted line) with the same page padding as the other admin screens.

@@ -22,6 +22,15 @@ describe('AdminNav', () => {
     expect(screen.getByRole('link', { name: inactive })).not.toHaveClass('text-primary');
   });
 
+  it('links back to the dashboard', () => {
+    render(<AdminNav />);
+
+    expect(screen.getByRole('link', { name: 'Back to dashboard' })).toHaveAttribute(
+      'href',
+      '/dashboard'
+    );
+  });
+
   it('links each tab to its route', () => {
     render(<AdminNav />);
 

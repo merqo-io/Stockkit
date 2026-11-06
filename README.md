@@ -41,6 +41,8 @@ small standalone controls. Reduced-motion users get no pulse, spin or dialog
 animations, and `/dashboard` shows a page-shaped loading skeleton instead of a
 spinner.
 
+The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
+
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
 not just fire-and-forget from the client — the tour's own nav-link step
@@ -223,17 +225,19 @@ Google" to work locally.
 
 ### Staging
 
-`vercel.json` limits git-triggered Vercel builds to `main` (`deploymentEnabled`
-with `**`, since `*` does not match branch names containing `/`), so PR and
-branch pushes no longer build previews and use up the Hobby plan's daily
-deployment cap. `staging` deploys through the deploy hook below, which that
-setting does not gate. For an ad-hoc preview, run the `vercel` CLI.
+`vercel.json` limits git-triggered Vercel builds to `main` and `staging`
+(`deploymentEnabled` with `**`, since `*` does not match branch names
+containing `/`), so PR and feature-branch pushes no longer build previews and
+use up the Hobby plan's daily deployment cap. A push to `staging` (a merged
+PR) deploys through Vercel's git integration; there is no deploy hook. For an
+ad-hoc preview, run the `vercel` CLI.
 `vercel.json` also pins functions to `sin1` (Singapore) so compute stays in
 the same region as Supabase.
 
 Vercel `Preview` deployments use the shared staging Supabase project
-(`merqo-staging`), not production. The `staging` branch, kept on `main` by
-the `staging sync` workflow, is served at `stockkit-staging.merqo.io`. The
+(`merqo-staging`), not production. The `staging` branch is served at
+`stockkit-staging.merqo.io`; after a staging -> main promotion the
+`staging sync` workflow fast-forwards it onto `main`'s commit. The
 workflow pushes with the `merqo-staging-sync` GitHub App token because a ruleset
 limits `staging` pushes to that app. Full
 setup, the env model and the rollout checklist live in merqo's
@@ -249,9 +253,7 @@ setup, the env model and the rollout checklist live in merqo's
   `merqo.products` (merqo's `supabase/seed/staging-registry.sql`).
 
 Vercel Deployment Protection must be off on this project (it still challenges
-a branch-assigned domain), and the sync workflow needs the repo secret
-`VERCEL_STAGING_DEPLOY_HOOK`: Vercel does not git-deploy a commit it already
-built for production, so the workflow calls the deploy hook instead.
+a branch-assigned domain).
 
 Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
 merqo's and qkit's, not with `supabase db push`: every kit shares one
