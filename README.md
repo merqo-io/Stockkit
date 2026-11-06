@@ -263,7 +263,7 @@ migration history table and reuses the same version numbers. First run
 `drop policy "vendor_avatars_public_read" on storage.objects;` in the staging
 SQL Editor: merqo's `0015` creates that policy, and stockkit's `0006` creates
 the identical one without a guard (on production `0006` ran first). `0006`
-then recreates it.
+then recreates it. Migration `0028` (prod-only `product_components` drop) is a no-op on staging.
 
 #### Migration-bearing PRs: staging first
 
