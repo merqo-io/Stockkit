@@ -19,6 +19,10 @@ import { readVendorTier } from '@/lib/vendor-entitlement';
 
 type SaveProductResult = ActionResult<{ productId: string }>;
 
+function capErrorMessage(entitlement: Entitlement): string {
+  return `Free plan limit: ${entitlement.maxActiveProducts} active products. Archive one or request Pro on the Plan page.`;
+}
+
 /**
  * Resolve a vendor's tier from the merqo entitlement cache and map it to an
  * Entitlement. Fails closed to Free when the lookup errors; readVendorTier
@@ -54,7 +58,7 @@ async function reactivationCapError(
     .eq('id', productId)
     .maybeSingle();
   if (existing && !existing.is_active && (await overActiveCap())) {
-    return `You've hit the Free plan's ${entitlement.maxActiveProducts}-product limit. Upgrade to Pro for unlimited products.`;
+    return capErrorMessage(entitlement);
   }
   return null;
 }
@@ -117,7 +121,7 @@ export async function saveProduct(input: ProductFormInput): Promise<SaveProductR
   if (await overActiveCap()) {
     return {
       success: false,
-      error: `You've hit the Free plan's ${entitlement.maxActiveProducts}-product limit. Upgrade to Pro for unlimited products.`,
+      error: capErrorMessage(entitlement),
     };
   }
 
@@ -239,7 +243,7 @@ async function readMovementPages(
   }
 }
 
-type GetMovementsResult = ActionResult<{ movements: StockMovement[] }>;
+type GetMovementsResult = ActionResult<{ movements: StockMovement[]; limit: number | null }>;
 
 /**
  * Ledger rows for a product, RLS-scoped, newest first. Capped to the last 10
@@ -261,7 +265,7 @@ export async function getProductMovements(productId: string): Promise<GetMovemen
     entitlement.movementHistoryLimit
   );
   if (failed) return { success: false, error: 'Could not load history' };
-  return { success: true, movements };
+  return { success: true, movements, limit: entitlement.movementHistoryLimit };
 }
 
 type ExportCsvResult = ActionResult<{ csv: string }>;
@@ -280,7 +284,7 @@ export async function exportProductMovementsCsv(productId: string): Promise<Expo
   if (!entitlement.csvExport) {
     return {
       success: false,
-      error: 'CSV export is a Pro feature. Upgrade to export your full stock history.',
+      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
     };
   }
 

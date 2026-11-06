@@ -35,6 +35,8 @@ restoring card/background contrast in light mode after the Reefer Frost
 rebrand had accidentally collapsed them to the same color, plus a later
 brightness bump to the (already-correct) dark-mode card.
 
+A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and points to the Plan page.
+
 On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
 grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
 small standalone controls. Reduced-motion users get no pulse, spin or dialog

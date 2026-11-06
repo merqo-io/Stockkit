@@ -1,22 +1,26 @@
 'use client';
 
-import { stockMovementReasonLabel } from '@/lib/stock';
-
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { stockMovementReasonLabel } from '@/lib/stock';
 import type { StockMovement } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { getProductMovements } from './actions';
 
 interface Props {
   productId: string;
   // Bumped by the parent after a new movement is recorded, to trigger a refetch.
   refreshKey: number;
+  // Reports whether the plan caps history (true on Free), or null while
+  // unknown or after a failed load, so siblings (the CSV download) can reflect
+  // the plan. Must be a stable callback (a state setter).
+  onCappedChange?: (capped: boolean | null) => void;
 }
 
 /** Plan-limited stock movements for a product, newest first. */
-export function MovementHistory({ productId, refreshKey }: Props) {
+export function MovementHistory({ productId, refreshKey, onCappedChange }: Props) {
   const [movements, setMovements] = useState<StockMovement[] | null>(null);
+  const [limit, setLimit] = useState<number | null>(null);
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
 
@@ -27,6 +31,7 @@ export function MovementHistory({ productId, refreshKey }: Props) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset must run before the async fetch
     setMovements(null);
     setFailed(false);
+    onCappedChange?.(null);
     getProductMovements(productId)
       .then((result) => {
         if (cancelled) return;
@@ -35,6 +40,8 @@ export function MovementHistory({ productId, refreshKey }: Props) {
           return;
         }
         setMovements(result.movements);
+        setLimit(result.limit);
+        onCappedChange?.(result.limit !== null);
       })
       .catch(() => {
         if (!cancelled) setFailed(true);
@@ -42,7 +49,7 @@ export function MovementHistory({ productId, refreshKey }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [productId, refreshKey, retryKey]);
+  }, [productId, refreshKey, retryKey, onCappedChange]);
 
   if (failed) {
     return (
@@ -58,9 +65,7 @@ export function MovementHistory({ productId, refreshKey }: Props) {
     return <p className="text-muted-foreground py-6 text-center text-sm">Loading history…</p>;
   }
   if (movements.length === 0) {
-    return (
-      <p className="text-muted-foreground py-6 text-center text-sm">No stock movements yet.</p>
-    );
+    return <p className="text-muted-foreground py-6 text-center text-sm">No stock changes yet</p>;
   }
 
   return (
@@ -77,17 +82,26 @@ export function MovementHistory({ productId, refreshKey }: Props) {
               {m.note ? ` · ${m.note}` : ''}
             </p>
           </div>
-          <span
-            className={cn(
-              'shrink-0 font-mono text-sm font-semibold tabular-nums',
-              m.delta > 0 ? 'text-stock-ok' : 'text-stock-out'
-            )}
-          >
+          <span className="text-foreground flex shrink-0 items-center gap-2 font-mono text-sm font-semibold tabular-nums">
+            <span
+              aria-hidden="true"
+              data-testid="delta-dot"
+              className="bg-muted-foreground size-2 rounded-full"
+            />
             {m.delta > 0 ? '+' : ''}
             {m.delta}
           </span>
         </div>
       ))}
+      {limit !== null && (
+        <p className="text-muted-foreground pt-1 text-xs">
+          Free plan keeps the last {limit} changes.{' '}
+          <Link href="/dashboard/plan" className="text-foreground underline">
+            Pro
+          </Link>{' '}
+          keeps full history.
+        </p>
+      )}
     </div>
   );
 }
