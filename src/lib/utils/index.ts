@@ -9,11 +9,6 @@ export const FORM_LABEL_CLASS =
   'text-xs font-semibold uppercase tracking-wider text-muted-foreground';
 export const FORM_ERROR_CLASS = 'text-sm font-medium text-destructive';
 
-// Small-caps label above a page title; shared by PageHeader and any other
-// eyebrow so the tracking stays identical.
-export const EYEBROW_CLASS =
-  'text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase';
-
 // Codified type scale for the "ledger" hero-number motif (font-mono
 // tabular-nums figures, e.g. inventory value, on-hand count) so every screen
 // that surfaces one uses one of a fixed set of sizes instead of an ad hoc
