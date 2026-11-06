@@ -1,6 +1,7 @@
 import { createServerClient as createSSRClient, type CookieMethodsServer } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+import { authCookieOptions } from '@/lib/supabase/cookie-options';
 import { publicEnv } from '@/lib/supabase/env';
 import type { Database } from '@/lib/types';
 
@@ -33,6 +34,7 @@ export async function createServerClient() {
     publicEnv.supabasePublishableKey,
     {
       cookies: cookieMethods(cookieStore),
+      cookieOptions: authCookieOptions(),
       db: { schema: 'stockkit' },
     }
   );

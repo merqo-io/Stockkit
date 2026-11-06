@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Sign-in no longer loops back to /login on stockkit.merqo.io: the browser, vendor server and middleware Supabase clients now write auth cookies on `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io`), matching merqo and loopkit, instead of host-only copies whose chunks mixed with theirs. Unset locally, cookies stay host-only.
+
 ### Changed
 
 - Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.

@@ -26,8 +26,27 @@ describe('Supabase adapters', () => {
   it('scopes browser clients to stockkit', () => {
     createClient();
     expect(mocks.browser).toHaveBeenCalledWith('https://test.invalid', 'public-test', {
+      cookieOptions: undefined,
       db: { schema: 'stockkit' },
     });
+  });
+
+  it('writes browser auth cookies on the shared domain when configured', () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_COOKIE_DOMAIN', '.merqo.io');
+    createClient();
+    expect(mocks.browser.mock.calls[0][2].cookieOptions).toEqual({ domain: '.merqo.io' });
+  });
+
+  it('writes vendor server-client auth cookies on the shared domain when configured', async () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_COOKIE_DOMAIN', '.merqo.io');
+    await createServerClient();
+    expect(mocks.ssr.mock.calls[0][2].cookieOptions).toEqual({ domain: '.merqo.io' });
+  });
+
+  it('omits the cookie domain from the vendor server client when unset or blank', async () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_COOKIE_DOMAIN', '');
+    await createServerClient();
+    expect(mocks.ssr.mock.calls[0][2].cookieOptions).toBeUndefined();
   });
   it('reads and writes the request cookies for a vendor client', async () => {
     await createServerClient();
