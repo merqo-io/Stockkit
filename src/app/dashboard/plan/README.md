@@ -43,3 +43,5 @@ Routed at `PAGE_ROUTES.PLAN` (`/dashboard/plan`) and reachable from
 [dashboard](../README.md)
 
 The page sets `metadata.title` "Plan" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.
+
+The page heading is `@merqo/ui`'s `PageHeader`.
