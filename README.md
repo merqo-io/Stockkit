@@ -259,11 +259,9 @@ a branch-assigned domain).
 
 Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
 merqo's and qkit's, not with `supabase db push`: every kit shares one
-migration history table and reuses the same version numbers. First run
-`drop policy "vendor_avatars_public_read" on storage.objects;` in the staging
-SQL Editor: merqo's `0015` creates that policy, and stockkit's `0006` creates
-the identical one without a guard (on production `0006` ran first). `0006`
-then recreates it.
+migration history table and reuses the same version numbers. `0006` drops and
+recreates `vendor_avatars_public_read`, so it no longer clashes with merqo's
+`0015`.
 
 #### Migration-bearing PRs: staging first
 
