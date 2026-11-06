@@ -20,3 +20,5 @@ session. Both returned errors and rejected requests are covered by regressions.
 The controlled password inputs use `@/components/password-fields`; this page retains recovery-session handling and its own validation. Field errors are linked with `aria-describedby`.
 
 Update failures are mapped through `authErrorMessage` rather than showing Supabase's raw text.
+
+Reset-password copy keeps real UTF-8 characters (ellipsis).
