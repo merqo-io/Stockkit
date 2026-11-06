@@ -397,4 +397,4 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.42.0 (commit `942ba9e`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.42.1 (commit `53ec5ba`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
