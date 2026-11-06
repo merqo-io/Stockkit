@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { authCookieOptions } from '@/lib/supabase/cookie-options';
 import { publicEnv } from '@/lib/supabase/env';
 import type { Database } from '@/lib/types';
 
@@ -74,6 +75,7 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+      cookieOptions: authCookieOptions(),
       db: { schema: 'stockkit' },
     }
   );

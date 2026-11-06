@@ -189,13 +189,14 @@ pnpm dev                     # http://localhost:3000
 Set these in `.env.local` (find them in Supabase → Project Settings → API).
 `NEXT_PUBLIC_*` values are inlined at build time — **rebuild after changing them**.
 
-| Var                                    | Notes                                                                                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`             | project URL                                                                                                                                |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (client-safe, respects RLS)                                                                                                |
-| `SUPABASE_SECRET_KEY`                  | server-only; bypasses RLS — used by the `/admin` console's cross-vendor reads/writes (`src/lib/admin-data.ts`, `src/app/admin/actions.ts`) |
-| `MERQO_METRICS_SECRET`                 | bearer secret gating `GET /api/merqo/{metrics,vendor-status,vendor-activity}` — merqo hub is the only caller                               |
-| `MERQO_PROVISION_SECRET`               | separate bearer secret gating `POST /api/merqo/vendor-provision` — a leaked metrics secret must not also unlock provisioning               |
+| Var                                    | Notes                                                                                                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | project URL                                                                                                                                          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (client-safe, respects RLS)                                                                                                          |
+| `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN`       | shared auth-cookie domain: `.merqo.io` in staging/prod so sign-in is shared with merqo and loopkit, blank locally (host-only cookies); build-inlined |
+| `SUPABASE_SECRET_KEY`                  | server-only; bypasses RLS — used by the `/admin` console's cross-vendor reads/writes (`src/lib/admin-data.ts`, `src/app/admin/actions.ts`)           |
+| `MERQO_METRICS_SECRET`                 | bearer secret gating `GET /api/merqo/{metrics,vendor-status,vendor-activity}` — merqo hub is the only caller                                         |
+| `MERQO_PROVISION_SECRET`               | separate bearer secret gating `POST /api/merqo/vendor-provision` — a leaked metrics secret must not also unlock provisioning                         |
 
 ### Database
 
@@ -398,3 +399,5 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
 `@merqo/ui` is pinned to v0.42.1 (commit `53ec5ba`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+
+Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
