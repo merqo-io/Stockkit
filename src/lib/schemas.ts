@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Upper bound for any money field (cents), matching qkit's convention. $10k
-// per unit â€” a fat-finger guard, not a real business limit â€” and keeps
+// per unit — a fat-finger guard, not a real business limit — and keeps
 // totalValueCents (on_hand * unit_cost_cents, summed across every product)
 // well inside a safe JS integer even at a large on-hand count.
 export const MAX_MONEY_CENTS = 10_000_00;
@@ -34,7 +34,7 @@ export const vendorSchema = z.object({
 export const productFormSchema = z.object({
   id: z.uuid().optional(),
   name: z.string().min(1, 'Product name is required').max(100),
-  // Free text â€” the UI offers unit presets (kg, pcs, box, â€¦) but a vendor can
+  // Free text — the UI offers unit presets (kg, pcs, box, …) but a vendor can
   // type anything that fits their own stock-keeping vocabulary.
   unit: z.string().min(1, 'Unit is required').max(20),
   unit_cost_cents: z
@@ -43,7 +43,7 @@ export const productFormSchema = z.object({
     .nonnegative()
     .max(MAX_MONEY_CENTS, 'Unit cost is too high')
     .default(0),
-  // Starting balance, only meaningful when creating a new product â€” see
+  // Starting balance, only meaningful when creating a new product — see
   // saveProduct in products/actions.ts for how a nonzero value here becomes
   // a single 'initial' stock_movements row inside the product insert transaction.
   on_hand: z.number().nonnegative().default(0),
@@ -53,7 +53,7 @@ export const productFormSchema = z.object({
 
 // 'initial' is reserved for the DB-seeded opening balance recorded when a
 // product is first created with a nonzero starting on_hand (see saveProduct)
-// â€” never chosen by the user through this form.
+// — never chosen by the user through this form.
 export const stockMovementFormSchema = z
   .object({
     product_id: z.uuid(),
@@ -80,7 +80,7 @@ export type VendorInput = z.infer<typeof vendorSchema>;
 export type ProductFormInput = z.infer<typeof productFormSchema>;
 export type StockMovementFormInput = z.infer<typeof stockMovementFormSchema>;
 
-/** Cents â†’ a locale-formatted currency string (e.g. "$1,234.50") for read-only display. */
+/** Cents → a locale-formatted currency string (e.g. "$1,234.50") for read-only display. */
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(cents / 100);
 }

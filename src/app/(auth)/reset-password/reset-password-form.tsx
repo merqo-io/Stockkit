@@ -96,7 +96,7 @@ export function ResetPasswordForm() {
   if (state === 'checking') {
     return (
       <ElevatedCard className="px-7 py-8">
-        <p className="text-muted-foreground text-center text-sm">Checking your reset linkâ€¦</p>
+        <p className="text-muted-foreground text-center text-sm">Checking your reset link…</p>
       </ElevatedCard>
     );
   }
@@ -142,7 +142,7 @@ export function ResetPasswordForm() {
           disabled={pending || !password || !confirm}
           className="h-12 w-full rounded-xl text-base font-semibold"
         >
-          {pending ? 'Updatingâ€¦' : 'Update password'}
+          {pending ? 'Updating…' : 'Update password'}
         </Button>
       </form>
     </ElevatedCard>
