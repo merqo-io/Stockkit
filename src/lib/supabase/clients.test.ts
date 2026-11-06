@@ -24,6 +24,7 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 describe('Supabase adapters', () => {
   it('scopes browser clients to stockkit', () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_COOKIE_DOMAIN', '');
     createClient();
     expect(mocks.browser).toHaveBeenCalledWith('https://test.invalid', 'public-test', {
       cookieOptions: undefined,
@@ -48,6 +49,7 @@ describe('Supabase adapters', () => {
     await createServerClient();
     expect(mocks.ssr.mock.calls[0][2].cookieOptions).toBeUndefined();
   });
+
   it('reads and writes the request cookies for a vendor client', async () => {
     await createServerClient();
     const options = mocks.ssr.mock.calls[0][2];
