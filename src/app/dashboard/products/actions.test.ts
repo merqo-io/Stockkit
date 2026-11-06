@@ -129,7 +129,7 @@ describe('saveProduct — active-product cap', () => {
 
     expect(result).toEqual({
       success: false,
-      error: "You've hit the Free plan's 20-product limit. Upgrade to Pro for unlimited products.",
+      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
     });
     expect(insertMock).not.toHaveBeenCalled();
   });
@@ -198,7 +198,7 @@ describe('saveProduct — active-product cap', () => {
 
     expect(result).toEqual({
       success: false,
-      error: "You've hit the Free plan's 20-product limit. Upgrade to Pro for unlimited products.",
+      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
     });
     expect(updateMock).not.toHaveBeenCalled();
   });
@@ -289,7 +289,7 @@ describe('vendorEntitlement, fail-closed lookup', () => {
     // Fail-closed: a paid vendor whose lookup hiccups is treated as Free.
     expect(result).toEqual({
       success: false,
-      error: 'CSV export is a Pro feature. Upgrade to export your full stock history.',
+      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
     });
   });
 });
@@ -352,7 +352,7 @@ describe('exportProductMovementsCsv', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'CSV export is a Pro feature. Upgrade to export your full stock history.',
+      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
     });
   });
 

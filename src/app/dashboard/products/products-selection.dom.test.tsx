@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import type { Product } from '@/lib/types';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 import { ProductsWorkspace } from './products-workspace';
 
@@ -10,7 +11,7 @@ vi.mock('./actions', () => ({
   archiveProduct: vi.fn(),
   exportProductMovementsCsv: vi.fn(),
   recordStockMovement: vi.fn(),
-  getProductMovements: vi.fn().mockResolvedValue({ success: true, movements: [] }),
+  getProductMovements: vi.fn().mockResolvedValue({ success: true, movements: [], limit: null }),
 }));
 
 it('does not submit another product draft or restock cost after switching selection', async () => {
@@ -37,15 +38,18 @@ it('does not submit another product draft or restock cost after switching select
   render(<ProductsWorkspace initialProducts={[first, second]} />);
   const firstRows = screen.getAllByRole('button', { name: /Rice/i });
   fireEvent.click(firstRows[firstRows.length - 1]);
-  fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Unsaved rice draft' } });
+  const user = userEvent.setup();
   fireEvent.change(screen.getByLabelText('Unit cost this restock ($)'), {
     target: { value: '88' },
   });
+  await user.click(screen.getByRole('tab', { name: 'Edit' }));
+  fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Unsaved rice draft' } });
   const secondRows = screen.getAllByRole('button', { name: /Beans/i });
   fireEvent.click(secondRows[secondRows.length - 1]);
+  expect(screen.getByLabelText('Unit cost this restock ($)')).toHaveValue('9.00');
+  await user.click(screen.getByRole('tab', { name: 'Edit' }));
   expect(screen.getByLabelText('Name')).toHaveValue('Beans');
   expect(screen.getByLabelText('Unit cost ($)')).toHaveValue('9.00');
-  expect(screen.getByLabelText('Unit cost this restock ($)')).toHaveValue('9.00');
   fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
   await waitFor(() =>
     expect(saveProduct).toHaveBeenCalledWith(
