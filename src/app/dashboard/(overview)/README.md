@@ -20,7 +20,7 @@ unit_cost_cents`, summed, formatted via `formatPrice`), low-stock and
   onboarding tour (`@/components/dashboard-tour`), since this is the
   first page a vendor lands on. The three stat tiles are `@merqo/ui`'s
   shared `StatTile` inside an `ElevatedCard` (the same pairing as
-  `admin/stat.tsx` and loopkit's stats page), with `@/lib/utils`'s
+  the admin overview's `StatCard` and loopkit's stats page), with `@/lib/utils`'s
   shared `LEDGER_LG_CLASS` type scale on the value instead of each hardcoding its own
   `font-mono text-3xl tabular-nums`, matching `products/product-detail.tsx`
   and `products/product-row.tsx`. The "Needs attention" list's stock-status

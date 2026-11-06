@@ -52,7 +52,9 @@ is ever edited after landing — a later migration corrects an earlier one.
 - **`0006_vendor_avatars_bucket.sql`** creates the public-read
   `vendor-avatars` Storage bucket (5MB limit, JPEG/PNG/WebP only) for the
   profile page's avatar upload, with RLS on `storage.objects` scoped to each
-  vendor's own `{auth.uid()}/...` path for insert/update/delete.
+  vendor's own `{auth.uid()}/...` path for insert/update/delete. Each policy is dropped before it is created,
+  because merqo's `0015` creates `vendor_avatars_public_read` in the shared
+  `storage.objects`; the bucket insert is `ON CONFLICT DO NOTHING`.
 - **`0007_rls_select_auth_uid.sql`** retrofits every `stockkit`-schema RLS
   policy (`vendors`/`products`/`stock_movements`/`feedback`) to wrap
   `auth.uid()` in a scalar subquery (`(select auth.uid())`), matching

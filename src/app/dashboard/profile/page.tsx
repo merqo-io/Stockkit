@@ -1,7 +1,6 @@
-import { PageHeader } from '@/components/page-header';
 import { getOrCreateVendorProfile } from '@/lib/merqo-vendor-profile';
 import { createServerClient } from '@/lib/supabase/server';
-import { BackButton } from '@merqo/ui';
+import { BackButton, PageHeader } from '@merqo/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ProfileForm } from './profile-form';
@@ -41,11 +40,9 @@ export default async function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-7 md:max-w-4xl">
       <div className="space-y-6">
         <BackButton LinkComponent={Link} href="/dashboard" label="Overview" />
-        <header>
-          <PageHeader eyebrow="Your account" title="Profile">
-            Your business name and social links are shared with every Merqo kit you use.
-          </PageHeader>
-        </header>
+        <PageHeader eyebrow="Your account" title="Profile" className="mb-0">
+          Your business name and social links are shared with every Merqo kit you use.
+        </PageHeader>
       </div>
       <ProfileForm
         vendorId={user.id}

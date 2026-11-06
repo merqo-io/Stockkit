@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import PlanPage from './page';
 
@@ -34,6 +35,12 @@ vi.mock('next/navigation', () => ({
 vi.mock('@merqo/ui', () => ({
   BackButton: ({ label }: { label: string }) => <span>{label}</span>,
   fetchPlanCatalog: fetchPlanCatalogMock,
+  PageHeader: ({ title, children }: { title: ReactNode; children?: ReactNode }) => (
+    <header>
+      <h1>{title}</h1>
+      <p>{children}</p>
+    </header>
+  ),
   PricingLadder: (props: Record<string, unknown>) => {
     pricingLadderMock(props);
     return <div data-testid="pricing-ladder" />;

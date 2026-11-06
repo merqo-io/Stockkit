@@ -27,7 +27,7 @@ type Mode = 'signin' | 'signup';
 const GENERIC_ERROR = 'Something went wrong. Try again.';
 
 function submitLabel(loading: boolean, isSignin: boolean) {
-  if (loading) return 'Please waitâ€¦';
+  if (loading) return 'Please wait…';
   return isSignin ? 'Sign in' : 'Create account';
 }
 
@@ -125,7 +125,7 @@ export function LoginForm() {
     return run(async () => {
       try {
         if (mode === 'signup') {
-          // Land the confirmation-email link back on stockkit â€” the shared
+          // Land the confirmation-email link back on stockkit — the shared
           // Supabase project's Site URL may point at another kit, so without
           // this the confirm link would bounce the vendor to the wrong app.
           const { data: result, error } = await supabase.auth.signUp({
@@ -304,7 +304,7 @@ export function LoginForm() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                   className="h-11 rounded-xl"
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'password-error' : undefined}

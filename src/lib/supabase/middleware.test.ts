@@ -145,6 +145,19 @@ describe('updateSession: host-only duplicate auth cookie cleanup', () => {
     expect(cleared(res, 'sb-project-auth-token')).toBeUndefined();
   });
 
+  it('passes the shared cookie domain to the Supabase client', async () => {
+    const { updateSession } = await import('./middleware');
+    await updateSession(withCookie('/dashboard', 'sb-project-auth-token=only-one'));
+    expect(createServerClientMock.mock.calls[0][2].cookieOptions).toEqual({ domain: '.merqo.io' });
+  });
+
+  it('omits the cookie domain when NEXT_PUBLIC_AUTH_COOKIE_DOMAIN is unset', async () => {
+    delete process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN;
+    const { updateSession } = await import('./middleware');
+    await updateSession(withCookie('/dashboard', 'sb-project-auth-token=only-one'));
+    expect(createServerClientMock.mock.calls[0][2].cookieOptions).toBeUndefined();
+  });
+
   it('does nothing when NEXT_PUBLIC_AUTH_COOKIE_DOMAIN is unset', async () => {
     delete process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN;
     const { updateSession } = await import('./middleware');

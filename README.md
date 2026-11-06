@@ -152,7 +152,7 @@ had not. `src/lib/image-upload-adapter.ts` stays local — the Storage
 bucket and object path are stockkit's own. Which kit uses which shared
 export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
-`@merqo/ui` is pinned to v0.39.0 (2026-11-04). The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
+The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
 `/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
 
@@ -189,13 +189,14 @@ pnpm dev                     # http://localhost:3000
 Set these in `.env.local` (find them in Supabase → Project Settings → API).
 `NEXT_PUBLIC_*` values are inlined at build time — **rebuild after changing them**.
 
-| Var                                    | Notes                                                                                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`             | project URL                                                                                                                                |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (client-safe, respects RLS)                                                                                                |
-| `SUPABASE_SECRET_KEY`                  | server-only; bypasses RLS — used by the `/admin` console's cross-vendor reads/writes (`src/lib/admin-data.ts`, `src/app/admin/actions.ts`) |
-| `MERQO_METRICS_SECRET`                 | bearer secret gating `GET /api/merqo/{metrics,vendor-status,vendor-activity}` — merqo hub is the only caller                               |
-| `MERQO_PROVISION_SECRET`               | separate bearer secret gating `POST /api/merqo/vendor-provision` — a leaked metrics secret must not also unlock provisioning               |
+| Var                                    | Notes                                                                                                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | project URL                                                                                                                                          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | publishable key (client-safe, respects RLS)                                                                                                          |
+| `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN`       | shared auth-cookie domain: `.merqo.io` in staging/prod so sign-in is shared with merqo and loopkit, blank locally (host-only cookies); build-inlined |
+| `SUPABASE_SECRET_KEY`                  | server-only; bypasses RLS — used by the `/admin` console's cross-vendor reads/writes (`src/lib/admin-data.ts`, `src/app/admin/actions.ts`)           |
+| `MERQO_METRICS_SECRET`                 | bearer secret gating `GET /api/merqo/{metrics,vendor-status,vendor-activity}` — merqo hub is the only caller                                         |
+| `MERQO_PROVISION_SECRET`               | separate bearer secret gating `POST /api/merqo/vendor-provision` — a leaked metrics secret must not also unlock provisioning                         |
 
 ### Database
 
@@ -259,11 +260,9 @@ a branch-assigned domain).
 
 Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
 merqo's and qkit's, not with `supabase db push`: every kit shares one
-migration history table and reuses the same version numbers. First run
-`drop policy "vendor_avatars_public_read" on storage.objects;` in the staging
-SQL Editor: merqo's `0015` creates that policy, and stockkit's `0006` creates
-the identical one without a guard (on production `0006` ran first). `0006`
-then recreates it. Migration `0028` (prod-only `product_components` drop) is a no-op on staging.
+migration history table and reuses the same version numbers. `0006` drops and
+recreates `vendor_avatars_public_read`, so it no longer clashes with merqo's
+`0015`. Migration `0028` (prod-only `product_components` drop) is a no-op on staging.
 
 #### Migration-bearing PRs: staging first
 
@@ -336,7 +335,7 @@ transaction). See `AGENTS.md` for full conventions.
 - `src/app/admin/`, the Merqo-team admin console (ported from loopkit's admin-console pattern): `requireAdmin()`-gated layout + nav, an overview page (vendor/product/plan totals + recent cross-vendor stock activity), `vendors/` (every vendor with its plan badge), and `activity/` (an `admin_audit` viewer via `@merqo/ui`'s shared `AuditLogTable`), own READMEs. Backed by `src/lib/admin.ts`/`admin-data.ts` and migration `0013_stockkit_admin.sql`.
 - `src/components/dashboard-tour.tsx` + `tour-steps.ts` — thin adapter over `@merqo/ui`'s `DashboardTour`, which owns the `driver.js` overlay lifecycle (auto-runs once on first login, tracked server-side via `vendors.tour_seen_at`, stamped as soon as the tour starts rather than when it finishes, so a mid-tour refresh can't re-trigger it), replay button, and popover theming (generated at runtime from this app's own CSS custom properties — no local `tour.css`); stockkit supplies step content and routing.
 - `src/app/actions/` — server actions shared across routes rather than colocated with a single page (vendor NPS feedback, Get-help support messages) — own README.
-- `src/components/ui/` — shadcn primitives (CLI-managed style, hand-copied from the sibling `qkit` project where a needed one — `checkbox`/`switch`/`alert-dialog` — wasn't already present here) — own README.
+- `src/components/ui/` — shadcn primitives (CLI-managed style, hand-copied from the sibling `qkit` project where a needed one — `checkbox`/`switch` — wasn't already present here) — own README.
 - `.claude/` — the Claude Code harness (hook scripts, project skills, harness integrity manifest/verifier) — own README.
 - `src/components/landing/` — the landing page's section components (`Hero`, `HowItWorks`, `Benefits`, `Faq`, `Cta`), plus `LedgerCardPreview` (`Hero`'s illustration — a static mock product card, not real data).
 - `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local) — the lifted-shadow card treatment used on the public auth pages and the landing page's `HowItWorks`/`Benefits` cards (not qkit's perforated "Ticket").
@@ -396,3 +395,7 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 ## Dashboard layout
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
+
+`@merqo/ui` is pinned to v0.42.1 (commit `53ec5ba`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+
+Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
