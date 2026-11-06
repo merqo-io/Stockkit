@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
+
 ### Changed
 
 - Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
