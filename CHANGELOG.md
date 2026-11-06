@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Migration `0006` drops each `vendor-avatars` policy on `storage.objects` before creating it, so a fresh bootstrap of the shared Supabase project no longer fails on merqo's same-named `vendor_avatars_public_read`. Existing environments are unaffected; the policy semantics are unchanged.
 - Sign-in no longer loops back to /login on stockkit.merqo.io: the browser, vendor server and middleware Supabase clients now write auth cookies on `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io`), matching merqo and loopkit, instead of host-only copies whose chunks mixed with theirs. Unset locally, cookies stay host-only.
 - Restored UTF-8 characters (em dashes, ellipses, arrows, bullets) that had been garbled by double encoding in the login and reset-password forms, validation messages and this changelog.
 
