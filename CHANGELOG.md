@@ -14,6 +14,7 @@
 
 ### Changed
 
+- Re-pinned `@merqo/ui` to v0.44.0 (commit `250a4ed`): new legal text (`LEGAL_VERSIONS` 2026-11-08), so vendors re-accept the terms on next sign-in.
 - `@merqo/ui` v0.39.0 -> v0.42.1. Deletes the local `PageHeader`, `Stat` and `components/ui/alert-dialog.tsx` in favour of the shared `PageHeader`, `StatCard` and `ConfirmDialog`. Visual differences: admin overview stat cards now use the shared elevated card shell (rounded corners and shadow instead of a flat bordered tile); `PageHeader` renders a `<header>` with its own bottom margin (call sites zero or override it so page spacing is unchanged); the archive confirmation stays open and shows `Archiving...` on the button until the archive call settles, instead of closing on click.
 
 - Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
