@@ -1,10 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { authErrorMessage } from '@/lib/auth-error-message';
 import { createClient } from '@/lib/supabase/client';
+import { Input, Label } from '@merqo/ui/primitives';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

@@ -1,7 +1,6 @@
 'use client';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
+import { Input, Label } from '@merqo/ui/primitives';
 export function PasswordFields({
   password,
   confirm,

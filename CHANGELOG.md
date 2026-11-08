@@ -10,6 +10,8 @@
 
 ### Removed
 
+- Local shadcn copies `badge`, `card`, `dialog`, `input`, `label`, `select`, `switch` and `textarea` under `src/components/ui/`, plus `cn` from `src/lib/utils`: they now come from `@merqo/ui/primitives` (v0.44.0). Local `button` (flat outline variant) and `tabs` (default/line variants) stay because the shared versions differ visually; `command`, `popover` and `separator` have no shared version.
+
 - Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
 
 ### Changed

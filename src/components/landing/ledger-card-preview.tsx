@@ -4,8 +4,8 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { STOCK_STATUS_DOT_CLASS } from '@/lib/stock';
-import { cn } from '@/lib/utils';
 import { ElevatedCard } from '@merqo/ui';
+import { cn } from '@merqo/ui/primitives';
 
 // Sample data for illustration, not a real product.
 const SAMPLE_ACTIVITY = [

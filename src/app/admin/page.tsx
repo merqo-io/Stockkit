@@ -1,8 +1,8 @@
 import { requireAdmin } from '@/lib/admin';
 import { platformTotals, recentActivity } from '@/lib/admin-data';
 import { stockMovementReasonLabel } from '@/lib/stock';
-import { cn } from '@/lib/utils';
 import { PageHeader, StatCard } from '@merqo/ui';
+import { cn } from '@merqo/ui/primitives';
 
 export const revalidate = 0;
 
