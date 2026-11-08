@@ -49,3 +49,5 @@ Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 `BackToTop` comes from `@merqo/ui` and is rendered beside `SiteFooter` in the public layout.
 
 `landing-copy.dom.test.tsx` renders the real `Nav`, `Hero`, `HowItWorks`, `Benefits` and `Faq` together and guards the public copy: no `$`, em dash or banned words, the "In build" badge, the exact pilot pricing line, and every signup CTA pointing at `WAITLIST_URL`. Signed-out CTAs read "Join the waitlist"; `/login` and `/dashboard` stay reachable by direct URL and the nav "Sign in" link. `Hero` shows an "In build" badge with "Built, not yet tried with vendors."; the low-stock step says the dashboard shows what is running low, because nothing is sent to the vendor.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

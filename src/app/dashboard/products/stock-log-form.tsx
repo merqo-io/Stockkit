@@ -8,20 +8,21 @@ import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useAsyncAction } from '@/hooks';
+import { stockMovementFormSchema } from '@/lib/schemas';
+import type { Product } from '@/lib/types';
+import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import {
+  cn,
+  Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useAsyncAction } from '@/hooks';
-import { stockMovementFormSchema } from '@/lib/schemas';
-import type { Product } from '@/lib/types';
-import { cn, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
+  Textarea,
+} from '@merqo/ui/primitives';
 import { recordStockMovement } from './actions';
 
 type Reason = 'restock' | 'waste' | 'adjustment';

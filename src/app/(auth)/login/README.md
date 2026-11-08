@@ -23,3 +23,5 @@ wrapped in `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local).
 Auth errors never reach the UI raw: every returned Supabase error goes through `authErrorMessage` (`@/lib/auth-error-message`) with an action-specific fallback. The vendor's business is labelled "Business name" in the UI; the local state and DB column keep their existing names.
 
 Login copy keeps real UTF-8 characters (ellipsis, em dash, password bullets).
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

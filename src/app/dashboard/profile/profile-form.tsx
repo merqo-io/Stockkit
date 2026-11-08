@@ -5,8 +5,6 @@ import { ImageUploader, SocialLinksFields, TwoColumnSections } from '@merqo/ui';
 
 import { Section } from '@/components/section';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useAsyncAction } from '@/hooks';
 import { removeReplacedAvatar, uploadVendorAvatar } from '@/lib/image-upload-adapter';
 import {
@@ -19,6 +17,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import { resizeToWebp } from '@merqo/ui';
+import { Input, Label } from '@merqo/ui/primitives';
 import { IdCard, KeyRound, Share2, Store, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

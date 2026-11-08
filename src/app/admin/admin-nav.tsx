@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { PAGE_ROUTES } from '@/lib/constants/routes';
-import { cn } from '@/lib/utils';
+import { cn } from '@merqo/ui/primitives';
 
 const TABS = [
   { href: PAGE_ROUTES.ADMIN, label: 'Overview' },

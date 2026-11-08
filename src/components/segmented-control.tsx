@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@merqo/ui/primitives';
 
 export interface SegmentedOption<T extends string> {
   value: T;

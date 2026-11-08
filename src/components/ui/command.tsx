@@ -5,13 +5,13 @@ import { SearchIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { cn } from '@/lib/utils/index';
+} from '@merqo/ui/primitives';
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
