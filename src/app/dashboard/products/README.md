@@ -112,3 +112,5 @@ read errors display an alert and retry action instead of an empty ledger.
 Product and stock-movement reads list their columns (`PRODUCT_COLUMNS`, `STOCK_MOVEMENT_COLUMNS`).
 
 The page sets `metadata.title` "Products" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

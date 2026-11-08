@@ -67,3 +67,5 @@ files' own doc comments for the adapter wiring.
 `password-fields.tsx` provides the controlled password pair for profile and recovery. Persistence and recovery-session checks remain with their callers; validation feedback is linked to the confirmation field.
 
 The server dashboard-tour adapter renders the canonical stock example once and passes its constant HTML to the client controller; react-dom/server is absent from the controller dependency graph.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
