@@ -260,11 +260,9 @@ a branch-assigned domain).
 
 Load the `stockkit` schema on staging with `scripts/staging-migrate.sh`, after
 merqo's and qkit's, not with `supabase db push`: every kit shares one
-migration history table and reuses the same version numbers. First run
-`drop policy "vendor_avatars_public_read" on storage.objects;` in the staging
-SQL Editor: merqo's `0015` creates that policy, and stockkit's `0006` creates
-the identical one without a guard (on production `0006` ran first). `0006`
-then recreates it.
+migration history table and reuses the same version numbers. `0006` drops and
+recreates `vendor_avatars_public_read`, so it no longer clashes with merqo's
+`0015`. Migration `0028` (prod-only `product_components` drop) is a no-op on staging.
 
 #### Migration-bearing PRs: staging first
 
@@ -398,6 +396,6 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.42.1 (commit `53ec5ba`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.44.0 (commit `250a4ed`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.

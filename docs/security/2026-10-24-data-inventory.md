@@ -15,4 +15,4 @@ Stockkit holds almost no personal data: a vendor's own stock records. There are 
 
 ## Proposed drop list (owner approval needed)
 
-None. `stock_movements.linked_movement_id` and `product_components` are covered by SK-01 (keep or drop), not this inventory.
+None. `stock_movements.linked_movement_id` and `product_components` were dropped by migration `0028` (SK-01, owner decision); they are no longer in the schema.

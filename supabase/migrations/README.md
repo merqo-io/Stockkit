@@ -52,7 +52,9 @@ is ever edited after landing — a later migration corrects an earlier one.
 - **`0006_vendor_avatars_bucket.sql`** creates the public-read
   `vendor-avatars` Storage bucket (5MB limit, JPEG/PNG/WebP only) for the
   profile page's avatar upload, with RLS on `storage.objects` scoped to each
-  vendor's own `{auth.uid()}/...` path for insert/update/delete.
+  vendor's own `{auth.uid()}/...` path for insert/update/delete. Each policy is dropped before it is created,
+  because merqo's `0015` creates `vendor_avatars_public_read` in the shared
+  `storage.objects`; the bucket insert is `ON CONFLICT DO NOTHING`.
 - **`0007_rls_select_auth_uid.sql`** retrofits every `stockkit`-schema RLS
   policy (`vendors`/`products`/`stock_movements`/`feedback`) to wrap
   `auth.uid()` in a scalar subquery (`(select auth.uid())`), matching
@@ -264,3 +266,7 @@ The latest migration limits `is_admin(uuid)` to the signed-in user or trusted se
 ## Merqo entitlements
 
 0025_vendor_entitlements.sql adds `stockkit.vendor_entitlements` (own-row select, service-role writes), `apply_vendor_entitlement` (maps the pushed email to the auth user and upserts only when `issued_at` is newer; service role only), `vendor_is_paid` (tier paid and `valid_until` null or in the future) and redefines `active_product_cap` to read it. 0026_drop_vendor_plan.sql carries `vendors.plan = pro` rows over as paid with no expiry, then drops the column and its grants. 0027_drop_pricing.sql drops `stockkit.pricing`. Apply 0025 to 0027 by hand (staging, then prod) before deploying: the app no longer reads `vendors.plan`. vendor-entitlements.test.sql covers the function and the cap.
+
+## Prod-only objects
+
+0028_drop_prod_only_product_components.sql drops `product_components`, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions that existed only on prod (SK-01). It raises if any `linked_movement_id` is set, and is a no-op on databases that never had them. drop-product-components.test.sql asserts they are gone. Apply by hand (staging, then prod).

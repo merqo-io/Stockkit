@@ -21,7 +21,7 @@ access, 5-year retention) are also summarised in `AGENTS.md`.
 - `stockkit.sync_vendor_profile` (SECURITY DEFINER) forwards a vendor's stall
   name to the shared `merqo.patch_vendor_profile` RPC, preserving social links on signup — best-effort,
   never blocks or fails signup if it errors.
-- `vendor_entitlements` (`0025`): cache of the entitlement merqo pushes to `POST /api/merqo/entitlement`. Own-row select RLS, writes only through the service-role `apply_vendor_entitlement` (newer `issued_at` wins). Paid means tier `paid` and `valid_until` null or in the future (`vendor_is_paid`), which drives `active_product_cap`. `vendors.plan` (`0026`) and `pricing` (`0027`) were dropped.
+- `vendor_entitlements` (`0025`): cache of the entitlement merqo pushes to `POST /api/merqo/entitlement`. Own-row select RLS, writes only through the service-role `apply_vendor_entitlement` (newer `issued_at` wins). Paid means tier `paid` and `valid_until` null or in the future (`vendor_is_paid`), which drives `active_product_cap`. `vendors.plan` (`0026`) and `pricing` (`0027`) were dropped. `0028` drops the prod-only `product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions.
 - `admins`/`admin_audit` (`0013_stockkit_admin.sql`): platform-operator
   allow-list and audit trail — one row per admin- or vendor-initiated action
   worth reconstructing later (a vendor's own
