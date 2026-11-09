@@ -10,15 +10,15 @@
 
 ### Removed
 
-- `clsx` and `tailwind-merge`; `cn` comes from `@merqo/ui/primitives`.
-
 - Local shadcn copies `badge`, `card`, `dialog`, `input`, `label`, `select`, `switch` and `textarea` under `src/components/ui/`, plus `cn` from `src/lib/utils`: they now come from `@merqo/ui/primitives` (v0.44.0). Local `button` (flat outline variant) and `tabs` (default/line variants) stay because the shared versions differ visually; `command`, `popover` and `separator` have no shared version.
 
 - Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
 
+- `clsx` and `tailwind-merge`; `cn` comes from `@merqo/ui/primitives`.
+
 ### Changed
 
-- Replaced the remaining kit-local copies of `@merqo/ui` pieces with the shared exports: `Providers`, `SegmentedControl`, `DashboardTour` server wiring, `ActionResult`, the brand icon generator, theme props, security headers and cookie options. The Supabase clients, session refresh, legal gate and rate limiter are thin wrappers over `@merqo/ui/supabase`, `@merqo/ui/auth` and `@merqo/ui/kit-api`.
+- Replaced the remaining kit-local copies of `@merqo/ui` pieces with the shared exports: `Providers`, `SegmentedControl`, `DashboardTour` server wiring, `ActionResult`, the brand icon generator, theme props, `security-headers`, `cookie-options` and `dashboard-tour.server`. The Supabase clients, session refresh, legal gate and rate limiter are thin wrappers over `@merqo/ui/supabase`, `@merqo/ui/auth` and `@merqo/ui/kit-api`.
 - `proxy.ts` is now the shared `createProxy`. The nonce routes are unchanged, but matching is by whole path segment, so `/administrator` no longer gets a nonce. The matcher's file-extension dot is now escaped.
 - The products filter is a radiogroup (`role="radio"`, `aria-checked`) instead of `aria-pressed` buttons.
 - `merqoNoLocalCopies` is enabled in `eslint.config.mjs`.

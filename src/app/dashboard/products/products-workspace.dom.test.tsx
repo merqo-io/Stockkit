@@ -114,6 +114,17 @@ describe('ProductsWorkspace filter and search', () => {
     );
   });
 
+  it('filters by touch', async () => {
+    const user = userEvent.setup();
+    render(<ProductsWorkspace initialProducts={items} />);
+
+    await user.pointer({ keys: '[TouchA]', target: screen.getByRole('radio', { name: 'Low' }) });
+
+    expect(screen.getByRole('radio', { name: 'Low' }).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Beans' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Rice' })).toBeNull();
+  });
+
   it('searches by name and shows an empty state with no match', async () => {
     const user = userEvent.setup();
     render(<ProductsWorkspace initialProducts={items} />);

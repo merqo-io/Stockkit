@@ -28,7 +28,7 @@ const config = [
     },
   },
   ...merqoEslintPreset({ sonarjsPlugin: sonarjs.configs.recommended.plugins.sonarjs, tsPlugin }),
-  // The supabase, legal-gate and rate-limit modules bind kit config (schema, cookie domain, RPC store) over the shared code; button and tabs are Kb1-kept primitives.
+  // The allow list covers files that import the kit wrappers (supabase, legal-gate, rate-limit, dashboard-tour) and the kept button and tabs primitives, which merqoNoLocalCopies would otherwise flag.
   ...merqoNoLocalCopies({
     allow: [
       'supabase-client',
