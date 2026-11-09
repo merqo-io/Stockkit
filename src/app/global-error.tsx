@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax -- renders without the app stylesheet, so colours stay literal */
 'use client';
 
-import { BRAND_PALE, BRAND_STEEL } from '@/lib/brand-icon';
+import { BRAND_PALE, BRAND_STEEL } from '@/lib/brand';
 
 // Replaces the root layout when it throws, so it ships its own <html> and inline styles.
 export default function GlobalError({

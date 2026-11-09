@@ -3,7 +3,7 @@
 Site chrome shared across routes: `SiteFooter` (public marketing footer —
 the dashboard has its own `DashboardNav` from `@merqo/ui`, and the public
 nav lives in `src/components/landing/nav.tsx`, not here), plus
-`Providers`/`ThemeProvider`.
+nothing else: `Providers` (theme provider and toaster) comes from `@merqo/ui`.
 
 `SiteFooter` is a single-row, bordered footer (`border-t`, transparent
 background) matching qkit's landing footer exactly — a lowercase `stockkit` wordmark
@@ -16,9 +16,8 @@ dashboard call since a signed-in vendor there is, by definition, already
 signed in; the legal links show on both. `site-footer.dom.test.tsx` covers
 both link sets rendering with the right `href`s.
 
-`Providers` mounts `<Toaster position="top-right" richColors />` —
-`richColors` matches qkit's and loopkit's config so error/success toasts
-get their red/green color-coded backgrounds. It doesn't wrap any
+`@merqo/ui`'s `Providers` mounts the theme provider and the toaster
+(rich colours for error/success toasts); there is no local copy. It doesn't wrap any
 client-side data-fetching context (no `QueryClientProvider`) — this app
 uses Server Components + Server Actions throughout, per AGENTS.md, so
 there's nothing for one to do.

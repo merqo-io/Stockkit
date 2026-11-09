@@ -1,9 +1,9 @@
 'use server';
 
-import type { ActionResult } from '@/lib/action-result';
 import { submitSupportMessage } from '@/lib/merqo-support';
 import { supportMessageSchema } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
+import type { ActionResult } from '@merqo/ui/kit-api';
 
 /**
  * Submit a vendor's Get-help message into the shared cross-kit

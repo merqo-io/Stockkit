@@ -1,28 +1,23 @@
-import { createHash } from 'node:crypto';
+import {
+  digest,
+  rateLimitCheck,
+  clientIp as sharedClientIp,
+  type RateLimitStore,
+} from '@merqo/ui/kit-api';
 
 import { createServiceClient } from '@/lib/supabase/server';
 
+export { digest };
+
 export const RATE_LIMIT_MESSAGE = 'Too many tries. Please wait and try again.';
 
-/**
- * Client IP from headers the platform sets itself. Vercel overwrites
- * x-vercel-forwarded-for; the proxy appends the real peer as the LAST
- * x-forwarded-for hop, while the first hop is whatever the client sent, so it
- * is never read.
- */
-export function clientIp(hdrs: Headers): string | null {
-  const vercel = hdrs.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
-  if (vercel) return vercel;
-  const real = hdrs.get('x-real-ip')?.trim();
-  if (real) return real;
-  const hops = hdrs.get('x-forwarded-for')?.split(',') ?? [];
-  const last = hops[hops.length - 1]?.trim();
-  return last || null;
-}
+// Vercel overwrites x-vercel-forwarded-for; for x-forwarded-for the shared
+// helper reads the last hop, the one the proxy appended, never the first,
+// which is whatever the client sent.
+const TRUSTED_IP_HEADERS = ['x-vercel-forwarded-for', 'x-real-ip', 'x-forwarded-for'];
 
-/** Counter keys carry digests only, so the table holds no raw IPs or ids. */
-export function digest(value: string): string {
-  return createHash('sha256').update(value).digest('hex');
+export function clientIp(hdrs: Headers): string | null {
+  return sharedClientIp(hdrs, { trustedHeaders: TRUSTED_IP_HEADERS });
 }
 
 export type LimitSpec = { key: string; limit: number; windowSeconds: number };
@@ -33,26 +28,27 @@ export type LimitSpec = { key: string; limit: number; windowSeconds: number };
  */
 export type LimitOutcome = 'allowed' | 'limited' | 'error';
 
-export async function checkLimits(specs: LimitSpec[]): Promise<LimitOutcome> {
-  try {
+// Counter keys carry digests only, so the table holds no raw IPs or ids.
+const store: RateLimitStore = {
+  async hit(key, limit, windowSeconds) {
     const supabase = await createServiceClient();
-    for (const spec of specs) {
-      const { data, error } = await supabase.rpc('check_rate_limit', {
-        p_key: spec.key,
-        p_limit: spec.limit,
-        p_window_seconds: spec.windowSeconds,
-      });
-      if (error) {
-        console.error('rate limiter error', error.message);
-        return 'error';
-      }
-      if (data !== true) return 'limited';
-    }
-    return 'allowed';
-  } catch (err) {
-    console.error('rate limiter threw', err instanceof Error ? err.message : 'unknown');
-    return 'error';
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_key: key,
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
+    if (error) throw new Error(error.message);
+    return data === true;
+  },
+};
+
+export async function checkLimits(specs: LimitSpec[]): Promise<LimitOutcome> {
+  for (const spec of specs) {
+    const verdict = await rateLimitCheck(store, spec.key, spec.limit, spec.windowSeconds);
+    if (verdict === 'error') return 'error';
+    if (verdict === 'limited') return 'limited';
   }
+  return 'allowed';
 }
 
 const HOUR = 3600;

@@ -1,9 +1,9 @@
 'use server';
-import type { ActionResult } from '@/lib/action-result';
 import { submitVendorFeedback } from '@/lib/merqo-vendor-feedback';
 import { checkLimits, LIMITS, RATE_LIMIT_MESSAGE, userAndIpSpecs } from '@/lib/rate-limit';
 import { feedbackSchema, type FeedbackInput } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
+import type { ActionResult } from '@merqo/ui/kit-api';
 
 /**
  * Submit vendor NPS feedback for stockkit into the shared cross-kit

@@ -100,18 +100,29 @@ describe('ProductsWorkspace filter and search', () => {
     const user = userEvent.setup();
     render(<ProductsWorkspace initialProducts={items} />);
 
-    await user.click(screen.getByRole('button', { name: 'Low' }));
+    await user.click(screen.getByRole('radio', { name: 'Low' }));
     expect(screen.getByRole('button', { name: 'Beans' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Rice' })).toBeNull();
 
-    await user.click(screen.getByRole('button', { name: 'Out' }));
+    await user.click(screen.getByRole('radio', { name: 'Out' }));
     expect(screen.getByRole('button', { name: 'Salt' })).toBeTruthy();
 
-    await user.click(screen.getByRole('button', { name: 'Archived' }));
+    await user.click(screen.getByRole('radio', { name: 'Archived' }));
     expect(screen.getByRole('button', { name: 'Old tin' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Archived' }).getAttribute('aria-pressed')).toBe(
+    expect(screen.getByRole('radio', { name: 'Archived' }).getAttribute('aria-checked')).toBe(
       'true'
     );
+  });
+
+  it('filters by touch', async () => {
+    const user = userEvent.setup();
+    render(<ProductsWorkspace initialProducts={items} />);
+
+    await user.pointer({ keys: '[TouchA]', target: screen.getByRole('radio', { name: 'Low' }) });
+
+    expect(screen.getByRole('radio', { name: 'Low' }).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Beans' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Rice' })).toBeNull();
   });
 
   it('searches by name and shows an empty state with no match', async () => {

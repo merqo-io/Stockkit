@@ -1,6 +1,5 @@
 'use server';
 
-import type { ActionResult } from '@/lib/action-result';
 import { patchVendorProfile } from '@/lib/merqo-vendor-profile';
 import { checkLimits, LIMITS, RATE_LIMIT_MESSAGE, userAndIpSpecs } from '@/lib/rate-limit';
 import {
@@ -10,6 +9,7 @@ import {
   type SocialLinksInput,
 } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
+import type { ActionResult } from '@merqo/ui/kit-api';
 import { revalidatePath } from 'next/cache';
 
 /**

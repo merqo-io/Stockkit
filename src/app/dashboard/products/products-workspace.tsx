@@ -3,11 +3,10 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { SegmentedControl } from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
-import { PageHeader } from '@merqo/ui';
+import { PageHeader, SegmentedControl } from '@merqo/ui';
 import {
   Dialog,
   DialogContent,

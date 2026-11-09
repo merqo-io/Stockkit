@@ -1,6 +1,5 @@
 'use server';
 
-import type { ActionResult } from '@/lib/action-result';
 import {
   checkLimits,
   clientIp,
@@ -10,6 +9,7 @@ import {
 } from '@/lib/rate-limit';
 import { vendorSchema } from '@/lib/schemas';
 import { createServerClient } from '@/lib/supabase/server';
+import type { ActionResult } from '@merqo/ui/kit-api';
 import { headers } from 'next/headers';
 
 /**

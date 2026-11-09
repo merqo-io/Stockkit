@@ -5,7 +5,7 @@ hand-edit); `widgets/` are small app-wide bits (brand mark, theme toggle,
 link list); `layout/` is site chrome; `landing/` is the marketing page's
 section components.
 
-`segmented-control.tsx` — `SegmentedControl`, a labelled group of `aria-pressed` pills for view switches (the products filter); a local stand-in for qkit's pill group until `@merqo/ui` exports one.
+The products filter uses `@merqo/ui`'s `SegmentedControl` (a radiogroup of pills); there is no local copy.
 
 `section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the
 per-field-group shell: icon chip + eyebrow + title + description),

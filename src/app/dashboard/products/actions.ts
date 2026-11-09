@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-import type { ActionResult } from '@/lib/action-result';
 import { recordAudit } from '@/lib/audit';
 import { STOCK_MOVEMENT_COLUMNS } from '@/lib/columns';
 import { ENTITLEMENTS, type Entitlement } from '@/lib/plan';
@@ -16,6 +15,7 @@ import {
 import { createServerClient } from '@/lib/supabase/server';
 import type { Product, StockMovement } from '@/lib/types';
 import { readVendorTier } from '@/lib/vendor-entitlement';
+import type { ActionResult } from '@merqo/ui/kit-api';
 
 type SaveProductResult = ActionResult<{ productId: string }>;
 

@@ -1,4 +1,4 @@
-import { merqoEslintPreset } from '@merqo/ui/eslint';
+import { merqoEslintPreset, merqoNoLocalCopies } from '@merqo/ui/eslint';
 import coreWebVitals from 'eslint-config-next/core-web-vitals';
 import typescript from 'eslint-config-next/typescript';
 import sonarjs from 'eslint-plugin-sonarjs';
@@ -28,6 +28,19 @@ const config = [
     },
   },
   ...merqoEslintPreset({ sonarjsPlugin: sonarjs.configs.recommended.plugins.sonarjs, tsPlugin }),
+  // The allow list covers files that import the kit wrappers (supabase, legal-gate, rate-limit, dashboard-tour) and the kept button and tabs primitives, which merqoNoLocalCopies would otherwise flag.
+  ...merqoNoLocalCopies({
+    allow: [
+      'supabase-client',
+      'supabase-server',
+      'supabase-middleware',
+      'legal-gate',
+      'rate-limit',
+      'dashboard-tour',
+      'components/ui/button',
+      'components/ui/tabs',
+    ],
+  }),
   {
     ignores: [
       '.next/**',
