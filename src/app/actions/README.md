@@ -19,4 +19,4 @@ Each file is a `"use server"` module imported directly by the client component t
 
 [app](../README.md)
 
-Signup, feedback and profile saves are rate limited through `src/lib/rate-limit.ts` and fail closed.
+Signup, feedback and profile saves are rate limited through `src/lib/rate-limit.ts` (a stockkit store over `@merqo/ui/kit-api`'s `rateLimitCheck`) and fail closed. `ActionResult` comes from `@merqo/ui/kit-api`.

@@ -33,8 +33,8 @@ Its `metadata.title` is a default ("stockkit | Inventory Tracking") plus a
 `%s | stockkit` template for per-page titles; the default follows every sibling
 kit's "Name | Tagline" browser-tab shape.
 
-`layout.tsx` also wraps the app in next-themes' `ThemeProvider`
-(`defaultTheme="system"` + `enableSystem`), so the `.dark` palette in
+`layout.tsx` also wraps the app in `@merqo/ui`'s `Providers` (next-themes
+with `defaultTheme="system"` + `enableSystem`, plus the toaster), so the `.dark` palette in
 `globals.css` applies from the OS/browser preference on first visit; the
 manual override now lives in `@merqo/ui`'s `AccountMenu` (v0.18.0+,
 signed-in only — theme switching is a signed-in preference, not a

@@ -123,6 +123,6 @@ collapsed theme submenu.
 
 Dashboard tests assert session and preference ownership in addition to navigation rendering. The tour stamp is cosmetic and best-effort: read or write failures must not block dashboard navigation. Product writes remain session-scoped server actions and constrained database functions.
 
-The layout mounts the server tour adapter, which supplies trusted constant example markup using the stock indicator tokens. The client tour retains lazy step construction and seen-state persistence.
+The layout renders `DashboardTour` with `renderTourExample()` markup (trusted constant example markup using the stock indicator tokens) as `exampleIndicator`. The client tour retains lazy step construction and seen-state persistence.
 
 The layout owns the page's vertical padding (`px-5 py-7`); pages add none of their own. Page titles come from the root `%s | stockkit` template. The nav shows only two links and no vendor subtitle.
