@@ -18,6 +18,8 @@
 
 ### Changed
 
+- Bumped `@merqo/ui` to 0.44.1: the kit-auth per-slug bucket now counts failures only, so a valid key is never blocked.
+
 - Replaced the remaining kit-local copies of `@merqo/ui` pieces with the shared exports: `Providers`, `SegmentedControl`, `DashboardTour` server wiring, `ActionResult`, the brand icon generator, theme props, `security-headers`, `cookie-options` and `dashboard-tour.server`. The Supabase clients, session refresh, legal gate and rate limiter are thin wrappers over `@merqo/ui/supabase`, `@merqo/ui/auth` and `@merqo/ui/kit-api`.
 - `proxy.ts` is now the shared `createProxy`. The nonce routes are unchanged, but matching is by whole path segment, so `/administrator` no longer gets a nonce. The matcher's file-extension dot is now escaped.
 - The products filter is a radiogroup (`role="radio"`, `aria-checked`) instead of `aria-pressed` buttons.
