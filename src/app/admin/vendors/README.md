@@ -16,3 +16,5 @@ product count, and a per-row Free/Pro toggle, sorted most-urgent first.
 [admin](../README.md)
 
 The "Joined" column renders in `font-mono`, matching the ledger convention for numeric cells.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

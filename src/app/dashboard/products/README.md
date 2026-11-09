@@ -8,7 +8,7 @@ product's movement history.
 - `page.tsx` — server fetch of the vendor's products, renders
   `ProductsWorkspace`.
 - The Archive button on the Edit tab opens @merqo/ui's `ConfirmDialog`; it closes once the archive call settles (the handler toasts its own failures).
-- The "All" filter lists active products only; archived products appear under "Archived".
+- The "All" filter lists active products only; archived products appear under "Archived". The filter is `@merqo/ui`'s `SegmentedControl`, a radiogroup, so tests query `role="radio"` and `aria-checked`.
 - `page.tsx` also reads the vendor tier for the Free "N of 20 active" meter and the optional `?product=<id>` preselect (linked from the overview "Needs attention" rows).
 - `products-workspace.tsx` — client state/shell (PageHeader, All/Low/Out/Archived filter, name search, one Add button, one list for both breakpoints): holds the product list,
   selected product, and which panel (`ProductForm`/`StockLogForm`/
@@ -112,3 +112,5 @@ read errors display an alert and retry action instead of an empty ledger.
 Product and stock-movement reads list their columns (`PRODUCT_COLUMNS`, `STOCK_MOVEMENT_COLUMNS`).
 
 The page sets `metadata.title` "Products" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

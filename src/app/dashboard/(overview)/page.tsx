@@ -6,6 +6,12 @@ import { redirect } from 'next/navigation';
 
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
 import { Button } from '@/components/ui/button';
+import { PRODUCT_COLUMNS } from '@/lib/columns';
+import { PAGE_ROUTES } from '@/lib/constants/routes';
+import { formatPrice } from '@/lib/schemas';
+import { stockStatusFor } from '@/lib/stock';
+import { createServerClient } from '@/lib/supabase/server';
+import { LEDGER_LG_CLASS } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -13,13 +19,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { PRODUCT_COLUMNS } from '@/lib/columns';
-import { PAGE_ROUTES } from '@/lib/constants/routes';
-import { formatPrice } from '@/lib/schemas';
-import { stockStatusFor } from '@/lib/stock';
-import { createServerClient } from '@/lib/supabase/server';
-import { cn, LEDGER_LG_CLASS } from '@/lib/utils';
+  cn,
+} from '@merqo/ui/primitives';
 
 export const metadata: Metadata = { title: 'Overview' };
 

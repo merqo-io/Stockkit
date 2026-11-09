@@ -3,19 +3,18 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { SegmentedControl } from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
+import { productStatusFor } from '@/lib/stock';
+import type { Product } from '@/lib/types';
+import { PageHeader, SegmentedControl } from '@merqo/ui';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { productStatusFor } from '@/lib/stock';
-import type { Product } from '@/lib/types';
-import { PageHeader } from '@merqo/ui';
+  Input,
+} from '@merqo/ui/primitives';
 import { ProductDetail } from './product-detail';
 import { ProductForm } from './product-form';
 import { ProductRow } from './product-row';

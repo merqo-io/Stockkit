@@ -3,7 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ActionResult } from '@/lib/action-result';
+import type { ActionResult } from '@merqo/ui/kit-api';
 
 const { saveProductMock, archiveProductMock } = vi.hoisted(() => ({
   saveProductMock: vi.fn(async (): Promise<ActionResult<{ productId: string }>> => ({

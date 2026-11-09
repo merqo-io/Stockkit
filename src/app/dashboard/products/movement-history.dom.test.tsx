@@ -2,8 +2,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ActionResult } from '@/lib/action-result';
 import type { StockMovement } from '@/lib/types';
+import type { ActionResult } from '@merqo/ui/kit-api';
 
 const { getProductMovementsMock } = vi.hoisted(() => ({
   getProductMovementsMock: vi.fn(

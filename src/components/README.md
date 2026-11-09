@@ -5,7 +5,7 @@ hand-edit); `widgets/` are small app-wide bits (brand mark, theme toggle,
 link list); `layout/` is site chrome; `landing/` is the marketing page's
 section components.
 
-`segmented-control.tsx` — `SegmentedControl`, a labelled group of `aria-pressed` pills for view switches (the products filter); a local stand-in for qkit's pill group until `@merqo/ui` exports one.
+The products filter uses `@merqo/ui`'s `SegmentedControl` (a radiogroup of pills); there is no local copy.
 
 `section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the
 per-field-group shell: icon chip + eyebrow + title + description),
@@ -67,3 +67,5 @@ files' own doc comments for the adapter wiring.
 `password-fields.tsx` provides the controlled password pair for profile and recovery. Persistence and recovery-session checks remain with their callers; validation feedback is linked to the confirmation field.
 
 The server dashboard-tour adapter renders the canonical stock example once and passes its constant HTML to the client controller; react-dom/server is absent from the controller dependency graph.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

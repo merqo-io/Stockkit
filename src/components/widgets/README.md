@@ -6,3 +6,5 @@ Small app-wide bits used by more than one feature area: `BrandText` (the
 No kit-local theme toggle lives here anymore — light/dark/system
 switching is now a shared control inside `@merqo/ui`'s `AccountMenu`
 (v0.18.0+), reachable from the signed-in dashboard.
+
+UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.

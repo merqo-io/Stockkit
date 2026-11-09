@@ -12,7 +12,6 @@ src/lib/supabase/                — browser / server / service clients + middle
 src/lib/types.ts                 — DB types (hand-maintained mirror of supabase/migrations)
 src/lib/schemas.ts                — Zod schemas for forms + actions, money-cents helpers
 src/lib/stock.ts                  — shared stock-status (ok/low/out) classification
-src/lib/action-result.ts          — ActionResult<T> server-action return type
 src/components/ui/                — shadcn primitives (CLI-managed style; do not hand-edit)
 supabase/migrations/              — SQL schema + RLS + record_stock_movement/sync_vendor_profile
 ```

@@ -75,8 +75,7 @@ and the statement-level cap trigger that share it can't drift apart;
 `stock.ts` — stock-status (ok/low/out) and `productStatusFor` (adds `archived` for inactive products)
 classification (`stockStatusFor`, boundary-tested in `stock.test.ts`:
 `onHand <= 0` is out, `onHand <= lowStockThreshold` is low, otherwise ok);
-`action-result.ts` — `ActionResult<T>` server-action
-return type; `merqo-vendor-feedback.ts` — `submitVendorFeedback`:
+`ActionResult<T>` comes from `@merqo/ui/kit-api`; `merqo-vendor-feedback.ts` — `submitVendorFeedback`:
 hand-written mirror of merqo's cross-schema `submit_vendor_feedback` RPC
 contract, generic over the caller's own `Database`/schema; `merqo-support.ts`
 — `submitSupportMessage`: hand-written mirror of merqo's cross-schema
@@ -106,7 +105,7 @@ clients, plus `middleware.ts`'s `updateSession`: session refresh/redirect
 for both `/dashboard` and `/admin` (see `middleware.test.ts`) — everything
 else (landing page, login) is public and skips the auth round-trip.
 
-`brand-icon.tsx` — the `brandIcon(size)` generator consumed by
+`brand.ts` — `stockkitIcon(size)`, stockkit's monogram and colours over `@merqo/ui`'s `brandIcon`, consumed by
 `src/app/icon.tsx`/`apple-icon.tsx`, per
 `docs/business/2026-07-21-brand-icon-family-standard.md`'s shared
 formula. `BRAND_STEEL`/`BRAND_PALE` are concrete-hex approximations of
@@ -174,7 +173,7 @@ retain failure reporting; cleanup failure cannot reverse completed work.
 
 `stock.ts` also owns typed stock-movement labels, including opening balances and unknown-reason display fallback.
 
-`security-headers.ts` holds the nonce route list and CSP source lists (including the Vercel toolbar origin outside production); `theme-props.ts` is shared by the root layout and the CSP; `columns.ts` lists the columns each table read selects; `admin.ts` also requires `aal2` in `requireAdmin()`.
+`nonce-prefixes.ts` lists the routes that get a CSP nonce (the shared `createProxy` in `proxy.ts` builds the policy); `columns.ts` lists the columns each table read selects; `admin.ts` also requires `aal2` in `requireAdmin()`.
 
 `rate-limit.ts` — `clientIp` (trusted headers only, never the first `x-forwarded-for` hop), `checkLimits` (calls `stockkit.check_rate_limit`, migration 0024; returns allowed, limited or error so callers pick fail-open or fail-closed) and `userAndIpSpecs`. `merqo-auth.ts` also exports `guardMerqoRoute` (rate limit then bearer, with 401 logging).
 

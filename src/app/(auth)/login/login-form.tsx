@@ -8,8 +8,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { BrandText } from '@/components/widgets';
 import { navigatingAway, useAsyncAction } from '@/hooks';
 import { authErrorMessage } from '@/lib/auth-error-message';
@@ -18,6 +16,7 @@ import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
 import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import { ElevatedCard } from '@merqo/ui';
+import { Input, Label } from '@merqo/ui/primitives';
 
 import { GoogleMark } from '@merqo/ui';
 import { completeSignup } from './actions';

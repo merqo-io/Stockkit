@@ -3,8 +3,8 @@
 import { DataTable, type DataTableColumn } from '@merqo/ui';
 
 import { VendorStatusBadge } from '@/app/admin/vendors/vendor-status-badge';
-import { Badge } from '@/components/ui/badge';
 import type { VendorRow } from '@/lib/admin-data';
+import { Badge } from '@merqo/ui/primitives';
 
 const columns: DataTableColumn<VendorRow>[] = [
   { header: 'Vendor', cell: (v) => v.name, className: 'font-medium' },

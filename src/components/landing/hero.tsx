@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
 import { LedgerCardPreview } from '@/components/landing/ledger-card-preview';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
+import { Badge } from '@merqo/ui/primitives';
 
 interface HeroProps {
   authed?: boolean;

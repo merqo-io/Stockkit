@@ -25,6 +25,9 @@ export default defineConfig({
     // import of it under full-suite worker contention can exceed vitest's 5s
     // default (seen intermittently on dashboard/layout.test.tsx).
     testTimeout: 30000,
+    // @merqo/ui's next and auth entries import extensionless `next/server`,
+    // which Node's ESM loader rejects; inlining lets Vite resolve it.
+    server: { deps: { inline: [/@merqo\/ui/] } },
     setupFiles: ['./test/setup.ts'],
     include: ['test/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}', 'eslint.config.test.ts'],
     coverage: {

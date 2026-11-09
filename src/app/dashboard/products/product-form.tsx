@@ -14,13 +14,12 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAsyncAction } from '@/hooks';
 import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { cn, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
+import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
+import { cn, Input, Label } from '@merqo/ui/primitives';
 import { archiveProduct, saveProduct } from './actions';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];

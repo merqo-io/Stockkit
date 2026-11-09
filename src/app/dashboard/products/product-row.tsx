@@ -3,7 +3,8 @@
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
-import { cn, LEDGER_SM_CLASS } from '@/lib/utils';
+import { LEDGER_SM_CLASS } from '@/lib/utils';
+import { cn } from '@merqo/ui/primitives';
 
 interface Props {
   product: Product;

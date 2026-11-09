@@ -1,15 +1,15 @@
 import type { CSSProperties, ReactElement } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { BRAND_PALE, BRAND_STEEL, brandIcon } from './brand-icon';
+import { BRAND_PALE, BRAND_STEEL, stockkitIcon } from './brand';
 
 function props(element: ReactElement) {
   return element.props as { style: CSSProperties; children: string };
 }
 
-describe('brandIcon', () => {
+describe('stockkitIcon', () => {
   it('renders the S mark with the shared formula and current brand colors', () => {
-    const { style, children } = props(brandIcon(32));
+    const { style, children } = props(stockkitIcon(32));
     expect(children).toBe('S');
     expect(style.width).toBe(32);
     expect(style.height).toBe(32);
@@ -21,7 +21,7 @@ describe('brandIcon', () => {
   });
 
   it('scales fontSize and borderRadius with size', () => {
-    const { style } = props(brandIcon(180));
+    const { style } = props(stockkitIcon(180));
     expect(style.fontSize).toBeCloseTo(180 * 0.62);
     expect(style.borderRadius).toBeCloseTo(180 * 0.22);
   });
