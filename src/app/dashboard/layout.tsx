@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { DashboardTourServer } from '@/components/dashboard-tour.server';
+import { DashboardTour } from '@/components/dashboard-tour';
 import { SiteFooter } from '@/components/layout';
+import { renderTourExample } from '@/components/tour-example';
 import { ensureVendorRow } from '@/lib/ensure-vendor-row';
 import { requireCurrentLegalAcceptance } from '@/lib/legal-gate';
 import { createServerClient } from '@/lib/supabase/server';
@@ -60,7 +61,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       </div>
       <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-7">{children}</main>
       <SiteFooter />
-      <DashboardTourServer seen={!!vendor?.tour_seen_at} />
+      <DashboardTour seen={!!vendor?.tour_seen_at} exampleIndicator={renderTourExample()} />
     </div>
   );
 }

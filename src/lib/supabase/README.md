@@ -7,16 +7,15 @@ middleware helper that `src/proxy.ts` calls on every request.
 
 ## Contents
 
-- `client.ts` — `createClient()`: browser Supabase client
-  (`createBrowserClient` from `@supabase/ssr`).
+- `client.ts` — `createClient()`: wrapper binding the `stockkit` schema and
+  cookie domain onto `@merqo/ui`'s browser client.
 - `server.ts` — `createServerClient()`/`createServiceClient()`: server-side
   clients for Server Components, Server Actions, and route handlers; the
   service-role client bypasses RLS.
-- `cookie-options.ts` — `authCookieOptions()`: passes
-  `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io` in staging/prod, blank locally)
-  as `cookieOptions.domain` to the browser, vendor server and middleware
-  clients, so auth cookies share a domain with merqo and loopkit. Unset keeps
-  host-only cookies. The service-role client never touches cookies.
+- The wrappers pass `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io` in
+  staging/prod, blank locally) to the shared clients, so auth cookies share a
+  domain with merqo and loopkit. Unset keeps host-only cookies. The
+  service-role client never touches cookies.
 - `env.ts` — fail-fast validation of `NEXT_PUBLIC_SUPABASE_*` env vars.
 - `middleware.ts` — `updateSession()`: refreshes the Supabase session cookie
   and redirects unauthenticated requests. `isProtectedPath()` matches both

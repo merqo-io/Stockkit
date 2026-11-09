@@ -21,7 +21,7 @@ no kit-local toggle on the public landing page anymore. Brand theme is
 "Reefer Frost" (chilled cyan-teal
 primary, frost-grey paper, crate-stamp crimson on destructive/attention
 actions) as of 2026-08-19 — see `globals.css`'s own header comment;
-`src/lib/brand-icon.tsx`'s ImageResponse-generated favicon/apple-touch-icon
+`src/lib/brand.ts`'s ImageResponse-generated favicon/apple-touch-icon
 carries the same rebrand. `admin_audit`'s coverage now extends past `/admin` (a vendor's own
 product archiving is recorded too, via a shared `src/lib/audit.ts`) and
 both `admin_audit` and `stock_movements` are append-only at the grant
@@ -341,13 +341,13 @@ transaction). See `AGENTS.md` for full conventions.
 - `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local) — the lifted-shadow card treatment used on the public auth pages and the landing page's `HowItWorks`/`Benefits` cards (not qkit's perforated "Ticket").
 - `src/hooks/use-async-action.ts` — the `pending`-flag-that-always-resets hook shared by every form/action in the app.
 - `src/lib/supabase/` — the three Supabase client factories (`client.ts` browser, `server.ts` server + service-role, `middleware.ts` session refresh) plus `env.ts` (fail-fast public env validation).
-- `src/lib/{types,schemas,action-result,stock}.ts` — the `Database` type mirror of the SQL schema, Zod validation schemas + money-cents helpers, the `ActionResult<T>` server-action return type, and the shared stock-status (`ok`/`low`/`out`, plus `archived` for inactive products in the products workspace) classification used by both the overview stats and the products workspace.
-- `src/lib/brand-icon.tsx` + `src/app/icon.tsx` + `src/app/apple-icon.tsx` — the generated favicon/Apple-touch-icon (a `next/og` `ImageResponse`, no image assets), per `docs/business/2026-07-21-brand-icon-family-standard.md`'s shared cross-kit formula.
+- `src/lib/{types,schemas,stock}.ts` — the `Database` type mirror of the SQL schema, Zod validation schemas + money-cents helpers, and the shared stock-status (`ok`/`low`/`out`, plus `archived` for inactive products in the products workspace) classification used by both the overview stats and the products workspace.
+- `src/lib/brand.ts` + `src/app/icon.tsx` + `src/app/apple-icon.tsx` — the generated favicon/Apple-touch-icon (stockkit's monogram and colours over `@merqo/ui`'s `brandIcon`, no image assets), per `docs/business/2026-07-21-brand-icon-family-standard.md`'s shared cross-kit formula.
 - `src/components/section.tsx` — thin adapter over `@merqo/ui`'s `Section` (icon chip + eyebrow + title + description), used by the profile page's five sections; injects stockkit's own `ElevatedCard` shell via `Section`'s `wrapper` render-prop.
 - `@merqo/ui`'s `ImageUploader` + `src/lib/image-upload-adapter.ts` — the profile page's avatar uploader (client-side resize to WebP, upload to the `vendor-avatars` Storage bucket via the local `uploadVendorAvatar` adapter).
 - `@merqo/ui`'s `SocialLinksFields` — the shared social-link field list (real brand icons via `@icons-pack/react-simple-icons`) and the labeled-icon input group built from it.
 - `src/components/layout/site-footer.tsx` — the mandatory footer (wordmark + tagline + `© <year> stockkit · a Merqo kit` credit line) per `docs/business/2026-07-21-landing-page-standard.md` §1.5, shared by the public and dashboard layouts.
-- `src/components/layout/providers.tsx` — mounts `sonner`'s `Toaster`; no `QueryClientProvider` (matching qkit's/loopkit's `providers.tsx` — this app uses Server Components + Server Actions throughout, per AGENTS.md, so there's no client-side query cache to wire up).
+- `@merqo/ui`'s `Providers` — mounts the theme provider and `sonner`'s `Toaster` in the root layout; no `QueryClientProvider` (this app uses Server Components + Server Actions throughout, per AGENTS.md, so there's no client-side query cache to wire up). Kit-local copies of shared pieces are banned by `merqoNoLocalCopies` in `eslint.config.mjs`; the Supabase, legal-gate, rate-limit and tour modules stay as config-binding wrappers over the shared code.
 - `src/proxy.ts` — Next 16's middleware entrypoint; guards `/dashboard` and `/admin` behind a session check.
 - `e2e/` — Playwright public smoke and auth-guard specs (own README).
 - `supabase/` — `config.toml` (Supabase CLI local-dev config) and

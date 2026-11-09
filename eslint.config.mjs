@@ -1,4 +1,4 @@
-import { merqoEslintPreset } from '@merqo/ui/eslint';
+import { merqoEslintPreset, merqoNoLocalCopies } from '@merqo/ui/eslint';
 import coreWebVitals from 'eslint-config-next/core-web-vitals';
 import typescript from 'eslint-config-next/typescript';
 import sonarjs from 'eslint-plugin-sonarjs';
@@ -28,6 +28,19 @@ const config = [
     },
   },
   ...merqoEslintPreset({ sonarjsPlugin: sonarjs.configs.recommended.plugins.sonarjs, tsPlugin }),
+  // The supabase, legal-gate and rate-limit modules bind kit config (schema, cookie domain, RPC store) over the shared code; button and tabs are Kb1-kept primitives.
+  ...merqoNoLocalCopies({
+    allow: [
+      'supabase-client',
+      'supabase-server',
+      'supabase-middleware',
+      'legal-gate',
+      'rate-limit',
+      'dashboard-tour',
+      'components/ui/button',
+      'components/ui/tabs',
+    ],
+  }),
   {
     ignores: [
       '.next/**',

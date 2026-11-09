@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ActionResult } from '@/lib/action-result';
+import type { ActionResult } from '@merqo/ui/kit-api';
 import { DashboardNav } from './dashboard-nav';
 
 // No live Supabase project is configured in this environment (see AGENTS.md);

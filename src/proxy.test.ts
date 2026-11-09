@@ -1,27 +1,15 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { createServerClient } = vi.hoisted(() => ({
-  createServerClient: vi.fn(),
-}));
-vi.mock('@supabase/ssr', () => ({ createServerClient }));
-vi.mock('@/lib/supabase/env', () => ({
-  publicEnv: {
-    supabaseUrl: 'https://example.supabase.co',
-    supabasePublishableKey: 'publishable-key',
-  },
-}));
+const { updateSession } = vi.hoisted(() => ({ updateSession: vi.fn() }));
+vi.mock('@/lib/supabase/middleware', () => ({ updateSession }));
 
-import { proxy } from './proxy';
+import { config, proxy } from './proxy';
 
 beforeEach(() => vi.stubEnv('NODE_ENV', 'production'));
 
 function signedIn() {
-  createServerClient.mockImplementation(() => ({
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }),
-    },
-  }));
+  updateSession.mockImplementation(async (request: NextRequest) => NextResponse.next({ request }));
 }
 
 const csp = (response: Response) => response.headers.get('Content-Security-Policy');
@@ -80,9 +68,9 @@ describe('proxy nonce CSP', () => {
   });
 
   it('still carries the nonce CSP on the login redirect', async () => {
-    createServerClient.mockImplementation(() => ({
-      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
-    }));
+    updateSession.mockImplementation(async (request: NextRequest) =>
+      NextResponse.redirect(new URL('/login', request.url))
+    );
     const response = await proxy(new NextRequest('https://stockkit.merqo.io/admin'));
 
     expect(response.status).toBe(307);
@@ -114,7 +102,9 @@ describe('proxy Supabase origins', () => {
   it('lets the browser reach the configured Supabase project', async () => {
     signedIn();
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'http://127.0.0.1:54321');
-    const response = await proxy(new NextRequest('https://stockkit.merqo.io/'));
+    vi.resetModules();
+    const { proxy: freshProxy } = await import('./proxy');
+    const response = await freshProxy(new NextRequest('https://stockkit.merqo.io/'));
 
     expect(csp(response)).toContain('http://127.0.0.1:54321');
     expect(csp(response)).toContain('ws://127.0.0.1:54321');
@@ -138,5 +128,56 @@ describe('proxy Vercel toolbar', () => {
     const response = await proxy(new NextRequest('https://stockkit.merqo.io/dashboard'));
 
     expect(csp(response)).not.toContain('vercel.live');
+  });
+});
+
+describe('proxy nonce coverage', () => {
+  it.each([
+    '/admin',
+    '/admin/users',
+    '/mfa',
+    '/dashboard',
+    '/dashboard/products',
+    '/auth/callback',
+    '/login',
+    '/reset-password',
+    '/legal/accept',
+  ])('nonces %s', async (path) => {
+    signedIn();
+    const response = await proxy(new NextRequest(`https://stockkit.merqo.io${path}`));
+
+    expect(csp(response)).toContain("'nonce-");
+  });
+
+  it.each(['/', '/about', '/legal/terms', '/legal/privacy', '/administrator'])(
+    'keeps the static policy on %s',
+    async (path) => {
+      signedIn();
+      const response = await proxy(new NextRequest(`https://stockkit.merqo.io${path}`));
+
+      expect(csp(response)).not.toContain('nonce-');
+    }
+  );
+});
+
+describe('proxy matcher', () => {
+  const matcher = new RegExp(`^${config.matcher[0]}$`);
+
+  it('runs on pages and API routes', () => {
+    for (const path of ['/', '/dashboard', '/api/health', '/legal/terms']) {
+      expect(matcher.test(path)).toBe(true);
+    }
+  });
+
+  it('skips Next assets and static images', () => {
+    for (const path of [
+      '/_next/static/a.js',
+      '/_next/image',
+      '/favicon.ico',
+      '/logo.svg',
+      '/a/b.webp',
+    ]) {
+      expect(matcher.test(path)).toBe(false);
+    }
   });
 });
