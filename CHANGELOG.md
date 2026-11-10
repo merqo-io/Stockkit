@@ -6,6 +6,12 @@
 
 - `/mfa` renders the shared `MfaForm` from `@merqo/ui`; the local form is now a thin Supabase adapter. Pasted codes such as "123 456" are reduced to six digits, the field gains a placeholder, the button reads "Verifying" while checking, the field is disabled while pending, non-digits are stripped as typed, the error clears when the field is edited, and a thrown network error shows the setup or wrong-code message instead of going unhandled.
 
+## 0.5.1 - 2026-11-11
+
+### Changed
+
+- Bumped `@merqo/ui` to 0.44.2: the terms, privacy policy, pilot agreement and About text now describe Merqo as a personal software project with charging and incorporation conditional. The terms and privacy version is 2026-11-10, so signed-in vendors are asked to re-accept.
+
 ## 0.5.0 - 2026-11-10
 
 ### Added
