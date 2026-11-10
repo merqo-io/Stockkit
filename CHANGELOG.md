@@ -2,38 +2,7 @@
 
 ## [Unreleased]
 
-### Fixed
-
-- Migration `0006` drops each `vendor-avatars` policy on `storage.objects` before creating it, so a fresh bootstrap of the shared Supabase project no longer fails on merqo's same-named `vendor_avatars_public_read`. Existing environments are unaffected; the policy semantics are unchanged.
-- Sign-in no longer loops back to /login on stockkit.merqo.io: the browser, vendor server and middleware Supabase clients now write auth cookies on `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io`), matching merqo and loopkit, instead of host-only copies whose chunks mixed with theirs. Unset locally, cookies stay host-only.
-- Restored UTF-8 characters (em dashes, ellipses, arrows, bullets) that had been garbled by double encoding in the login and reset-password forms, validation messages and this changelog.
-
-### Removed
-
-- Local shadcn copies `badge`, `card`, `dialog`, `input`, `label`, `select`, `switch` and `textarea` under `src/components/ui/`, plus `cn` from `src/lib/utils`: they now come from `@merqo/ui/primitives` (v0.44.0). Local `button` (flat outline variant) and `tabs` (default/line variants) stay because the shared versions differ visually; `command`, `popover` and `separator` have no shared version.
-
-- Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
-
-- `clsx` and `tailwind-merge`; `cn` comes from `@merqo/ui/primitives`.
-
-### Changed
-
-- Bumped `@merqo/ui` to 0.44.1: the kit-auth per-slug bucket now counts failures only, so a valid key is never blocked.
-
-- Replaced the remaining kit-local copies of `@merqo/ui` pieces with the shared exports: `Providers`, `SegmentedControl`, `DashboardTour` server wiring, `ActionResult`, the brand icon generator, theme props, `security-headers`, `cookie-options` and `dashboard-tour.server`. The Supabase clients, session refresh, legal gate and rate limiter are thin wrappers over `@merqo/ui/supabase`, `@merqo/ui/auth` and `@merqo/ui/kit-api`.
-- `proxy.ts` is now the shared `createProxy`. The nonce routes are unchanged, but matching is by whole path segment, so `/administrator` no longer gets a nonce. The matcher's file-extension dot is now escaped.
-- The products filter is a radiogroup (`role="radio"`, `aria-checked`) instead of `aria-pressed` buttons.
-- `merqoNoLocalCopies` is enabled in `eslint.config.mjs`.
-
-- Re-pinned `@merqo/ui` to v0.44.0 (commit `250a4ed`): new legal text (`LEGAL_VERSIONS` 2026-11-08), so vendors re-accept the terms on next sign-in.
-- `@merqo/ui` v0.39.0 -> v0.42.1. Deletes the local `PageHeader`, `Stat` and `components/ui/alert-dialog.tsx` in favour of the shared `PageHeader`, `StatCard` and `ConfirmDialog`. Visual differences: admin overview stat cards now use the shared elevated card shell (rounded corners and shadow instead of a flat bordered tile); `PageHeader` renders a `<header>` with its own bottom margin (call sites zero or override it so page spacing is unchanged); the archive confirmation stays open and shows `Archiving...` on the button until the archive call settles, instead of closing on click.
-
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
-- Product detail: Log stock, Edit and History are tabs on desktop as well as mobile. The product form drops the Active switch (Archive covers it) and shows field errors inline, the stock form labels Quantity, shows inline errors and a "Log restock of 1 kg" submit with "Restock logged" toasts, history reads "No stock changes yet", Free history shows "Free plan keeps the last 10 changes. Pro keeps full history." with a Plan page link, the direction dot is neutral, archived products get a Restore product button on the Edit tab (still capped on Free), and "Download CSV" is a lock linking to the Plan page on Free. Product-limit and generic error copy now says what to do next.
-- Admin: a "Back to dashboard" link in the admin nav, pages use `PageHeader` with consistent spacing, stat tiles and panels are flat bordered surfaces, timestamps are monospace, and missing values read "None" instead of an em dash.
-- Release flow is now `feat/*`|`fix/*` -> `staging` -> `main`: PRs merge into `staging`, which deploys to `stockkit-staging.merqo.io` through Vercel's git integration, and `staging` is promoted to `main` with a merge commit. `vercel.json` enables git deploys for `staging` alongside `main`, `.github/workflows/ci.yml` also runs on pushes to `staging`, and `.github/workflows/staging-sync.yml` only fast-forwards `staging` onto `main` (the deploy-hook step and the `VERCEL_STAGING_DEPLOY_HOOK` secret are no longer used).
-- Profile page: uses `PageHeader` (eyebrow "Your account") without a nested `<main>` or double gutter, sections are flat bordered cards, the field is called "Business name" everywhere, saves read "Save name" / "Save links" with matching accessible names and only the business-name save is filled, and failure toasts say which save failed.
-- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
+## 0.5.0 - 2026-11-10
 
 ### Added
 
@@ -41,20 +10,44 @@
 - `/legal/accept` has a "Sign out" exit and a "Tick the box to continue." hint on the disabled button; the plan page has a "Request Pro" button (Free only) that sends a support message, and both pages use the new local `PageHeader`.
 - `/dashboard/plan` renders merqo's shared `PricingLadder` (All-Access highlighted, no Event Pass) from the public `GET /api/plans` catalog via `@merqo/ui` v0.39.0; stockkit stores no price. If merqo is unreachable the page shows the current plan and a calm "Prices are unavailable right now" note.
 - `POST /api/merqo/entitlement` receives merqo's entitlement push into `stockkit.vendor_entitlements` (migration `0025`). The plan gate, `can_create_product` and the plan shown to merqo now read that cache; a paid row lapses to Free once `valid_until` passes, with no push. A stale `issued_at` is a no-op. Apply 0025 to 0027 by hand (staging, then prod) before deploying.
+- Loading skeletons (`role="status"`) for `/admin` (covers overview, vendors and activity) and `/mfa`, matching the dashboard's.
+- `knip.json` so `pnpm dlx knip@6.44.2` has the right entry points; findings and the sweep are recorded in `docs/meta/2026-10-24-fresh-eyes-sweep.md`.
 
 ### Changed
 
+- Bumped `@merqo/ui` to 0.44.1: the kit-auth per-slug bucket now counts failures only, so a valid key is never blocked.
+- Replaced the remaining kit-local copies of `@merqo/ui` pieces with the shared exports: `Providers`, `SegmentedControl`, `DashboardTour` server wiring, `ActionResult`, the brand icon generator, theme props, `security-headers`, `cookie-options` and `dashboard-tour.server`. The Supabase clients, session refresh, legal gate and rate limiter are thin wrappers over `@merqo/ui/supabase`, `@merqo/ui/auth` and `@merqo/ui/kit-api`.
+- `proxy.ts` is now the shared `createProxy`. The nonce routes are unchanged, but matching is by whole path segment, so `/administrator` no longer gets a nonce. The matcher's file-extension dot is now escaped.
+- The products filter is a radiogroup (`role="radio"`, `aria-checked`) instead of `aria-pressed` buttons.
+- `merqoNoLocalCopies` is enabled in `eslint.config.mjs`.
+- Re-pinned `@merqo/ui` to v0.44.0 (commit `250a4ed`): new legal text (`LEGAL_VERSIONS` 2026-11-08), so vendors re-accept the terms on next sign-in.
+- `@merqo/ui` v0.39.0 -> v0.42.1. Deletes the local `PageHeader`, `Stat` and `components/ui/alert-dialog.tsx` in favour of the shared `PageHeader`, `StatCard` and `ConfirmDialog`. Visual differences: admin overview stat cards now use the shared elevated card shell (rounded corners and shadow instead of a flat bordered tile); `PageHeader` renders a `<header>` with its own bottom margin (call sites zero or override it so page spacing is unchanged); the archive confirmation stays open and shows `Archiving...` on the button until the archive call settles, instead of closing on click.
 - Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
+- Product detail: Log stock, Edit and History are tabs on desktop as well as mobile. The product form drops the Active switch (Archive covers it) and shows field errors inline, the stock form labels Quantity, shows inline errors and a "Log restock of 1 kg" submit with "Restock logged" toasts, history reads "No stock changes yet", Free history shows "Free plan keeps the last 10 changes. Pro keeps full history." with a Plan page link, the direction dot is neutral, archived products get a Restore product button on the Edit tab (still capped on Free), and "Download CSV" is a lock linking to the Plan page on Free. Product-limit and generic error copy now says what to do next.
+- Admin: a "Back to dashboard" link in the admin nav, pages use `PageHeader` with consistent spacing, stat tiles and panels are flat bordered surfaces, timestamps are monospace, and missing values read "None" instead of an em dash.
+- Release flow is now `feat/*`|`fix/*` -> `staging` -> `main`: PRs merge into `staging`, which deploys to `stockkit-staging.merqo.io` through Vercel's git integration, and `staging` is promoted to `main` with a merge commit. `vercel.json` enables git deploys for `staging` alongside `main`, `.github/workflows/ci.yml` also runs on pushes to `staging`, and `.github/workflows/staging-sync.yml` only fast-forwards `staging` onto `main` (the deploy-hook step and the `VERCEL_STAGING_DEPLOY_HOOK` secret are no longer used).
+- Profile page: uses `PageHeader` (eyebrow "Your account") without a nested `<main>` or double gutter, sections are flat bordered cards, the field is called "Business name" everywhere, saves read "Save name" / "Save links" with matching accessible names and only the business-name save is filled, and failure toasts say which save failed.
+- Dashboard shell and overview: the page header reads "Overview" (via `PageHeader`), "Needs attention" rows link to Products with a "View all (N more)" footer past five, rows read "Low at N unit", stock-status colour moves from the stat numerals to a small dot for contrast, the account menu no longer repeats the vendor name, shell padding moves into the layout, and page titles use a `%s | stockkit` template.
 - Sign-in, sign-up, reset-password and two-step pages use plain sentence-case copy, call the vendor's business "Business name", and show the wordmark in the display font. Supabase auth errors map to short next-step messages via `authErrorMessage` instead of showing the raw text.
+- Pin Vercel functions to `sin1` (Singapore) in `vercel.json` for data residency, matching the Supabase region.
+- `vercel.json` limits git-triggered Vercel builds to `main`, so PR and branch pushes stop using the Hobby daily deployment cap. Staging still deploys through its deploy hook; ad-hoc previews come from the `vercel` CLI.
+- The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
 
 ### Fixed
 
+- Migration `0006` drops each `vendor-avatars` policy on `storage.objects` before creating it, so a fresh bootstrap of the shared Supabase project no longer fails on merqo's same-named `vendor_avatars_public_read`. Existing environments are unaffected; the policy semantics are unchanged.
+- Sign-in no longer loops back to /login on stockkit.merqo.io: the browser, vendor server and middleware Supabase clients now write auth cookies on `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (`.merqo.io`), matching merqo and loopkit, instead of host-only copies whose chunks mixed with theirs. Unset locally, cookies stay host-only.
+- Restored UTF-8 characters (em dashes, ellipses, arrows, bullets) that had been garbled by double encoding in the login and reset-password forms, validation messages and this changelog.
 - Archived products in `/dashboard/products` show an "Archived" status (neutral dot) in the list row and detail pane instead of In stock/Low/Out; they stay listed so they can be reactivated.
 - `/dashboard` creates the missing `vendors` row for a vendor signed in through merqo (the auth cookie is shared across `*.merqo.io`, so `/auth/callback` is skipped), instead of failing product creation on `products_vendor_id_fkey`.
 
 ### Removed
 
+- Local shadcn copies `badge`, `card`, `dialog`, `input`, `label`, `select`, `switch` and `textarea` under `src/components/ui/`, plus `cn` from `src/lib/utils`: they now come from `@merqo/ui/primitives` (v0.44.0). Local `button` (flat outline variant) and `tabs` (default/line variants) stay because the shared versions differ visually; `command`, `popover` and `separator` have no shared version.
+- Migration `0028` drops the prod-only `stockkit.product_components` table, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions (SK-01). It aborts if any `linked_movement_id` is set and is a no-op where the objects never existed. Apply to staging, then prod, by hand.
+- `clsx` and `tailwind-merge`; `cn` comes from `@merqo/ui/primitives`.
 - `vendors.plan` (legacy `pro` rows become paid with no expiry, migration `0026`), the `stockkit.pricing` table (`0027`), `src/lib/pricing.ts`, the admin pricing form and plan toggle, and the upgrade-request CTA. `/dashboard/plan` shows no price and points to the Merqo account.
+- Dead code found by knip: the unused `separator` primitive, the unused `CommandDialog`, `CommandSeparator`, `CommandShortcut` and `PopoverAnchor`/`Header`/`Title`/`Description` wrappers, unused `Vendor`, `Feedback`, `Admin`, `AdminAudit`, `EntitlementPayload`, `PasswordChangeInput`, `DisplayNameInput` and `VendorInput` types, and the exports of `buttonVariants`, `tabsListVariants` and several types that are only used in their own file.
 
 ### Security
 
@@ -62,13 +55,6 @@
 - DB-backed fixed-window rate limiter (migration `0024_rate_limits.sql`, `src/lib/rate-limit.ts`). `/api/merqo/*`: 120 per minute per route and IP, fail open. Signup: 5 per hour per user and 20 per hour per IP, fail closed. Feedback: 5 per hour per user, fail closed. Profile saves: 10 per hour per user, fail closed. Apply 0024 by hand before deploying.
 - `clientIp` reads `x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first; `legal/accept` uses it.
 - Failed bearer auth on `/api/merqo/*` logs route, reason and IP, never the token.
-
-### Changed
-
-- Products page: `PageHeader`, an All / Low / Out / Archived filter, name search, an "N of 20 active" meter on Free, one responsive Add button, an empty state inside the two-pane layout, no nested scroll, `aria-pressed` on the selected row and "Low at N unit" copy. `?product=<id>` preselects a product; overview "Needs attention" rows link to it. "All" now lists active products only; archived products sit under Archived.
-- Pin Vercel functions to `sin1` (Singapore) in `vercel.json` for data residency, matching the Supabase region.
-- `vercel.json` limits git-triggered Vercel builds to `main`, so PR and branch pushes stop using the Hobby daily deployment cap. Staging still deploys through its deploy hook; ad-hoc previews come from the `vercel` CLI.
-- The staging sync workflow pushes `staging` with the `merqo-staging-sync` GitHub App token instead of `GITHUB_TOKEN`, because a ruleset limits `staging` pushes to that app. The job's own token drops to `contents: read`.
 
 ## 0.4.1 - 2026-11-02
 

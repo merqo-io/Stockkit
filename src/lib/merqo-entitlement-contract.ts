@@ -20,5 +20,3 @@ export const entitlementPayloadSchema = z
     message: 'tier is not valid for this kit',
     path: ['tier'],
   });
-
-export type EntitlementPayload = z.infer<typeof entitlementPayloadSchema>;

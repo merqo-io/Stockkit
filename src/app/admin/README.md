@@ -10,6 +10,7 @@ vendors/products/stock_movements domain (no "programs" concept here).
 ## Contents
 
 - `admin-nav.tsx` — `AdminNav` client component: a Back to dashboard link and the Overview/Vendors/Activity tab bar, highlighting the active section by path.
+- `loading.tsx` — skeleton (header, stat tiles, rows; `role="status"`) shown while any `/admin` page loads; `loading.dom.test.tsx` covers it.
 - `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders the header (`BrandText` wordmark, Admin badge, sign-out) and `AdminNav`.
 - `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (in a flat bordered panel), and nothing else: pricing and plan changes live in merqo.
 - `vendors/`, vendor list with each vendor's plan badge (own README).
