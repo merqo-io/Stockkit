@@ -21,6 +21,8 @@ password alone.
 
 Needs TOTP enrolment and verification enabled in Supabase Auth.
 
+Differences from the former local form: the input has `pattern="[0-9]*"` and strips non-digits as typed (a pasted "123 456" becomes 123456), is disabled while pending, and clears the error when edited; thrown errors are shown as copy instead of going unhandled.
+
 A failed verify is mapped through `authErrorMessage`, falling back to "That code didn't work. Enter the latest code from your app."
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
