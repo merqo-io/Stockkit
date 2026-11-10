@@ -43,6 +43,8 @@ small standalone controls. Reduced-motion users get no pulse, spin or dialog
 animations, and `/dashboard`, `/admin` and `/mfa` show a page-shaped loading skeleton instead of a
 spinner.
 
+The `/mfa` two-step sign-in form is the shared `MfaForm` from `@merqo/ui` behind a thin local adapter (`src/app/mfa/mfa-form.tsx`) that wires Supabase enrol and verify.
+
 The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
 
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
