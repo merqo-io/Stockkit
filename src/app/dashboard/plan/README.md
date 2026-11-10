@@ -6,7 +6,7 @@ The vendor-facing plan page. It shows the vendor's current plan, what it
 includes, and (on Free) a "Request Pro" button that files a support message
 for a manual upgrade. Merqo owns subscriptions
 and pricing, so stockkit stores no price: the page fetches merqo's public
-`GET /api/plans` catalog (`fetchPlanCatalog` from `@merqo/ui`, base URL from
+`GET /api/plans` catalog (`fetchPlanCatalog` from `@merqo/ui`, base URL from `merqoBaseUrl()` in `@/lib/merqo-base-url`, which reads
 `MERQO_BASE_URL`) and renders the shared `PricingLadder`, highlighting
 All-Access without Event Pass (it does not cover stockkit). When merqo is
 unreachable the page shows the current plan plus a muted "Prices are

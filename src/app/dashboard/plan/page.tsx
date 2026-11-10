@@ -1,4 +1,5 @@
 import { PAGE_ROUTES } from '@/lib/constants/routes';
+import { merqoBaseUrl } from '@/lib/merqo-base-url';
 import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
 import { readVendorTier } from '@/lib/vendor-entitlement';
@@ -11,10 +12,6 @@ import { RequestProButton } from './request-pro-button';
 export const metadata: Metadata = { title: 'Plan' };
 
 export const revalidate = 0;
-
-function merqoBaseUrl(): string {
-  return process.env.MERQO_BASE_URL ?? 'https://www.merqo.io';
-}
 
 export default async function PlanPage() {
   const supabase = await createServerClient();

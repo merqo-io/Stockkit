@@ -22,7 +22,7 @@ folder's job is entirely to collect the vendor's consent and forward it.
   the vendor.
 - `accept-form.dom.test.tsx` — covers the hint and the sign-out success and
   failure paths.
-- `actions.ts` — `acceptLegalTerms` server action. Re-checks for a signed-in
+- `actions.ts` — `acceptLegalTerms` server action (merqo base URL from `@/lib/merqo-base-url`). Re-checks for a signed-in
   user (redirects to `/login` otherwise), reads the vendor's real
   `ip`/`user_agent`, then `POST`s `/api/merqo/legal-accept` on merqo once
   per doc type (`terms`, `privacy`), each independent so a

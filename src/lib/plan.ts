@@ -55,7 +55,7 @@ export function resolveTier(row: CachedEntitlement | null | undefined, now: Date
  * its surrounding words so the page can wrap it in `font-mono` — the app's
  * ledger typographic signature applies to every figure shown to a vendor.
  */
-export type PlanFeature =
+type PlanFeature =
   | { kind: 'text'; text: string }
   | { kind: 'metric'; prefix: string; value: number; suffix: string };
 
