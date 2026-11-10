@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `/mfa` renders the shared `MfaForm` from `@merqo/ui`; the local form is now a thin Supabase adapter. Pasted codes such as "123 456" are reduced to six digits, the field gains a placeholder, and the button reads "Verifying" while checking.
+
 ## 0.5.0 - 2026-11-10
 
 ### Added
