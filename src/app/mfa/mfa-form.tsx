@@ -1,122 +1,66 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { authErrorMessage } from '@/lib/auth-error-message';
 import { createClient } from '@/lib/supabase/client';
-import { Input, Label } from '@merqo/ui/primitives';
+import { MfaForm as SharedMfaForm, navigatingAway } from '@merqo/ui';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef } from 'react';
 
 type Props = {
   verifiedFactorId: string | null;
   staleFactorIds: string[];
 };
 
-const CODE = /^\d{6}$/;
+type VerifyError = { code?: string | null; message?: string | null };
+
+const ENROL_FAILED = 'enrol_failed';
+const VERIFY_FAILED = 'verify_failed';
+const NO_FACTOR = 'no_factor';
 
 export function MfaForm({ verifiedFactorId, staleFactorIds }: Props) {
   const router = useRouter();
-  const [factorId, setFactorId] = useState(verifiedFactorId);
-  const [enrolment, setEnrolment] = useState<{
-    qr: string;
-    secret: string;
-  } | null>(null);
-  const [code, setCode] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  // The shared form only passes a string to mapError. Keeping the Supabase
+  // error here lets authErrorMessage match on both its code and its message.
+  const verifyError = useRef<VerifyError | null>(null);
 
-  async function startEnrol() {
-    setBusy(true);
-    setError(null);
-    const supabase = createClient();
-    for (const id of staleFactorIds) {
-      await supabase.auth.mfa.unenroll({ factorId: id });
-    }
-    const { data, error: enrolError } = await supabase.auth.mfa.enroll({
-      factorType: 'totp',
-    });
-    setBusy(false);
-    if (enrolError || !data) {
-      setError('Could not start setup. Try again.');
-      return;
-    }
-    setFactorId(data.id);
-    setEnrolment({ qr: data.totp.qr_code, secret: data.totp.secret });
-  }
-
-  async function verify(event: React.SyntheticEvent) {
-    event.preventDefault();
-    if (!factorId || !CODE.test(code)) {
-      setError('Enter the 6-digit code from your authenticator app.');
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    const { error: verifyError } = await createClient().auth.mfa.challengeAndVerify({
-      factorId,
-      code,
-    });
-    if (verifyError) {
-      setBusy(false);
-      setError(
-        authErrorMessage(verifyError, "That code didn't work. Enter the latest code from your app.")
-      );
-      return;
-    }
-    router.replace('/admin');
-    router.refresh();
-  }
-
-  if (!factorId) {
-    return (
-      <div className="space-y-4">
-        <p className="text-muted-foreground text-sm">
-          Admin access needs an authenticator app. Set one up once, then enter its code each time
-          you sign in.
-        </p>
-        <Button onClick={startEnrol} disabled={busy} className="h-11 w-full rounded-xl">
-          Set up authenticator
-        </Button>
-        {error && (
-          <p role="alert" className="text-destructive text-sm">
-            {error}
-          </p>
-        )}
-      </div>
+  function mapMfaError(raw: string): string {
+    if (raw === ENROL_FAILED) return 'Could not start setup. Try again.';
+    if (raw === NO_FACTOR) return 'Enter the 6-digit code from your authenticator app.';
+    return authErrorMessage(
+      raw === VERIFY_FAILED ? verifyError.current : { code: raw, message: raw },
+      "That code didn't work. Enter the latest code from your app."
     );
   }
 
   return (
-    <form onSubmit={verify} className="space-y-4">
-      {enrolment && (
-        <div className="space-y-2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- Supabase returns a data: SVG, nothing to optimise */}
-          <img src={enrolment.qr} alt="Authenticator QR code" className="mx-auto size-44" />
-          <p className="text-muted-foreground text-center text-xs">
-            Can&rsquo;t scan? Enter this key instead:
-          </p>
-          <code className="block text-center text-sm break-all">{enrolment.secret}</code>
-        </div>
-      )}
-      <div className="space-y-2">
-        <Label htmlFor="mfa-code">6-digit code</Label>
-        <Input
-          id="mfa-code"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          maxLength={6}
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
-      </div>
-      {error && (
-        <p role="alert" className="text-destructive text-sm">
-          {error}
-        </p>
-      )}
-      <Button type="submit" disabled={busy} className="h-11 w-full rounded-xl">
-        Verify
-      </Button>
-    </form>
+    <SharedMfaForm
+      hasFactor={verifiedFactorId !== null}
+      mapError={mapMfaError}
+      onEnrol={async () => {
+        try {
+          const supabase = createClient();
+          for (const id of staleFactorIds) {
+            await supabase.auth.mfa.unenroll({ factorId: id });
+          }
+          const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
+          if (error || !data) return ENROL_FAILED;
+          return { qr: data.totp.qr_code, secret: data.totp.secret, factorId: data.id };
+        } catch {
+          return ENROL_FAILED;
+        }
+      }}
+      onVerify={async (code, context) => {
+        const factorId = context.factorId ?? verifiedFactorId;
+        if (!factorId) return NO_FACTOR;
+        const { error } = await createClient().auth.mfa.challengeAndVerify({ factorId, code });
+        if (error) {
+          verifyError.current = error;
+          return VERIFY_FAILED;
+        }
+        router.replace('/admin');
+        router.refresh();
+        await navigatingAway();
+      }}
+    />
   );
 }

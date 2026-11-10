@@ -13,13 +13,15 @@ password alone.
   `/admin`, otherwise passes the verified TOTP factor (or stale unverified ones)
   to the form.
 - `loading.tsx` — card skeleton (`role="status"`) shown while the page's admin and factor lookups run; `loading.dom.test.tsx` covers it.
-- `mfa-form.tsx` — client form: enrol an authenticator (QR plus manual key) or
-  verify a 6-digit code with `challengeAndVerify`, then enter `/admin`.
-- `mfa-form.dom.test.tsx` — verify, wrong code, enrol-then-verify, bad input.
+- `mfa-form.tsx` — thin adapter over `MfaForm` from `@merqo/ui`: wires Supabase
+  enrol (QR plus manual key) and `challengeAndVerify`, then enters `/admin`.
+- `mfa-form.dom.test.tsx` — verify, wrong code, rate limit, enrol failure, enrol-then-verify, touch, bad input.
 
 ## Connectivity
 
 Needs TOTP enrolment and verification enabled in Supabase Auth.
+
+Differences from the former local form: the input has `pattern="[0-9]*"` and strips non-digits as typed (a pasted "123 456" becomes 123456), is disabled while pending, and clears the error when edited; thrown errors are shown as copy instead of going unhandled.
 
 A failed verify is mapped through `authErrorMessage`, falling back to "That code didn't work. Enter the latest code from your app."
 
