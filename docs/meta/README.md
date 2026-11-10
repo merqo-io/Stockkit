@@ -16,4 +16,6 @@ design history; this is the standing backlog going forward).
 
 - `2026-10-10-component-reuse-spec.md`: component consolidation boundaries, CSV export wiring and verification requirements.
 
+- `2026-10-24-fresh-eyes-sweep.md`: Phase 8 close-out sweep (knip, duplicates, loading states, coverage), with the fixed, deferred and needs-owner lists.
+
 - `templatecentral-adoption-log.md`: what the templateCentral 6.0.4 and 7.2.2 reviews adopted and skipped, moved out of `AGENTS.md`.

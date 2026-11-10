@@ -7,7 +7,7 @@ export type VendorPlan = 'free' | 'pro';
 // chosen by the user through the stock-movement form (see schemas.ts).
 export type StockMovementReason = 'restock' | 'waste' | 'adjustment' | 'initial';
 
-export type LegalCheckState = {
+type LegalCheckState = {
   email: string;
   checked_at: string;
   is_current: boolean;
@@ -318,9 +318,5 @@ export interface Database {
   };
 }
 
-export type Vendor = Database['stockkit']['Tables']['vendors']['Row'];
 export type Product = Database['stockkit']['Tables']['products']['Row'];
 export type StockMovement = Database['stockkit']['Tables']['stock_movements']['Row'];
-export type Feedback = Database['stockkit']['Tables']['feedback']['Row'];
-export type Admin = Database['stockkit']['Tables']['admins']['Row'];
-export type AdminAudit = Database['stockkit']['Tables']['admin_audit']['Row'];

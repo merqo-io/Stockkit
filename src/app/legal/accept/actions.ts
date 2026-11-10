@@ -1,5 +1,6 @@
 'use server';
 
+import { merqoBaseUrl } from '@/lib/merqo-base-url';
 import { clientIp } from '@/lib/rate-limit';
 // eslint-disable-next-line no-restricted-imports -- RLS has no client policy for this write; the caller is verified first
 import { createServerClient, createServiceClient } from '@/lib/supabase/server';
@@ -14,10 +15,6 @@ const DOC_TYPES = ['terms', 'privacy'] as const;
 
 function sha256(input: string): string {
   return createHash('sha256').update(input).digest('hex');
-}
-
-function merqoBaseUrl(): string {
-  return process.env.MERQO_BASE_URL ?? 'https://www.merqo.io';
 }
 
 /**

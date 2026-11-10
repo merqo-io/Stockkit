@@ -40,7 +40,7 @@ A product's detail view is three tabs on every screen size (Log stock, Edit, His
 On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
 grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
 small standalone controls. Reduced-motion users get no pulse, spin or dialog
-animations, and `/dashboard` shows a page-shaped loading skeleton instead of a
+animations, and `/dashboard`, `/admin` and `/mfa` show a page-shaped loading skeleton instead of a
 spinner.
 
 The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
@@ -323,6 +323,7 @@ transaction). See `AGENTS.md` for full conventions.
 ### Contents
 
 - `scripts/staging-migrate.sh`: loads migrations into the shared staging Supabase project with psql (see Staging above).
+- `knip.json`: entry points and three justified dependency ignores for `pnpm dlx knip@6.44.2` (dead-code scan, not a dependency); the latest findings are in `docs/meta/2026-10-24-fresh-eyes-sweep.md`.
 - `scripts/check-route-logging.mjs` — pre-existing scaffold check that every API route under `src/app/api` uses the `withLogging` wrapper; still guards `src/app/api/health/route.ts`.
 - `src/app/error.tsx` + `src/app/not-found.tsx` + `src/app/global-error.tsx` — branded error/404/root-crash boundaries, matching qkit's and loopkit's family-wide pattern.
 - `src/app/(auth)/login/` — the combined sign-in/sign-up page (email/password + Google OAuth, plus a forgot-password flow) and its `completeSignup` server action (creates the `vendors` row, best-effort registers the vendor into the shared `merqo.vendor_profile` table).
@@ -335,7 +336,7 @@ transaction). See `AGENTS.md` for full conventions.
 - `src/app/admin/`, the Merqo-team admin console (ported from loopkit's admin-console pattern): `requireAdmin()`-gated layout + nav, an overview page (vendor/product/plan totals + recent cross-vendor stock activity), `vendors/` (every vendor with its plan badge), and `activity/` (an `admin_audit` viewer via `@merqo/ui`'s shared `AuditLogTable`), own READMEs. Backed by `src/lib/admin.ts`/`admin-data.ts` and migration `0013_stockkit_admin.sql`.
 - `src/components/dashboard-tour.tsx` + `tour-steps.ts` — thin adapter over `@merqo/ui`'s `DashboardTour`, which owns the `driver.js` overlay lifecycle (auto-runs once on first login, tracked server-side via `vendors.tour_seen_at`, stamped as soon as the tour starts rather than when it finishes, so a mid-tour refresh can't re-trigger it), replay button, and popover theming (generated at runtime from this app's own CSS custom properties — no local `tour.css`); stockkit supplies step content and routing.
 - `src/app/actions/` — server actions shared across routes rather than colocated with a single page (vendor NPS feedback, Get-help support messages) — own README.
-- `src/components/ui/` — the shadcn primitives with no shared equivalent (`button`, `tabs`, `command`, `popover`, `separator`); badge, card, dialog, input, label, select, switch and textarea come from `@merqo/ui/primitives` — own README.
+- `src/components/ui/` — the shadcn primitives with no shared equivalent (`button`, `tabs`, `command`, `popover`); badge, card, dialog, input, label, select, switch and textarea come from `@merqo/ui/primitives` — own README.
 - `.claude/` — the Claude Code harness (hook scripts, project skills, harness integrity manifest/verifier) — own README.
 - `src/components/landing/` — the landing page's section components (`Hero`, `HowItWorks`, `Benefits`, `Faq`, `Cta`), plus `LedgerCardPreview` (`Hero`'s illustration — a static mock product card, not real data).
 - `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local) — the lifted-shadow card treatment used on the public auth pages and the landing page's `HowItWorks`/`Benefits` cards (not qkit's perforated "Ticket").

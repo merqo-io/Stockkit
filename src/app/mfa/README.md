@@ -12,6 +12,7 @@ password alone.
   `/admin` so the `aal2` gate cannot loop back), forwards an `aal2` session to
   `/admin`, otherwise passes the verified TOTP factor (or stale unverified ones)
   to the form.
+- `loading.tsx` — card skeleton (`role="status"`) shown while the page's admin and factor lookups run; `loading.dom.test.tsx` covers it.
 - `mfa-form.tsx` — client form: enrol an authenticator (QR plus manual key) or
   verify a 6-digit code with `challengeAndVerify`, then enter `/admin`.
 - `mfa-form.dom.test.tsx` — verify, wrong code, enrol-then-verify, bad input.

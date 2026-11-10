@@ -20,12 +20,10 @@ export const passwordChangeSchema = z
     message: 'Passwords do not match',
     path: ['confirm'],
   });
-export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 
 export const displayNameSchema = z.object({
   displayName: z.string().trim().max(60, 'Display name is too long'),
 });
-export type DisplayNameInput = z.infer<typeof displayNameSchema>;
 
 export const vendorSchema = z.object({
   name: z.string().min(1, 'Stall name is required').max(100),
@@ -76,7 +74,6 @@ export const stockMovementFormSchema = z
   );
 
 export type LoginInput = z.infer<typeof loginSchema>;
-export type VendorInput = z.infer<typeof vendorSchema>;
 export type ProductFormInput = z.infer<typeof productFormSchema>;
 export type StockMovementFormInput = z.infer<typeof stockMovementFormSchema>;
 

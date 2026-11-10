@@ -5,7 +5,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // Mirrors merqo's `metricsPayloadSchema` (../merqo/src/lib/metrics-schema.ts).
 // Defined locally rather than imported — cross-repo runtime imports aren't
 // available; contract test keeps this in lockstep with merqo's actual schema.
-export type MetricsPayload = {
+type MetricsPayload = {
   product: string;
   generated_at: string;
   revenue_cents_30d: number;

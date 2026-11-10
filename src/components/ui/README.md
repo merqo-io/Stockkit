@@ -8,10 +8,9 @@ tooltip) and `cn` are imported from `@merqo/ui/primitives`; do not re-add local 
 
 ## Contents
 
-- `button.tsx` — `Button`/`buttonVariants` (cva variants/sizes), `asChild`-capable via Radix `Slot`; the outline variant is flat (no shadow). Coarse-pointer 44px minimums for buttons, inputs, selects, tab triggers and the dialog close live in `src/app/globals.css` (keyed on `data-slot`/`data-variant`), not in these class strings
-- `command.tsx` — `cmdk`-backed `Command`/`CommandDialog`/`CommandInput`/`CommandList`/`CommandEmpty`/`CommandGroup`/`CommandItem`/`CommandSeparator`/`CommandShortcut`; paired with `popover.tsx` to build the products form's unit combobox (`product-form.tsx`)
-- `popover.tsx` — Radix `Popover` wrapper: `Popover`/`PopoverTrigger`/`PopoverContent`/`PopoverAnchor`/`PopoverHeader`/`PopoverTitle`/`PopoverDescription`
-- `separator.tsx` — Radix `Separator` wrapper: horizontal/vertical divider line
+- `button.tsx` — `Button` (cva variants/sizes), `asChild`-capable via Radix `Slot`; the outline variant is flat (no shadow). Coarse-pointer 44px minimums for buttons, inputs, selects, tab triggers and the dialog close live in `src/app/globals.css` (keyed on `data-slot`/`data-variant`), not in these class strings
+- `command.tsx` — `cmdk`-backed `Command`/`CommandInput`/`CommandList`/`CommandEmpty`/`CommandGroup`/`CommandItem`; paired with `popover.tsx` to build the products form's unit combobox (`product-form.tsx`)
+- `popover.tsx` — Radix `Popover` wrapper: `Popover`/`PopoverTrigger`/`PopoverContent`
 - `tabs.tsx` — Radix `Tabs` wrapper
 
 ## Parent
