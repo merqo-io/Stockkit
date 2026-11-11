@@ -362,7 +362,7 @@ transaction). See `AGENTS.md` for full conventions.
 policies it depends on, applied via the Supabase CLI or the SQL Editor. `test/` holds the
 API-route logging tests; colocated `src/**/*.test.ts` and `src/**/*.dom.test.tsx` files cover authentication, dashboard behavior, business logic and components. `pnpm test:ci` enforces at least 80% statements, branches, functions and lines.
 
-Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.44.1 commit.
+Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.44.2 commit.
 
 Products are archived with is_active=false so identity and ledger remain
 available. Migration 0018 blocks deletion of products/vendors/accounts with
