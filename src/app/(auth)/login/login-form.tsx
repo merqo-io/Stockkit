@@ -14,8 +14,7 @@ import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
-import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
-import { ElevatedCard } from '@merqo/ui';
+import { ElevatedCard, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
 import { Input, Label } from '@merqo/ui/primitives';
 
 import { GoogleMark } from '@merqo/ui';

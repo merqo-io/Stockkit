@@ -1,7 +1,13 @@
 'use client';
 import { PasswordFields } from '@/components/password-fields';
 
-import { ImageUploader, SocialLinksFields, TwoColumnSections } from '@merqo/ui';
+import {
+  FORM_ERROR_CLASS,
+  FORM_LABEL_CLASS,
+  ImageUploader,
+  SocialLinksFields,
+  TwoColumnSections,
+} from '@merqo/ui';
 
 import { Section } from '@/components/section';
 import { Button } from '@/components/ui/button';
@@ -15,7 +21,6 @@ import {
   type SocialLinksInput,
 } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
-import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import { resizeToWebp } from '@merqo/ui';
 import { Input, Label } from '@merqo/ui/primitives';
 import { IdCard, KeyRound, Share2, Store, UserRound } from 'lucide-react';
