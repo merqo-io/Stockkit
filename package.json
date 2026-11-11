@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.0",
-    "@merqo/ui": "github:merqo-io/merqo-ui#c05d7b0d549ddde45c0202d3dd15c00c2c6ada07",
+    "@merqo/ui": "github:merqo-io/merqo-ui#6bd6bd7bc0cc3405145f5730ddc344ab0b1a129f",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "2.110.7",
     "class-variance-authority": "^0.7.1",
