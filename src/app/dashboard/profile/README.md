@@ -71,3 +71,5 @@ Controlled password fields share markup with the recovery form while this page r
 The page uses `@merqo/ui`'s `PageHeader` (eyebrow "Your account", display-font h1) with no nested `<main>` or extra gutter, since the dashboard layout owns page padding. Sections are flat bordered cards. Only "Save name" is a filled button; the other saves are outline. Failure toasts name the action (for example "Could not save business name. Try again.").
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies. The actions return `ActionResult` from `@merqo/ui/kit-api`.
+
+Label and error classes (`FORM_LABEL_CLASS`, `FORM_ERROR_CLASS`) come from `@merqo/ui`.

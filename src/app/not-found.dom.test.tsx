@@ -7,6 +7,7 @@ import NotFound from './not-found';
 describe('NotFound', () => {
   it('links back to home', () => {
     render(<NotFound />);
+    expect(screen.getByText('404')).toBeTruthy();
     expect(screen.getByRole('link', { name: /back to start/i }).getAttribute('href')).toBe('/');
   });
 });

@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Moved to `@merqo/ui` 0.45.1. `error.tsx`, `not-found.tsx` and `global-error.tsx` render the shared `ErrorPage`, `NotFound` and `GlobalError` with the same copy; the local popover, `FieldError` and the two dashed empty boxes in the products workspace are replaced by the shared `Popover`, `FormError` and `EmptyState`, and `FORM_LABEL_CLASS` and `FORM_ERROR_CLASS` now come from the package. The error page now shows Next's digest as a reference line, and the global error body sits in a `main` landmark.
 - `/mfa` renders the shared `MfaForm` from `@merqo/ui`; the local form is now a thin Supabase adapter. Pasted codes such as "123 456" are reduced to six digits, the field gains a placeholder, the button reads "Verifying" while checking, the field is disabled while pending, non-digits are stripped as typed, the error clears when the field is edited, and a thrown network error shows the setup or wrong-code message instead of going unhandled.
 
 ## 0.5.1 - 2026-11-11

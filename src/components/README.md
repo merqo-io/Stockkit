@@ -69,3 +69,5 @@ files' own doc comments for the adapter wiring.
 The server dashboard-tour adapter renders the canonical stock example once and passes its constant HTML to the client controller; react-dom/server is absent from the controller dependency graph.
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
+
+`password-fields.tsx` takes its label and error classes from `@merqo/ui`.

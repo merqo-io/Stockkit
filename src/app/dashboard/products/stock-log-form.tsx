@@ -2,7 +2,7 @@
 
 import { STOCK_MOVEMENT_REASON_LABEL } from '@/lib/stock';
 
-import { InfoTooltip, MoneyInput } from '@merqo/ui';
+import { FORM_ERROR_CLASS, FORM_LABEL_CLASS, InfoTooltip, MoneyInput } from '@merqo/ui';
 import { Minus, Plus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { useAsyncAction } from '@/hooks';
 import { stockMovementFormSchema } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
 import {
   cn,
   Input,
