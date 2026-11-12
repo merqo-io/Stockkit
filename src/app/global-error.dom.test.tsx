@@ -12,6 +12,7 @@ describe('GlobalError', () => {
     const error = Object.assign(new Error('boom'), { digest: 'abc123' });
 
     render(<GlobalError error={error} reset={reset} />);
+    expect(screen.getByRole('heading', { name: 'Something went wrong' })).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /try again/i }));
     expect(reset).toHaveBeenCalled();
   });

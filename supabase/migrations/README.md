@@ -270,3 +270,5 @@ The latest migration limits `is_admin(uuid)` to the signed-in user or trusted se
 ## Prod-only objects
 
 0028_drop_prod_only_product_components.sql drops `product_components`, `stock_movements.linked_movement_id` and the `prevent_nested_components` / `record_linked_movement` functions that existed only on prod (SK-01). It raises if any `linked_movement_id` is set, and is a no-op on databases that never had them. drop-product-components.test.sql asserts they are gone. Apply by hand (staging, then prod).
+
+0029_realign_schema_drift.sql re-asserts the `vendor_avatars_vendor_*` storage policies, the four-value `stock_movements_reason_check` and a narrow `service_role` grant (SELECT, INSERT, REFERENCES, TRIGGER) on `stock_movements`, so every environment matches the migrations regardless of Postgres version.

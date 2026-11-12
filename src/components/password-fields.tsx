@@ -1,5 +1,5 @@
 'use client';
-import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
+import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
 import { Input, Label } from '@merqo/ui/primitives';
 export function PasswordFields({
   password,

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
-import { PageHeader, SegmentedControl } from '@merqo/ui';
+import { EmptyState, PageHeader, SegmentedControl } from '@merqo/ui';
 import {
   Dialog,
   DialogContent,
@@ -138,22 +138,18 @@ export function ProductsWorkspace({
   function renderList() {
     if (products.length === 0) {
       return (
-        <div className="border-border rounded-xl border border-dashed px-6 py-16 text-center">
-          <p className="font-display text-xl font-semibold">No products yet</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Add your first product to start tracking stock.
-          </p>
-        </div>
+        <EmptyState
+          title="No products yet"
+          description="Add your first product to start tracking stock."
+        />
       );
     }
     if (visible.length === 0) {
       return (
-        <div className="border-border rounded-xl border border-dashed px-6 py-12 text-center">
-          <p className="font-display text-xl font-semibold">No matching products</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Try another search or switch the filter.
-          </p>
-        </div>
+        <EmptyState
+          title="No matching products"
+          description="Try another search or switch the filter."
+        />
       );
     }
     return (

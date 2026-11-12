@@ -24,7 +24,7 @@ product's movement history.
 - `product-form.tsx` — create/edit form. Starting quantity is only
   editable when creating a new product; an existing product's `on_hand`
   only ever moves through `StockLogForm`. The unit field is a
-  `UnitPicker`, a shadcn `Command`+`Popover` combobox (free text plus
+  `UnitPicker`, a shadcn `Command` plus `@merqo/ui/primitives` `Popover` combobox (free text plus
   `UNIT_PRESETS` suggestions), replacing a raw `<input list>`/`<datalist>` for
   consistent cross-browser rendering. The unit-cost field is
   `@merqo/ui`'s `MoneyInput` (the same one qkit's menu prices use): it
@@ -114,3 +114,5 @@ Product and stock-movement reads list their columns (`PRODUCT_COLUMNS`, `STOCK_M
 The page sets `metadata.title` "Products" (rendered through the root `%s | stockkit` template) and relies on the dashboard layout for top padding.
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
+
+Field errors render through `@merqo/ui`'s `FormError`, and the "No products yet" and "No matching products" lists use its `EmptyState`.

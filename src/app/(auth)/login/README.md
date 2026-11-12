@@ -25,3 +25,5 @@ Auth errors never reach the UI raw: every returned Supabase error goes through `
 Login copy keeps real UTF-8 characters (ellipsis, em dash, password bullets). Rate limiting and the Supabase clients come through the `src/lib` wrappers over `@merqo/ui`.
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
+
+The form label and error classes used by the login form come from `@merqo/ui`.

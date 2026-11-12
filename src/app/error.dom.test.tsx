@@ -15,6 +15,9 @@ describe('Error', () => {
     render(<ErrorPage error={error} reset={reset} />);
     expect(consoleError).toHaveBeenCalledWith('Unhandled error', error);
 
+    expect(screen.getByText("That didn't load")).toBeTruthy();
+    expect(screen.getByText('Reference: abc123')).toBeTruthy();
+
     await user.click(screen.getByRole('button', { name: /try again/i }));
     expect(reset).toHaveBeenCalled();
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { ConfirmDialog, InfoTooltip, MoneyInput } from '@merqo/ui';
+import { ConfirmDialog, FORM_LABEL_CLASS, FormError, InfoTooltip, MoneyInput } from '@merqo/ui';
 import { Archive, ArchiveRestore, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -14,12 +14,10 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAsyncAction } from '@/hooks';
 import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@/lib/utils';
-import { cn, Input, Label } from '@merqo/ui/primitives';
+import { cn, Input, Label, Popover, PopoverContent, PopoverTrigger } from '@merqo/ui/primitives';
 import { archiveProduct, saveProduct } from './actions';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];
@@ -48,15 +46,6 @@ function fieldErrors(
     if (FIELD_KEYS.includes(key) && !out[key as FieldKey]) out[key as FieldKey] = issue.message;
   }
   return out;
-}
-
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null;
-  return (
-    <p id={id} role="alert" className={FORM_ERROR_CLASS}>
-      {message}
-    </p>
-  );
 }
 
 function UnitPicker({
@@ -244,7 +233,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           aria-invalid={Boolean(errors.name)}
           aria-describedby={errors.name ? 'product-name-error' : undefined}
         />
-        <FieldError id="product-name-error" message={errors.name} />
+        <FormError id="product-name-error" message={errors.name} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -257,7 +246,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
             onChange={setUnit}
             errorId={errors.unit ? 'product-unit-error' : undefined}
           />
-          <FieldError id="product-unit-error" message={errors.unit} />
+          <FormError id="product-unit-error" message={errors.unit} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="product-cost" className={FORM_LABEL_CLASS}>
@@ -270,7 +259,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
             onCommit={setUnitCostCents}
             aria-describedby={errors.unit_cost_cents ? 'product-cost-error' : undefined}
           />
-          <FieldError id="product-cost-error" message={errors.unit_cost_cents} />
+          <FormError id="product-cost-error" message={errors.unit_cost_cents} />
         </div>
       </div>
 
@@ -292,7 +281,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
               aria-invalid={Boolean(errors.on_hand)}
               aria-describedby={errors.on_hand ? 'product-on-hand-error' : undefined}
             />
-            <FieldError id="product-on-hand-error" message={errors.on_hand} />
+            <FormError id="product-on-hand-error" message={errors.on_hand} />
           </div>
         )}
         <div className="space-y-2">
@@ -318,7 +307,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
             aria-invalid={Boolean(errors.low_stock_threshold)}
             aria-describedby={errors.low_stock_threshold ? 'product-threshold-error' : undefined}
           />
-          <FieldError id="product-threshold-error" message={errors.low_stock_threshold} />
+          <FormError id="product-threshold-error" message={errors.low_stock_threshold} />
         </div>
       </div>
 
