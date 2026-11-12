@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Migration `0029` re-asserts the `vendor_avatars_vendor_*` storage write policies (never applied on staging or prod), restores `stock_movements_reason_check` to its four defined values (prod had `consumed` added by hand) and resets `service_role` on `stock_movements` to SELECT, INSERT, REFERENCES, TRIGGER so MAINTAIN from `grant all` on Postgres 17+ no longer lingers. Apply by hand to staging, then prod.
+
 ### Changed
 
 - Moved to `@merqo/ui` 0.45.1. `error.tsx`, `not-found.tsx` and `global-error.tsx` render the shared `ErrorPage`, `NotFound` and `GlobalError` with the same copy; the local popover, `FieldError` and the two dashed empty boxes in the products workspace are replaced by the shared `Popover`, `FormError` and `EmptyState`, and `FORM_LABEL_CLASS` and `FORM_ERROR_CLASS` now come from the package. The error page now shows Next's digest as a reference line, and the global error body sits in a `main` landmark.
