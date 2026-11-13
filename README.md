@@ -363,7 +363,7 @@ transaction). See `AGENTS.md` for full conventions.
 policies it depends on, applied via the Supabase CLI or the SQL Editor. `test/` holds the
 API-route logging tests; colocated `src/**/*.test.ts` and `src/**/*.dom.test.tsx` files cover authentication, dashboard behavior, business logic and components. `pnpm test:ci` enforces at least 80% statements, branches, functions and lines.
 
-Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.44.2 commit.
+Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.46.0 commit.
 
 Products are archived with is_active=false so identity and ledger remain
 available. Migration 0018 blocks deletion of products/vendors/accounts with
@@ -400,6 +400,6 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.44.0 (commit `250a4ed`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.46.0 (commit `5ebd889`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
