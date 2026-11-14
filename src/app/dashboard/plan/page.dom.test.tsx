@@ -4,13 +4,19 @@ import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import PlanPage from './page';
 
-const { createServerClientMock, readVendorTierMock, fetchPlanCatalogMock, pricingLadderMock } =
-  vi.hoisted(() => ({
-    createServerClientMock: vi.fn(),
-    readVendorTierMock: vi.fn(),
-    fetchPlanCatalogMock: vi.fn(),
-    pricingLadderMock: vi.fn(),
-  }));
+const {
+  createServerClientMock,
+  readVendorTierMock,
+  fetchPlanCatalogMock,
+  pricingLadderMock,
+  realLadder,
+} = vi.hoisted(() => ({
+  createServerClientMock: vi.fn(),
+  readVendorTierMock: vi.fn(),
+  fetchPlanCatalogMock: vi.fn(),
+  pricingLadderMock: vi.fn(),
+  realLadder: { on: false },
+}));
 
 vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
@@ -32,20 +38,23 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@merqo/ui', () => ({
-  BackButton: ({ label }: { label: string }) => <span>{label}</span>,
-  fetchPlanCatalog: fetchPlanCatalogMock,
-  PageHeader: ({ title, children }: { title: ReactNode; children?: ReactNode }) => (
-    <header>
-      <h1>{title}</h1>
-      <p>{children}</p>
-    </header>
-  ),
-  PricingLadder: (props: Record<string, unknown>) => {
-    pricingLadderMock(props);
-    return <div data-testid="pricing-ladder" />;
-  },
-}));
+vi.mock('@merqo/ui', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@merqo/ui')>();
+  return {
+    BackButton: ({ label }: { label: string }) => <span>{label}</span>,
+    fetchPlanCatalog: fetchPlanCatalogMock,
+    PageHeader: ({ title, children }: { title: ReactNode; children?: ReactNode }) => (
+      <header>
+        <h1>{title}</h1>
+        <p>{children}</p>
+      </header>
+    ),
+    PricingLadder: (props: Parameters<typeof actual.PricingLadder>[0]) => {
+      pricingLadderMock(props);
+      return realLadder.on ? actual.PricingLadder(props) : <div data-testid="pricing-ladder" />;
+    },
+  };
+});
 
 const originalBaseUrl = process.env.MERQO_BASE_URL;
 
@@ -56,6 +65,7 @@ beforeEach(() => {
   readVendorTierMock.mockReset().mockResolvedValue('free');
   fetchPlanCatalogMock.mockReset();
   pricingLadderMock.mockReset();
+  realLadder.on = false;
   delete process.env.MERQO_BASE_URL;
 });
 
@@ -65,6 +75,14 @@ afterEach(() => {
 });
 
 describe('PlanPage', () => {
+  it('shows the pilot pricing notice from the shared ladder', async () => {
+    realLadder.on = true;
+    fetchPlanCatalogMock.mockResolvedValue({ plans: [] });
+    render(await PlanPage());
+
+    expect(screen.getByText(/Merqo is free during the pilot\./)).toBeInTheDocument();
+  });
+
   it('renders the ladder highlighting all_access when the catalog loads', async () => {
     const catalog = { plans: [] };
     fetchPlanCatalogMock.mockResolvedValue(catalog);

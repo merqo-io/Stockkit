@@ -17,7 +17,9 @@ enforced by `dashboard/products/actions.ts` and the database.
 ## Contents
 
 - `page.dom.test.tsx`: covers the ladder, the null-catalog fallback and the
-  base-URL resolution with `@merqo/ui` mocked.
+  base-URL resolution with `@merqo/ui` mocked, and asserts that the real
+  `PricingLadder` renders its pilot notice (added in `@merqo/ui` v0.46.0) above
+  the plans.
 - `request-pro-button.tsx`, `RequestProButton` (client): calls
   `submitSupportMessageAction` with the `account` category, toasts the result
   and disables itself once sent. `request-pro-button.dom.test.tsx` covers both
