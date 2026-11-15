@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { AboutMerqo } from '@merqo/ui';
+import { Button } from '@merqo/ui/primitives';
 import Link from 'next/link';
 
 export const metadata = { title: 'About' };

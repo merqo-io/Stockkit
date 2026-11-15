@@ -14,9 +14,9 @@ own.
   the same origin-story content every kit's own `/about` page and
   merqo's own `/about` render from one source. Supplies a "See stockkit"
   CTA as `AboutMerqo`'s `children` — the component has no Button/Link
-  dependency of its own.
+  dependency of its own. The CTA uses `Button` from `@merqo/ui/primitives` (touch-sized on coarse pointers), as the other kits do.
 - `page.dom.test.tsx` — covers the origin-story copy, the kit-name line,
-  and the CTA link's href.
+  the CTA link's href and the shared touch-sized Button.
 
 ## Parent
 
