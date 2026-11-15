@@ -15,4 +15,11 @@ describe('AboutPage', () => {
     render(<AboutPage />);
     expect(screen.getByRole('link', { name: 'See stockkit' })).toHaveAttribute('href', '/');
   });
+
+  it('renders the CTA with the shared touch-sized Button', () => {
+    render(<AboutPage />);
+    expect(screen.getByRole('link', { name: 'See stockkit' }).className).toContain(
+      'pointer-coarse:h-12'
+    );
+  });
 });
