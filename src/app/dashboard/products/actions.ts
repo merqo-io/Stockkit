@@ -20,7 +20,7 @@ import type { ActionResult } from '@merqo/ui/kit-api';
 type SaveProductResult = ActionResult<{ productId: string }>;
 
 function capErrorMessage(entitlement: Entitlement): string {
-  return `Free plan limit: ${entitlement.maxActiveProducts} active products. Archive one or request Pro on the Plan page.`;
+  return `You can have ${entitlement.maxActiveProducts} active products. Archive one to add another.`;
 }
 
 /**
@@ -284,7 +284,7 @@ export async function exportProductMovementsCsv(productId: string): Promise<Expo
   if (!entitlement.csvExport) {
     return {
       success: false,
-      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
+      error: 'CSV download is not available yet.',
     };
   }
 

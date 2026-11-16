@@ -246,7 +246,7 @@ describe('ProductForm', () => {
     vi.mocked(toast.error).mockClear();
     saveProductMock.mockResolvedValueOnce({
       success: false,
-      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
+      error: 'You can have 20 active products. Archive one to add another.',
     });
     const onSaved = vi.fn();
     const user = userEvent.setup();
@@ -259,7 +259,9 @@ describe('ProductForm', () => {
 
     await user.click(screen.getByRole('button', { name: /restore product/i }));
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Free plan limit'));
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('You can have 20 active products')
+    );
     expect(onSaved).not.toHaveBeenCalled();
   });
 });

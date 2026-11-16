@@ -7,8 +7,8 @@ includes, and (on Free) a "Request Pro" button that files a support message
 for a manual upgrade. Merqo owns subscriptions
 and pricing, so stockkit stores no price: the page fetches merqo's public
 `GET /api/plans` catalog (`fetchPlanCatalog` from `@merqo/ui`, base URL from `merqoBaseUrl()` in `@/lib/merqo-base-url`, which reads
-`MERQO_BASE_URL`) and renders the shared `PricingLadder`, highlighting
-All-Access without Event Pass (it does not cover stockkit). When merqo is
+`MERQO_BASE_URL`), sending `Authorization: Bearer $MERQO_CUSTOMER_SECRET` when that server-only variable is set (omitted otherwise), and renders the shared `PricingLadder`, highlighting
+Pro without Event Pass (it does not cover stockkit). When merqo is
 unreachable the page shows the current plan plus a muted "Prices are
 unavailable right now" line. Prices appear only here on the vendor dashboard,
 never on public pages. The limits shown are display-only; the gates are

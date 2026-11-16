@@ -60,13 +60,13 @@ describe('ExportHistoryButton', () => {
     click.mockRestore();
   });
 
-  it('shows a lock state linking to the Plan page on Free', () => {
+  it('shows a disabled lock state with no link to the Plan page on Free', () => {
     render(<ExportHistoryButton productId="product-id" locked />);
 
-    const link = screen.getByRole('link', { name: /download csv/i });
-    expect(link).toHaveAttribute('href', '/dashboard/plan');
-    expect(link).toHaveAttribute('title', 'CSV download needs Pro');
-    expect(link).toHaveTextContent('Download CSV');
+    const button = screen.getByRole('button', { name: /download csv/i });
+    expect(button).toBeDisabled();
+    expect(button).toHaveTextContent('(not available yet)');
+    expect(screen.queryByRole('link')).toBeNull();
     expect(mocks.exportCsv).not.toHaveBeenCalled();
   });
 

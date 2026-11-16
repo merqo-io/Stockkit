@@ -46,13 +46,13 @@ product's movement history.
   refetch on `refreshKey` change).
 - `product-detail.tsx` — product detail panel: header (status, on-hand) over
   Log stock / Edit / History tabs on both desktop and mobile; the History tab
-  holds `export-history-button.tsx` ("Download CSV", a lock link to
-  `/dashboard/plan` on Free) above the ledger. The Active switch is gone from
+  holds `export-history-button.tsx` ("Download CSV", a disabled lock
+  button on Free) above the ledger. The Active switch is gone from
   the product form; Archive is the only way to deactivate, and an archived
   product's Edit tab shows a Restore product button (cap-checked on Free). Form validation
   errors render inline under the field (`aria-describedby`); toasts are for
   server results only. `getProductMovements` also returns the plan's
-  `limit`, so Free history shows a "Pro keeps full history" notice; stock status via the shared
+  `limit`, so Free history shows a "Full history is not available yet" notice; stock status via the shared
   `StockStatusIndicator`, same as `product-row.tsx`.
 - `actions.ts` provides `saveProduct`, `archiveProduct`,
   `recordStockMovement`, `getProductMovements` and `exportProductMovementsCsv`.
