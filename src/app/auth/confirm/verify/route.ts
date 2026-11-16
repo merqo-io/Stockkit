@@ -9,7 +9,7 @@ export function POST(request: Request) {
     defaultNext: PAGE_ROUTES.DASHBOARD,
     loginPath: PAGE_ROUTES.LOGIN,
     afterSignIn: async (supabase) => {
-      await ensureVendorRow(supabase as Parameters<typeof ensureVendorRow>[0]);
+      await ensureVendorRow(supabase);
     },
     recovery: { path: PAGE_ROUTES.RESET_PASSWORD },
   });
