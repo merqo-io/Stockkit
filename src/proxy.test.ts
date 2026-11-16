@@ -139,6 +139,8 @@ describe('proxy nonce coverage', () => {
     '/dashboard',
     '/dashboard/products',
     '/auth/callback',
+    '/auth/confirm',
+    '/auth/confirm/verify',
     '/login',
     '/reset-password',
     '/legal/accept',

@@ -57,6 +57,14 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: 'Sign in' })).toBeTruthy();
   });
 
+  it('shows the expired-link message when the error search param is link', () => {
+    searchParamsValue.current = 'error=link';
+    render(<LoginForm />);
+    expect(screen.getByRole('alert').textContent).toBe(
+      'That link is invalid or has expired. Request a new one.'
+    );
+  });
+
   it('starts in signup mode when the mode search param is signup', () => {
     searchParamsValue.current = 'mode=signup';
     render(<LoginForm />);

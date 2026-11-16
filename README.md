@@ -167,6 +167,7 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 | `/`                   | anyone                    | landing page, "In build" badge, waitlist CTA                                                                       |
 | `/login`              | anyone                    | Supabase email/password + Google OAuth sign-in / sign-up                                                           |
 | `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                     |
+| `/auth/confirm`       | anyone                    | continue page for emailed auth links; its button POSTs to `/auth/confirm/verify`, which verifies the token hash    |
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                     |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                           |
 | `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                               |
@@ -331,6 +332,7 @@ transaction). See `AGENTS.md` for full conventions.
 - `src/app/error.tsx` + `src/app/not-found.tsx` + `src/app/global-error.tsx` — thin files over `@merqo/ui`'s `ErrorPage`, `NotFound` and `GlobalError` (v0.45.1), with stockkit's copy and colours passed in.
 - `src/app/(auth)/login/` — the combined sign-in/sign-up page (email/password + Google OAuth, plus a forgot-password flow) and its `completeSignup` server action (creates the `vendors` row, best-effort registers the vendor into the shared `merqo.vendor_profile` table).
 - `src/app/(auth)/reset-password/` — completes a password reset on the recovery session `/auth/callback` establishes.
+- `src/app/auth/confirm/` — the page and `verify/` POST handler for emailed auth links verified on this origin (`handleAuthConfirm` from `@merqo/ui/auth`).
 - `src/app/auth/callback/` — the `GET` Route Handler both Google OAuth and password-recovery links redirect through; on a successful exchange also self-heals a local `vendors` row for the signed-in user (`ensureVendorRow` from `src/lib/ensure-vendor-row.ts`, upsert + `ignoreDuplicates`; `dashboard/layout.tsx` runs the same self-heal when a vendor arrives via the shared `*.merqo.io` cookie without a row), since Google OAuth sign-in has no `completeSignup`-equivalent step to create one — without it, `markTourSeen`'s update silently no-ops and the onboarding tour re-runs on every dashboard visit.
 - `src/app/(public)/` — the public landing page (composed from `src/components/landing/`) + its layout.
 - `src/app/api/health/` — the scaffold health-check route (logging-wrapped, used by the Dockerfile healthcheck); untouched.
@@ -400,6 +402,6 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.46.0 (commit `5ebd889`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.49.0 (commit `f9f3bad`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
