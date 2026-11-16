@@ -4,6 +4,9 @@
 
 ### Fixed
 
+- The plan page highlights the Pro plan in the price ladder (the All-Access plan is inactive) and sends `MERQO_CUSTOMER_SECRET` as a bearer token on the server-side `GET /api/plans` fetch when it is set.
+- The product active-cap error, the CSV download lock and the history cap notice no longer link to the Plan page or ask the vendor to request Pro; they say the feature is not available yet.
+
 - `/about` CTA uses `Button` from `@merqo/ui/primitives` (touch-sized on coarse pointers) instead of the local button, matching the other kits. The `(public)` layout already supplies the nav and footer.
 
 - Migration `0029` re-asserts the `vendor_avatars_vendor_*` storage write policies (never applied on staging or prod), restores `stock_movements_reason_check` to its four defined values (prod had `consumed` added by hand) and resets `service_role` on `stock_movements` to SELECT, INSERT, REFERENCES, TRIGGER so MAINTAIN from `grant all` on Postgres 17+ no longer lingers. Apply by hand to staging, then prod.

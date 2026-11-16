@@ -1,6 +1,5 @@
 'use client';
 import { Lock } from 'lucide-react';
-import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -55,12 +54,10 @@ export function ExportHistoryButton({ productId, locked = false }: Props) {
   }
   if (locked) {
     return (
-      <Button asChild type="button" variant="outline" size="sm">
-        <Link href="/dashboard/plan" title="CSV download needs Pro">
-          <Lock className="size-3.5" aria-hidden="true" />
-          Download CSV
-          <span className="sr-only">(needs Pro)</span>
-        </Link>
+      <Button type="button" variant="outline" size="sm" disabled>
+        <Lock className="size-3.5" aria-hidden="true" />
+        Download CSV
+        <span className="sr-only">(not available yet)</span>
       </Button>
     );
   }
