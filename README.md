@@ -35,7 +35,7 @@ restoring card/background contrast in light mode after the Reefer Frost
 rebrand had accidentally collapsed them to the same color, plus a later
 brightness bump to the (already-correct) dark-mode card.
 
-A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and points to the Plan page.
+A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and that full history is not available yet.
 
 On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
 grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
@@ -154,7 +154,7 @@ had not. `src/lib/image-upload-adapter.ts` stays local — the Storage
 bucket and object path are stockkit's own. Which kit uses which shared
 export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
-The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
+The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`, authenticated with `MERQO_CUSTOMER_SECRET` as a bearer when set); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
 `/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
 

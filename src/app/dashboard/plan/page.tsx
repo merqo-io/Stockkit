@@ -26,7 +26,11 @@ export default async function PlanPage() {
   const view = resolvePlanView(plan, ENTITLEMENTS[plan]);
   // Prices live only in merqo's catalog; null means merqo is unreachable, and
   // the page must still render without them.
-  const catalog = await fetchPlanCatalog(merqoBaseUrl());
+  const secret = process.env.MERQO_CUSTOMER_SECRET;
+  const catalog = await fetchPlanCatalog(
+    merqoBaseUrl(),
+    secret ? { headers: { Authorization: `Bearer ${secret}` } } : undefined
+  );
 
   return (
     <div className="space-y-6">
@@ -65,7 +69,7 @@ export default async function PlanPage() {
           Plans
         </h2>
         {catalog ? (
-          <PricingLadder catalog={catalog} highlight="all_access" showEventPass={false} />
+          <PricingLadder catalog={catalog} highlight="qkit" showEventPass={false} />
         ) : (
           <p className="text-muted-foreground text-sm">
             Prices are unavailable right now. Check back shortly.
