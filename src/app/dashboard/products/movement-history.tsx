@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { stockMovementReasonLabel } from '@/lib/stock';
@@ -95,11 +94,7 @@ export function MovementHistory({ productId, refreshKey, onCappedChange }: Props
       ))}
       {limit !== null && (
         <p className="text-muted-foreground pt-1 text-xs">
-          Free plan keeps the last {limit} changes.{' '}
-          <Link href="/dashboard/plan" className="text-foreground underline">
-            Pro
-          </Link>{' '}
-          keeps full history.
+          Showing the last {limit} changes. Full history is not available yet.
         </p>
       )}
     </div>

@@ -29,6 +29,16 @@ function submitLabel(loading: boolean, isSignin: boolean) {
   return isSignin ? 'Sign in' : 'Create account';
 }
 
+function ExpiredLinkNotice() {
+  const searchParams = useSearchParams();
+  if (searchParams.get('error') !== 'link') return null;
+  return (
+    <p role="alert" className={`${FORM_ERROR_CLASS} mt-4`}>
+      That link is invalid or has expired. Request a new one.
+    </p>
+  );
+}
+
 type Sent = { email: string; kind: 'signup' | 'reset' };
 
 function SentNotice({ sent, onBack }: { sent: Sent; onBack: () => void }) {
@@ -222,6 +232,7 @@ export function LoginForm() {
                 ? 'Sign in to your vendor dashboard.'
                 : 'Create an account to start tracking stock.'}
             </p>
+            <ExpiredLinkNotice />
 
             <Button
               type="button"

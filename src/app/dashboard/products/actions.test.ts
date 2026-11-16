@@ -129,7 +129,7 @@ describe('saveProduct — active-product cap', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
+      error: 'You can have 20 active products. Archive one to add another.',
     });
     expect(insertMock).not.toHaveBeenCalled();
   });
@@ -198,7 +198,7 @@ describe('saveProduct — active-product cap', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'Free plan limit: 20 active products. Archive one or request Pro on the Plan page.',
+      error: 'You can have 20 active products. Archive one to add another.',
     });
     expect(updateMock).not.toHaveBeenCalled();
   });
@@ -289,7 +289,7 @@ describe('vendorEntitlement, fail-closed lookup', () => {
     // Fail-closed: a paid vendor whose lookup hiccups is treated as Free.
     expect(result).toEqual({
       success: false,
-      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
+      error: 'CSV download is not available yet.',
     });
   });
 });
@@ -352,7 +352,7 @@ describe('exportProductMovementsCsv', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'CSV download is a Pro feature. Request Pro on the Plan page.',
+      error: 'CSV download is not available yet.',
     });
   });
 

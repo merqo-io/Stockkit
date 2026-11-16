@@ -57,6 +57,7 @@ vi.mock('@merqo/ui', async (importOriginal) => {
 });
 
 const originalBaseUrl = process.env.MERQO_BASE_URL;
+const originalSecret = process.env.MERQO_CUSTOMER_SECRET;
 
 beforeEach(() => {
   createServerClientMock.mockReset().mockResolvedValue({
@@ -67,11 +68,14 @@ beforeEach(() => {
   pricingLadderMock.mockReset();
   realLadder.on = false;
   delete process.env.MERQO_BASE_URL;
+  delete process.env.MERQO_CUSTOMER_SECRET;
 });
 
 afterEach(() => {
   if (originalBaseUrl === undefined) delete process.env.MERQO_BASE_URL;
   else process.env.MERQO_BASE_URL = originalBaseUrl;
+  if (originalSecret === undefined) delete process.env.MERQO_CUSTOMER_SECRET;
+  else process.env.MERQO_CUSTOMER_SECRET = originalSecret;
 });
 
 describe('PlanPage', () => {
@@ -83,7 +87,7 @@ describe('PlanPage', () => {
     expect(screen.getByText(/Merqo is free during the pilot\./)).toBeInTheDocument();
   });
 
-  it('renders the ladder highlighting all_access when the catalog loads', async () => {
+  it('renders the ladder highlighting qkit when the catalog loads', async () => {
     const catalog = { plans: [] };
     fetchPlanCatalogMock.mockResolvedValue(catalog);
     render(await PlanPage());
@@ -92,7 +96,7 @@ describe('PlanPage', () => {
     expect(document.body.textContent).toContain('You are on the free plan.');
     expect(pricingLadderMock).toHaveBeenCalledWith({
       catalog,
-      highlight: 'all_access',
+      highlight: 'qkit',
       showEventPass: false,
     });
     expect(screen.queryByText(/Prices are unavailable/)).toBeNull();
@@ -116,14 +120,23 @@ describe('PlanPage', () => {
   it('falls back to the default merqo base url', async () => {
     fetchPlanCatalogMock.mockResolvedValue(null);
     await PlanPage();
-    expect(fetchPlanCatalogMock).toHaveBeenCalledWith('https://www.merqo.io');
+    expect(fetchPlanCatalogMock).toHaveBeenCalledWith('https://www.merqo.io', undefined);
   });
 
   it('uses MERQO_BASE_URL when set', async () => {
     process.env.MERQO_BASE_URL = 'https://merqo.test';
     fetchPlanCatalogMock.mockResolvedValue(null);
     await PlanPage();
-    expect(fetchPlanCatalogMock).toHaveBeenCalledWith('https://merqo.test');
+    expect(fetchPlanCatalogMock).toHaveBeenCalledWith('https://merqo.test', undefined);
+  });
+
+  it('sends the Authorization header when MERQO_CUSTOMER_SECRET is set', async () => {
+    process.env.MERQO_CUSTOMER_SECRET = 'test-secret';
+    fetchPlanCatalogMock.mockResolvedValue(null);
+    await PlanPage();
+    expect(fetchPlanCatalogMock).toHaveBeenCalledWith('https://www.merqo.io', {
+      headers: { Authorization: 'Bearer test-secret' },
+    });
   });
 
   it('shows the current plan and a calm note, with no prices, when the catalog is null', async () => {

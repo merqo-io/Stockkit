@@ -7,7 +7,7 @@ as of `layout.tsx`'s legal-acceptance gate, a current terms/privacy
 acceptance (own README); `admin/` (own README) is the Merqo-team back-office
 console. `proxy.ts` redirects signed-out visitors to `/login`; the server layout additionally requires `requireAdmin()` and returns 404 for a signed-in non-admin; `legal/` (own README) is the public terms/privacy pages plus
 the `/legal/accept` interstitial the dashboard gate redirects a stale vendor
-to; `auth/callback/` and `api/` are plain Route Handlers.
+to; `auth/callback/` and `api/` are plain Route Handlers; `auth/confirm/` is the own-domain email-link step (own README).
 
 `globals.css` also holds the `@media (pointer: coarse)` 44px touch-target rules
 and the `.tap-area` utility, and its `prefers-reduced-motion` block switches off

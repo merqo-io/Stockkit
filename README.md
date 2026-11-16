@@ -35,7 +35,7 @@ restoring card/background contrast in light mode after the Reefer Frost
 rebrand had accidentally collapsed them to the same color, plus a later
 brightness bump to the (already-correct) dark-mode card.
 
-A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and points to the Plan page.
+A product's detail view is three tabs on every screen size (Log stock, Edit, History), with form errors shown inline under each field; on the Free plan the History tab notes the 10-change cap and that full history is not available yet.
 
 On touch devices (`pointer: coarse`) buttons, inputs, selects and tab triggers
 grow to a 44px minimum via `src/app/globals.css`, with a `.tap-area` utility for
@@ -154,7 +154,7 @@ had not. `src/lib/image-upload-adapter.ts` stays local — the Storage
 bucket and object path are stockkit's own. Which kit uses which shared
 export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
-The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
+The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`, authenticated with `MERQO_CUSTOMER_SECRET` as a bearer when set); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
 `/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
 
@@ -167,6 +167,7 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 | `/`                   | anyone                    | landing page, "In build" badge, waitlist CTA                                                                       |
 | `/login`              | anyone                    | Supabase email/password + Google OAuth sign-in / sign-up                                                           |
 | `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                     |
+| `/auth/confirm`       | anyone                    | continue page for emailed auth links; its button POSTs to `/auth/confirm/verify`, which verifies the token hash    |
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                     |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                           |
 | `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                               |
@@ -331,6 +332,7 @@ transaction). See `AGENTS.md` for full conventions.
 - `src/app/error.tsx` + `src/app/not-found.tsx` + `src/app/global-error.tsx` — thin files over `@merqo/ui`'s `ErrorPage`, `NotFound` and `GlobalError` (v0.45.1), with stockkit's copy and colours passed in.
 - `src/app/(auth)/login/` — the combined sign-in/sign-up page (email/password + Google OAuth, plus a forgot-password flow) and its `completeSignup` server action (creates the `vendors` row, best-effort registers the vendor into the shared `merqo.vendor_profile` table).
 - `src/app/(auth)/reset-password/` — completes a password reset on the recovery session `/auth/callback` establishes.
+- `src/app/auth/confirm/` — the page and `verify/` POST handler for emailed auth links verified on this origin (`handleAuthConfirm` from `@merqo/ui/auth`).
 - `src/app/auth/callback/` — the `GET` Route Handler both Google OAuth and password-recovery links redirect through; on a successful exchange also self-heals a local `vendors` row for the signed-in user (`ensureVendorRow` from `src/lib/ensure-vendor-row.ts`, upsert + `ignoreDuplicates`; `dashboard/layout.tsx` runs the same self-heal when a vendor arrives via the shared `*.merqo.io` cookie without a row), since Google OAuth sign-in has no `completeSignup`-equivalent step to create one — without it, `markTourSeen`'s update silently no-ops and the onboarding tour re-runs on every dashboard visit.
 - `src/app/(public)/` — the public landing page (composed from `src/components/landing/`) + its layout.
 - `src/app/api/health/` — the scaffold health-check route (logging-wrapped, used by the Dockerfile healthcheck); untouched.
@@ -400,6 +402,6 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.46.0 (commit `5ebd889`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.49.1 (commit `016f59f`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
