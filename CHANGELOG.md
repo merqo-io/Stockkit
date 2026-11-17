@@ -19,6 +19,7 @@
 
 ### Changed
 
+- `@merqo/ui` repinned from v0.50.0 to v0.50.1: footer links get a 44px minimum touch height and a visible focus ring at every width, and the footer reserves bottom padding so the fixed Back to top button no longer covers them.
 - Bumped `@merqo/ui` from v0.49.1 to v0.50.0 (adds `FaqPage` and `faqJsonLd`).
 - Bumped `@merqo/ui` to v0.46.0: the plan page price ladder now shows a notice that Merqo is free during the pilot.
 - Moved to `@merqo/ui` 0.45.1. `error.tsx`, `not-found.tsx` and `global-error.tsx` render the shared `ErrorPage`, `NotFound` and `GlobalError` with the same copy; the local popover, `FieldError` and the two dashed empty boxes in the products workspace are replaced by the shared `Popover`, `FormError` and `EmptyState`, and `FORM_LABEL_CLASS` and `FORM_ERROR_CLASS` now come from the package. The error page now shows Next's digest as a reference line, and the global error body sits in a `main` landmark.
