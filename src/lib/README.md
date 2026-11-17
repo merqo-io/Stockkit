@@ -186,6 +186,6 @@ via the `*.merqo.io` cookie). Logs and swallows errors.
 
 ## Auth error copy
 
-`auth-error-message.ts` exports `authErrorMessage(error, fallback)`, which maps Supabase auth errors (by `code`, else message match) to plain next-step copy and never returns the raw message.
+`auth-error-message.ts` exports `authErrorMessage(error, fallback)`, which maps Supabase auth errors (by `code`, else message match) to plain next-step copy and never returns the raw message. `weak_password` errors (by code or message text) go through the exported `weakPasswordMessage({ reasons, message })`, which names the failed rule and reads policy numbers from the server message. `PASSWORD_REQUIREMENTS_HINT` is the single statement of the password policy shown in the UI.
 
 `schemas.ts` is UTF-8 and its user-facing messages must keep real characters (em dash, ellipsis); `schemas.test.ts` fails on double-encoded text.

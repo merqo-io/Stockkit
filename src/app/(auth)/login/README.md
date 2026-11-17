@@ -21,7 +21,7 @@ wrapped in `@merqo/ui`'s `ElevatedCard` (2026-09-16, was stockkit-local).
 
 `completeSignup` is rate limited (5 per hour per user, 20 per hour per IP) and fails closed (the IP bucket is skipped when no client IP is known), answering with "Too many tries. Please wait and try again."
 
-Auth errors never reach the UI raw: every returned Supabase error goes through `authErrorMessage` (`@/lib/auth-error-message`) with an action-specific fallback. The vendor's business is labelled "Business name" in the UI; the local state and DB column keep their existing names.
+Auth errors never reach the UI raw: every returned Supabase error goes through `authErrorMessage` (`@/lib/auth-error-message`) with an action-specific fallback. Signup mode shows the password-requirements tooltip beside the Password label (not sign-in), and a Supabase `weak_password` rejection toasts the specific failed rule. The vendor's business is labelled "Business name" in the UI; the local state and DB column keep their existing names.
 
 Login copy keeps real UTF-8 characters (ellipsis, em dash, password bullets). Rate limiting and the Supabase clients come through the `src/lib` wrappers over `@merqo/ui`.
 
