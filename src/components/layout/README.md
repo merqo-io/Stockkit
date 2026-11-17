@@ -8,7 +8,7 @@ nothing else: `Providers` (theme provider and toaster) comes from `@merqo/ui`.
 `SiteFooter` is a single-row, bordered footer (`border-t`, transparent
 background) matching qkit's landing footer exactly — a lowercase `stockkit` wordmark
 (also `/#top`), a one-line tagline, the mandatory `© <year> stockkit · a
-Merqo kit` credit line, an `/about` link, `@merqo/ui`'s `LegalFooterLinks`
+Merqo kit` credit line, an `/about` link, an `/faq` link (the shared `Footer`'s `faqHref`, on for both layouts since the page is public), `@merqo/ui`'s `LegalFooterLinks`
 (Terms/Privacy, linking to `/legal/terms`/`/legal/privacy`), and (via the `showSignIn` prop,
 on for the public layout only) a `Vendor sign in →` link. It's shared by
 the public layout and the dashboard layout — `showSignIn` stays off for the

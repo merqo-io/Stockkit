@@ -26,6 +26,7 @@ export function SiteFooter({
       tagline={tagline}
       copyright={creditText}
       showSignIn={showSignIn}
+      faqHref="/faq"
       wordmark={
         // eslint-disable-next-line @next/next/no-html-link-for-pages -- Link leaves the old hash in the URL bar on a fragment-only jump
         <a
