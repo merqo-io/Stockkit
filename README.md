@@ -171,7 +171,7 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 | `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                     |
 | `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                           |
 | `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                               |
-| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes; Free vendors can request Pro (support message, upgraded by hand)                |
+| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes                                                                                  |
 | `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                    |
 | `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                  |
 | `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                             |
