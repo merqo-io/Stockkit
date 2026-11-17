@@ -22,12 +22,6 @@ vi.mock('@/lib/supabase/server', () => ({
   createServerClient: createServerClientMock,
 }));
 
-vi.mock('@/app/actions/support', () => ({
-  submitSupportMessageAction: vi.fn(),
-}));
-
-vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
-
 vi.mock('@/lib/vendor-entitlement', () => ({
   readVendorTier: readVendorTierMock,
 }));
@@ -102,14 +96,14 @@ describe('PlanPage', () => {
     expect(screen.queryByText(/Prices are unavailable/)).toBeNull();
   });
 
-  it('offers the Request Pro button on Free', async () => {
+  it('shows no Request Pro button or every-feature line on Free', async () => {
     fetchPlanCatalogMock.mockResolvedValue(null);
     render(await PlanPage());
-    expect(screen.getByRole('button', { name: 'Request Pro' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Request Pro' })).toBeNull();
     expect(screen.queryByText('You have every stockkit feature.')).toBeNull();
   });
 
-  it('shows the every-feature line instead of the button on Pro', async () => {
+  it('shows the every-feature line on Pro', async () => {
     readVendorTierMock.mockResolvedValue('pro');
     fetchPlanCatalogMock.mockResolvedValue(null);
     render(await PlanPage());

@@ -7,7 +7,6 @@ import { BackButton, fetchPlanCatalog, PageHeader, PricingLadder } from '@merqo/
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { RequestProButton } from './request-pro-button';
 
 export const metadata: Metadata = { title: 'Plan' };
 
@@ -55,13 +54,9 @@ export default async function PlanPage() {
             </li>
           ))}
         </ul>
-        <div className="mt-4">
-          {plan === 'free' ? (
-            <RequestProButton />
-          ) : (
-            <p className="text-muted-foreground text-sm">You have every stockkit feature.</p>
-          )}
-        </div>
+        {plan !== 'free' && (
+          <p className="text-muted-foreground mt-4 text-sm">You have every stockkit feature.</p>
+        )}
       </div>
 
       <section aria-labelledby="plans-heading" className="space-y-4">
