@@ -25,4 +25,9 @@ describe('SiteFooter', () => {
     render(<SiteFooter />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
   });
+
+  it('links to the public FAQ page', () => {
+    render(<SiteFooter />);
+    expect(screen.getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/faq');
+  });
 });

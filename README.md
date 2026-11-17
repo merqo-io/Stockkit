@@ -162,23 +162,23 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 
 ## Routes
 
-| Route                 | Who                       | Purpose                                                                                                            |
-| --------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `/`                   | anyone                    | landing page, "In build" badge, waitlist CTA                                                                       |
-| `/login`              | anyone                    | Supabase email/password + Google OAuth sign-in / sign-up                                                           |
-| `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                     |
-| `/auth/confirm`       | anyone                    | continue page for emailed auth links; its button POSTs to `/auth/confirm/verify`, which verifies the token hash    |
-| `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                     |
-| `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                           |
-| `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                               |
-| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes                                                                                  |
-| `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                    |
-| `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                  |
-| `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                             |
-| `/legal/*`            | anyone / vendor (auth)    | Terms of Service, Privacy Policy, and the accept interstitial for a stale vendor — own README (`src/app/legal/`)   |
-| `/about`              | anyone                    | "Why Merqo" page, `@merqo/ui`'s shared `AboutMerqo` component (`v0.25.0`) — own README (`src/app/(public)/about/`) |
-| `/faq`                | anyone                    | standalone FAQ, `@merqo/ui`'s shared `FaqPage` (`v0.50.1`) — own README (`src/app/(public)/faq/`)                  |
-| `/api/merqo/*`        | merqo hub (bearer-secret) | metrics poll, vendor status/activity lookup, vendor provisioning — own README (`src/app/api/merqo/`)               |
+| Route                 | Who                       | Purpose                                                                                                                               |
+| --------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                   | anyone                    | landing page, "In build" badge, waitlist CTA                                                                                          |
+| `/login`              | anyone                    | Supabase email/password + Google OAuth sign-in / sign-up                                                                              |
+| `/reset-password`     | anyone                    | set a new password on a recovery session from `/auth/callback`                                                                        |
+| `/auth/confirm`       | anyone                    | continue page for emailed auth links; its button POSTs to `/auth/confirm/verify`, which verifies the token hash                       |
+| `/auth/callback`      | anyone                    | exchanges an OAuth/recovery code for a session, then redirects                                                                        |
+| `/dashboard`          | vendor (auth)             | inventory value + low/out-of-stock stats                                                                                              |
+| `/dashboard/products` | vendor (auth)             | product list with filter and search; log stock, edit products, view movement history                                                  |
+| `/dashboard/plan`     | vendor (auth)             | current plan and what it includes                                                                                                     |
+| `/admin`              | Merqo admin               | platform totals (vendors/products/plan mix), recent cross-vendor stock activity                                                       |
+| `/admin/vendors`      | Merqo admin               | every vendor with a health-triage status and plan badge, sorted most-urgent first                                                     |
+| `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                                                |
+| `/legal/*`            | anyone / vendor (auth)    | Terms of Service, Privacy Policy, and the accept interstitial for a stale vendor — own README (`src/app/legal/`)                      |
+| `/about`              | anyone                    | "Why Merqo" page, `@merqo/ui`'s shared `AboutMerqo` component (`v0.25.0`) — own README (`src/app/(public)/about/`)                    |
+| `/faq`                | anyone                    | standalone FAQ, `@merqo/ui`'s shared `FaqPage` (`v0.50.1`; the footer's FAQ link is `v0.51.0`) — own README (`src/app/(public)/faq/`) |
+| `/api/merqo/*`        | merqo hub (bearer-secret) | metrics poll, vendor status/activity lookup, vendor provisioning — own README (`src/app/api/merqo/`)                                  |
 
 ## Getting started
 
