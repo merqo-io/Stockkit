@@ -13,6 +13,9 @@ fixed-position sibling of `SiteFooter`.
 group so it inherits the same `Nav`/`SiteFooter`/`BackToTop` chrome and
 auth-aware session check for free.
 
+`faq/` (own README) is the standalone `/faq` page, the shared `FaqPage`
+from `@merqo/ui`; it too inherits the chrome from this layout.
+
 ## Shared package note
 
 `BackToTop` now comes from `@merqo/ui` (v0.31.0) rather than `@/components/landing/back-to-top`.

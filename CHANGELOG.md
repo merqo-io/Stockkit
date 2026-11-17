@@ -4,6 +4,7 @@
 
 ### Added
 
+- A public `/faq` page built on the shared `FaqPage` from `@merqo/ui` (three groups, FAQ JSON-LD). The landing nav's FAQ link now goes to `/faq` and shows at every width.
 - `/auth/confirm` (a page whose button posts to `/auth/confirm/verify`) so emailed auth links can verify a token hash on stockkit's own origin; a GET never consumes the token. Failures land on `/login?error=link`, which now shows an expired-link message. `/auth/callback` is unchanged.
 
 ### Fixed
@@ -18,7 +19,7 @@
 
 ### Changed
 
-- Bumped `@merqo/ui` to v0.49.1.
+- Bumped `@merqo/ui` from v0.49.1 to v0.50.0 (adds `FaqPage` and `faqJsonLd`).
 - Bumped `@merqo/ui` to v0.46.0: the plan page price ladder now shows a notice that Merqo is free during the pilot.
 - Moved to `@merqo/ui` 0.45.1. `error.tsx`, `not-found.tsx` and `global-error.tsx` render the shared `ErrorPage`, `NotFound` and `GlobalError` with the same copy; the local popover, `FieldError` and the two dashed empty boxes in the products workspace are replaced by the shared `Popover`, `FormError` and `EmptyState`, and `FORM_LABEL_CLASS` and `FORM_ERROR_CLASS` now come from the package. The error page now shows Next's digest as a reference line, and the global error body sits in a `main` landmark.
 - `/mfa` renders the shared `MfaForm` from `@merqo/ui`; the local form is now a thin Supabase adapter. Pasted codes such as "123 456" are reduced to six digits, the field gains a placeholder, the button reads "Verifying" while checking, the field is disabled while pending, non-digits are stripped as typed, the error clears when the field is edited, and a thrown network error shows the setup or wrong-code message instead of going unhandled.

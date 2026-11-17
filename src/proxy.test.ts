@@ -151,7 +151,7 @@ describe('proxy nonce coverage', () => {
     expect(csp(response)).toContain("'nonce-");
   });
 
-  it.each(['/', '/about', '/legal/terms', '/legal/privacy', '/administrator'])(
+  it.each(['/', '/about', '/faq', '/legal/terms', '/legal/privacy', '/administrator'])(
     'keeps the static policy on %s',
     async (path) => {
       signedIn();
