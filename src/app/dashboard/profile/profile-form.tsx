@@ -12,6 +12,7 @@ import {
 import { Section } from '@/components/section';
 import { Button } from '@/components/ui/button';
 import { useAsyncAction } from '@/hooks';
+import { authErrorMessage } from '@/lib/auth-error-message';
 import { removeReplacedAvatar, uploadVendorAvatar } from '@/lib/image-upload-adapter';
 import {
   displayNameSchema,
@@ -176,7 +177,7 @@ export function ProfileForm({
       try {
         const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error, 'Could not update password. Try again.'));
           return;
         }
         toast.success('Password updated');
@@ -251,7 +252,7 @@ export function ProfileForm({
             icon={<KeyRound className="size-5" />}
             eyebrow="Sign-in security"
             title="Change password"
-            description="Set a new password. At least 8 characters."
+            description="Set a new password."
           >
             <div className="space-y-2">
               <Label htmlFor="account-email" className={FORM_LABEL_CLASS}>

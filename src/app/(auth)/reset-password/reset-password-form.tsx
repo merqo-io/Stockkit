@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { navigatingAway, useAsyncAction } from '@/hooks';
-import { authErrorMessage, PASSWORD_REQUIREMENTS_HINT } from '@/lib/auth-error-message';
+import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { passwordChangeSchema } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
@@ -118,7 +118,6 @@ export function ResetPasswordForm() {
   return (
     <ElevatedCard className="px-7 py-8">
       <h1 className="text-2xl leading-tight font-semibold">Set a new password</h1>
-      <p className="text-muted-foreground mt-1.5 text-sm">{PASSWORD_REQUIREMENTS_HINT}</p>
       <form
         onSubmit={(e) => {
           e.preventDefault();

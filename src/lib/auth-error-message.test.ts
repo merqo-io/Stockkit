@@ -66,7 +66,7 @@ describe('authErrorMessage', () => {
 
 describe('weakPasswordMessage', () => {
   const CHARS =
-    'Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};:<>?,./~.';
+    'Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};\':"|<>?,./`~.';
 
   it('names the minimum length when the message carries a number', () => {
     expect(
