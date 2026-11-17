@@ -4,6 +4,7 @@
 
 ### Added
 
+- Signup and the reset-password form now name the rule a rejected weak password broke (length, missing character types, known breach) instead of a generic message, and both show an (i) tooltip with the password requirements.
 - A public `/faq` page built on the shared `FaqPage` from `@merqo/ui` (three groups, FAQ JSON-LD). The landing nav's FAQ link now goes to `/faq` and shows at every width.
 - `/auth/confirm` (a page whose button posts to `/auth/confirm/verify`) so emailed auth links can verify a token hash on stockkit's own origin; a GET never consumes the token. Failures land on `/login?error=link`, which now shows an expired-link message. `/auth/callback` is unchanged.
 

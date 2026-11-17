@@ -18,7 +18,11 @@ vi.mock('./actions', () => ({
 
 const { updateUserMock, uploadMock, getPublicUrlMock } = vi.hoisted(() => ({
   updateUserMock: vi.fn(
-    async (_input: unknown): Promise<{ error: null | { message: string } }> => ({ error: null })
+    async (
+      _input: unknown
+    ): Promise<{
+      error: null | { message: string; code?: string; status?: number; reasons?: string[] };
+    }> => ({ error: null })
   ),
   uploadMock: vi.fn(async (_path: string, _blob: unknown, _opts: unknown) => ({ error: null })),
   getPublicUrlMock: vi.fn((path: string) => ({
@@ -136,14 +140,21 @@ describe('ProfileForm', () => {
   });
 
   it('shows an error toast when updating the password returns a failure', async () => {
-    updateUserMock.mockResolvedValueOnce({ error: { message: 'Password server error' } });
+    updateUserMock.mockResolvedValueOnce({
+      error: {
+        code: 'weak_password',
+        status: 422,
+        reasons: ['length'],
+        message: 'Password should be at least 10 characters.',
+      },
+    });
     const user = userEvent.setup();
     render(<ProfileForm {...defaultProps} />);
     await user.type(screen.getByLabelText(/^new password$/i), 'hunter22');
     await user.type(screen.getByLabelText(/confirm new password/i), 'hunter22');
     await user.click(screen.getByRole('button', { name: /update password/i }));
     const { toast } = await import('sonner');
-    expect(toast.error).toHaveBeenCalledWith('Password server error');
+    expect(toast.error).toHaveBeenCalledWith('Password is too short. Use at least 10 characters.');
   });
 
   it('saves the display name via supabase.auth.updateUser, independently of other sections', async () => {

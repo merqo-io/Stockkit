@@ -158,7 +158,7 @@ The public landing is waitlist-only and publishes no pricing; `/login` and `/das
 
 `/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
 
-Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("Business name" instead of stall/shop). Supabase auth errors go through `authErrorMessage` (`src/lib/auth-error-message.ts`) to fixed friendly messages; the raw error text is never shown.
+Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("Business name" instead of stall/shop). Supabase auth errors go through `authErrorMessage` (`src/lib/auth-error-message.ts`) to fixed friendly messages; the raw error text is never shown. A weak password on sign-up, reset or profile change-password names the rule it failed (length, missing character types, known breach), and a tap requirements hint sits beside the password label on sign-up, reset and profile.
 
 ## Routes
 

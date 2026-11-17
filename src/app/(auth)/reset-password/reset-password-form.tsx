@@ -118,9 +118,6 @@ export function ResetPasswordForm() {
   return (
     <ElevatedCard className="px-7 py-8">
       <h1 className="text-2xl leading-tight font-semibold">Set a new password</h1>
-      <p className="text-muted-foreground mt-1.5 text-sm">
-        Pick something at least 8 characters long.
-      </p>
       <form
         onSubmit={(e) => {
           e.preventDefault();

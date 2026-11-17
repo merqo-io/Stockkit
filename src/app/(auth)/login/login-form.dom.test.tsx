@@ -164,6 +164,42 @@ describe('LoginForm', () => {
     expect(completeSignupMock).not.toHaveBeenCalled();
   });
 
+  it('shows the specific message when signUp rejects a weak password', async () => {
+    authMock.signUp.mockResolvedValue({
+      data: { session: null },
+      error: {
+        code: 'weak_password',
+        status: 422,
+        reasons: ['characters'],
+        message:
+          'Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$.',
+      },
+    });
+    searchParamsValue.current = 'mode=signup';
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await user.type(screen.getByLabelText('Business name'), "Mama's Kitchen");
+    await user.type(screen.getByLabelText('Email'), 'new@example.com');
+    await user.type(screen.getByLabelText('Password'), 'hunter22');
+    await user.click(screen.getByRole('button', { name: 'Create account' }));
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'Password needs a lowercase letter, an uppercase letter, a number and a symbol.'
+      )
+    );
+  });
+
+  it('shows the password requirements hint in signup mode only', () => {
+    searchParamsValue.current = 'mode=signup';
+    const { unmount } = render(<LoginForm />);
+    expect(screen.getByRole('button', { name: 'Password requirements' })).toBeTruthy();
+    unmount();
+    searchParamsValue.current = '';
+    render(<LoginForm />);
+    expect(screen.queryByRole('button', { name: 'Password requirements' })).toBeNull();
+  });
+
   it('signs in with email/password and redirects to dashboard on success', async () => {
     const user = userEvent.setup();
     render(<LoginForm />);
