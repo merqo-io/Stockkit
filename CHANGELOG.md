@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Security
+
+- `next` and `eslint-config-next` moved from 16.4.2 to 16.4.6, which clears GHSA-mfr8-8qww-v76h (information disclosure across root params through `use cache` and `unstable_cache`).
+
 ### Added
 
 - The footer links to `/faq` on the public pages and in the dashboard, using `faqHref` from `@merqo/ui` v0.51.0 (pinned to `aeed30b`).
