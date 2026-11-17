@@ -177,6 +177,7 @@ Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("
 | `/admin/activity`     | Merqo admin               | `admin_audit` viewer — the most recent admin/vendor actions worth reconstructing later                             |
 | `/legal/*`            | anyone / vendor (auth)    | Terms of Service, Privacy Policy, and the accept interstitial for a stale vendor — own README (`src/app/legal/`)   |
 | `/about`              | anyone                    | "Why Merqo" page, `@merqo/ui`'s shared `AboutMerqo` component (`v0.25.0`) — own README (`src/app/(public)/about/`) |
+| `/faq`                | anyone                    | standalone FAQ, `@merqo/ui`'s shared `FaqPage` (`v0.50.0`) — own README (`src/app/(public)/faq/`)                  |
 | `/api/merqo/*`        | merqo hub (bearer-secret) | metrics poll, vendor status/activity lookup, vendor provisioning — own README (`src/app/api/merqo/`)               |
 
 ## Getting started

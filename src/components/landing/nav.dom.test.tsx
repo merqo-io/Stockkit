@@ -22,4 +22,11 @@ describe('Nav', () => {
     render(<Nav />);
     expect(screen.getByRole('link', { name: 'About' }).getAttribute('href')).toBe('/about');
   });
+
+  it('links to the FAQ page and keeps the link visible at every width', () => {
+    render(<Nav />);
+    const link = screen.getByRole('link', { name: 'FAQ' });
+    expect(link.getAttribute('href')).toBe('/faq');
+    expect(link.className).not.toContain('hidden');
+  });
 });
