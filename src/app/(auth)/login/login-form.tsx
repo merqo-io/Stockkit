@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { PasswordRequirementsTip } from '@/components/password-requirements-tip';
 import { Button } from '@/components/ui/button';
 import { BrandText } from '@/components/widgets';
 import { navigatingAway, useAsyncAction } from '@/hooks';
@@ -80,6 +81,37 @@ function SentNotice({ sent, onBack }: { sent: Sent; onBack: () => void }) {
         </ElevatedCard>
       </div>
     </main>
+  );
+}
+
+function PasswordLabelRow({
+  isSignin,
+  loading,
+  onForgot,
+}: {
+  isSignin: boolean;
+  loading: boolean;
+  onForgot: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-1">
+        <Label htmlFor="password" className={FORM_LABEL_CLASS}>
+          Password
+        </Label>
+        {!isSignin && <PasswordRequirementsTip />}
+      </div>
+      {isSignin && (
+        <button
+          type="button"
+          onClick={onForgot}
+          disabled={loading}
+          className="text-primary text-xs font-semibold underline-offset-4 hover:underline disabled:opacity-50"
+        >
+          Forgot password?
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -295,21 +327,7 @@ export function LoginForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <Label htmlFor="password" className={FORM_LABEL_CLASS}>
-                    Password
-                  </Label>
-                  {isSignin && (
-                    <button
-                      type="button"
-                      onClick={sendReset}
-                      disabled={loading}
-                      className="text-primary text-xs font-semibold underline-offset-4 hover:underline disabled:opacity-50"
-                    >
-                      Forgot password?
-                    </button>
-                  )}
-                </div>
+                <PasswordLabelRow isSignin={isSignin} loading={loading} onForgot={sendReset} />
                 <Input
                   id="password"
                   type="password"

@@ -72,10 +72,22 @@ describe('ResetPasswordForm', () => {
     expect(routerRefresh).toHaveBeenCalled();
   });
 
-  it('shows a toast when updateUser returns an error', async () => {
+  it('shows the password requirements hint trigger next to the new-password label', async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    render(<ResetPasswordForm />);
+    await screen.findByLabelText('New password');
+    expect(screen.getByRole('button', { name: 'Password requirements' })).toBeTruthy();
+  });
+
+  it('shows a specific toast when updateUser rejects a weak password', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
     updateUserMock.mockResolvedValueOnce({
-      error: { code: 'weak_password', message: 'Password too weak' },
+      error: {
+        code: 'weak_password',
+        status: 422,
+        reasons: ['length'],
+        message: 'Password should be at least 10 characters.',
+      },
     });
     const user = userEvent.setup();
     render(<ResetPasswordForm />);
@@ -84,7 +96,9 @@ describe('ResetPasswordForm', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Pick a longer password.'));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Password is too short. Use at least 10 characters.')
+    );
     expect(routerPush).not.toHaveBeenCalled();
   });
 

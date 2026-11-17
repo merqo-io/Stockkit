@@ -1,4 +1,5 @@
 'use client';
+import { PasswordRequirementsTip } from '@/components/password-requirements-tip';
 import { FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
 import { Input, Label } from '@merqo/ui/primitives';
 export function PasswordFields({
@@ -19,9 +20,12 @@ export function PasswordFields({
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="new-password" className={FORM_LABEL_CLASS}>
-          New password
-        </Label>
+        <div className="flex items-center gap-1">
+          <Label htmlFor="new-password" className={FORM_LABEL_CLASS}>
+            New password
+          </Label>
+          <PasswordRequirementsTip />
+        </div>
         <Input
           id="new-password"
           type="password"
