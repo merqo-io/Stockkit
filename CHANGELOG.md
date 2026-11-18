@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- The landing page follows the shared public-page rules: step cards and the ledger preview are plain bordered `rounded-lg` surfaces with no shadow or hover lift, the benefits list and FAQ items use `rounded-lg`, the `fade-rise` entrance animation is gone, and the ledger preview shows both sample movements instead of cycling every four seconds.
 - The plan page no longer shows a "Request Pro" button on Free; Pro unlocks no stockkit feature, so the request led nowhere
 - The plan page highlights the Pro plan in the price ladder (the All-Access plan is inactive) and sends `MERQO_CUSTOMER_SECRET` as a bearer token on the server-side `GET /api/plans` fetch when it is set.
 - The product active-cap error, the CSV download lock and the history cap notice no longer link to the Plan page or ask the vendor to request Pro; they say the feature is not available yet.

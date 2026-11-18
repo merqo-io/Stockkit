@@ -12,7 +12,7 @@ interface HeroProps {
 export function Hero({ authed = false }: HeroProps) {
   return (
     <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:py-28">
-      <div className="fade-rise text-center lg:text-left">
+      <div className="text-center lg:text-left">
         <p className="text-primary font-mono text-sm font-semibold tracking-wider uppercase">
           stockkit
         </p>
@@ -36,7 +36,7 @@ export function Hero({ authed = false }: HeroProps) {
           </Button>
         </div>
       </div>
-      <div className="fade-rise flex justify-center lg:justify-end">
+      <div className="flex justify-center lg:justify-end">
         <LedgerCardPreview />
       </div>
     </div>

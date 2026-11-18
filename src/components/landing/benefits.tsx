@@ -24,7 +24,7 @@ export function Benefits() {
       <h2 className="font-display mb-10 text-center text-3xl font-semibold">
         Why vendors pick stockkit
       </h2>
-      <div className="border-border divide-border fade-rise divide-y overflow-hidden rounded-2xl border">
+      <div className="border-border divide-border divide-y overflow-hidden rounded-lg border">
         {BENEFITS.map((b) => (
           <div key={b.title} className="flex items-start gap-5 px-6 py-6 sm:items-center">
             <div className="bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full">

@@ -31,15 +31,13 @@ as-is everywhere a wordmark appears (`nav.tsx`, `dashboard/dashboard-nav.tsx`)
 so the gradient "Stock"/flat "Kit" treatment never renders two different
 ways on the same page.
 
-`ledger-card-preview.tsx` is `Hero`'s illustration — a mock product card
-(name, stock-status dot, on-hand count), not real data, but its
-recent-movement row cycles between two sample entries every few seconds
-(`prefers-reduced-motion`-gated, reusing the `.fade-rise` keyframe) so the
-page's one signature visual reads as a live ledger instead of a frozen
-screenshot. `HowItWorks` keeps the shared `@merqo/ui` `ElevatedCard`
-(2026-09-16, was stockkit-local) card-grid treatment with `01/02/03`
-numbering, since its three steps are an actual
-sequence; `Benefits` is deliberately a different shape — a bordered
+`ledger-card-preview.tsx` is `Hero`'s illustration: a mock product card
+(name, stock-status dot, on-hand count) with two sample movement rows. It is
+static; nothing cycles, because no product event is behind it. `HowItWorks`
+renders its three steps as `bg-card rounded-lg border` cards with `01/02/03`
+numbering, since they are an actual sequence. Landing surfaces carry no shadow,
+no hover lift and no entrance animation, per the shared public-page rules
+(see root `DESIGN.md`). `Benefits` is deliberately a different shape — a bordered
 horizontal list (icon left, text right, divider rows) — since its three
 items have no such order and shouldn't look like they do.
 

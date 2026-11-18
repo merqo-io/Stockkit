@@ -205,26 +205,12 @@
 .animate-float {
   animation: float 10s ease-in-out infinite;
 }
-@keyframes fade-rise {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.fade-rise {
-  animation: fade-rise 0.4s ease-out both;
-}
 /* tw-animate-css drives dialog/tabs/select enter and exit through
    animation-name utilities (animate-in/out, data-[state=...]:animate-*), so
    they are switched off here along with the app's own keyframes. Spinners
    stop turning, which is why they are paired with a text label where the
    state matters. */
 @media (prefers-reduced-motion: reduce) {
-  .fade-rise,
   .animate-float,
   .animate-pulse,
   .animate-spin,
