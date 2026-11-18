@@ -8,6 +8,7 @@
 
 ### Added
 
+- `DESIGN.md` records stockkit's public-page values and the places the public pages still break the shared rules.
 - The footer links to `/faq` on the public pages and in the dashboard, using `faqHref` from `@merqo/ui` v0.51.0 (pinned to `aeed30b`).
 - Signup and the reset-password form now name the rule a rejected weak password broke (length, missing character types, known breach) instead of a generic message, and both show an (i) tooltip with the password requirements.
 - A public `/faq` page built on the shared `FaqPage` from `@merqo/ui` (three groups, FAQ JSON-LD). The landing nav's FAQ link now goes to `/faq` and shows at every width.
