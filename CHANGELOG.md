@@ -8,6 +8,7 @@
 
 ### Added
 
+- `DESIGN.md` records stockkit's public-page values and the places the public pages still break the shared rules.
 - The footer links to `/faq` on the public pages and in the dashboard, using `faqHref` from `@merqo/ui` v0.51.0 (pinned to `aeed30b`).
 - Signup and the reset-password form now name the rule a rejected weak password broke (length, missing character types, known breach) instead of a generic message, and both show an (i) tooltip with the password requirements.
 - A public `/faq` page built on the shared `FaqPage` from `@merqo/ui` (three groups, FAQ JSON-LD). The landing nav's FAQ link now goes to `/faq` and shows at every width.
@@ -15,6 +16,7 @@
 
 ### Fixed
 
+- The landing page follows the shared public-page rules: step cards and the ledger preview are plain bordered `rounded-lg` surfaces with no shadow or hover lift, the benefits list and FAQ items use `rounded-lg`, the `fade-rise` entrance animation is gone, and the ledger preview shows both sample movements instead of cycling every four seconds.
 - The plan page no longer shows a "Request Pro" button on Free; Pro unlocks no stockkit feature, so the request led nowhere
 - The plan page highlights the Pro plan in the price ladder (the All-Access plan is inactive) and sends `MERQO_CUSTOMER_SECRET` as a bearer token on the server-side `GET /api/plans` fetch when it is set.
 - The product active-cap error, the CSV download lock and the history cap notice no longer link to the Plan page or ask the vendor to request Pro; they say the feature is not available yet.

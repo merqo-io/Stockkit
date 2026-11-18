@@ -24,7 +24,7 @@ export function Faq() {
         {FAQ.map((item) => (
           <details
             key={item.q}
-            className="group bg-card open:border-primary/50 overflow-hidden rounded-xl border"
+            className="group bg-card open:border-primary/50 overflow-hidden rounded-lg border"
           >
             <summary className="focus-visible:ring-primary/50 flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 outline-none focus-visible:ring-2 focus-visible:ring-inset">
               <span className="text-base leading-snug font-semibold">{item.q}</span>

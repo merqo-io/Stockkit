@@ -1,7 +1,5 @@
 import { ListChecks, RefreshCw, TrendingUp } from 'lucide-react';
 
-import { ElevatedCard } from '@merqo/ui';
-
 const STEPS = [
   {
     icon: ListChecks,
@@ -28,10 +26,7 @@ export function HowItWorks() {
       </h2>
       <div className="grid gap-5 sm:grid-cols-3">
         {STEPS.map((step, i) => (
-          <ElevatedCard
-            key={step.title}
-            className="fade-rise p-6 transition-transform duration-200 hover:-translate-y-1"
-          >
+          <div key={step.title} className="bg-card rounded-lg border p-6">
             <div className="flex items-center gap-3">
               <span className="text-primary font-mono text-sm font-semibold">
                 {String(i + 1).padStart(2, '0')}
@@ -41,7 +36,7 @@ export function HowItWorks() {
             </div>
             <h3 className="mt-4 text-xl font-semibold">{step.title}</h3>
             <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{step.body}</p>
-          </ElevatedCard>
+          </div>
         ))}
       </div>
     </section>
