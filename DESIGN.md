@@ -12,4 +12,3 @@ Public pages (landing, about, FAQ, legal) follow the shared rules at https://git
   - `src/components/landing/benefits.tsx:27`: the benefits list is `rounded-2xl`.
   - `src/components/landing/hero.tsx:15`, `src/components/landing/hero.tsx:39`, `src/components/landing/benefits.tsx:27`, `src/components/landing/how-it-works.tsx:33`: the `fade-rise` load-time animation (`src/app/globals.css:218`) runs on page content.
   - `src/components/landing/ledger-card-preview.tsx:25`: the ledger card's activity row cycles every four seconds with no product event behind it.
-  - `src/app/globals.css:205`: `.animate-float` is defined for decorative motion; no public page uses it.
