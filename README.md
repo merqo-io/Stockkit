@@ -1,6 +1,6 @@
 # stockkit
 
-Public page rules (radius, shadow, hover and motion) are recorded in `DESIGN.md`.
+Public page rules (radius, shadow, hover and motion) are recorded in `DESIGN.md`. The landing follows them, so `DESIGN.md` lists nothing open.
 
 Inventory tracking for small vendors. Vendors sign in, add the products they
 stock, log restocks/waste/adjustments against a running on-hand count, and
