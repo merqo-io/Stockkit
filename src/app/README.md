@@ -11,7 +11,8 @@ to; `auth/callback/` and `api/` are plain Route Handlers; `auth/confirm/` is the
 
 `globals.css` also holds the `@media (pointer: coarse)` 44px touch-target rules
 and the `.tap-area` utility, and its `prefers-reduced-motion` block switches off
-pulse, spin and the tw-animate enter/exit animations.
+pulse, spin and the tw-animate enter/exit animations. The landing has no
+entrance animation, so there is no `fade-rise` keyframe.
 `globals.css`'s `@source` includes `node_modules/@merqo/ui/dist` so the
 shared package's Tailwind classes get compiled here too. Its color tokens
 are named "Reefer Frost" in the file's own header comment (chilled
