@@ -13,6 +13,7 @@ to; `auth/callback/` and `api/` are plain Route Handlers; `auth/confirm/` is the
 and the `.tap-area` utility, and its `prefers-reduced-motion` block switches off
 pulse, spin and the tw-animate enter/exit animations. The landing has no
 entrance animation, so there is no `fade-rise` keyframe.
+It also defines the `--success` token (the stock-ok green, darker in light mode and lighter in dark mode) that the shared `DeltaPill` reads as `text-success`.
 `globals.css`'s `@source` includes `node_modules/@merqo/ui/dist` so the
 shared package's Tailwind classes get compiled here too. Its color tokens
 are named "Reefer Frost" in the file's own header comment (chilled

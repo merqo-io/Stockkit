@@ -368,7 +368,7 @@ transaction). See `AGENTS.md` for full conventions.
 policies it depends on, applied via the Supabase CLI or the SQL Editor. `test/` holds the
 API-route logging tests; colocated `src/**/*.test.ts` and `src/**/*.dom.test.tsx` files cover authentication, dashboard behavior, business logic and components. `pnpm test:ci` enforces at least 80% statements, branches, functions and lines.
 
-Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.50.1 commit.
+Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.54.0 commit.
 
 Products are archived with is_active=false so identity and ledger remain
 available. Migration 0018 blocks deletion of products/vendors/accounts with
@@ -381,7 +381,7 @@ limits in [the audit report](docs/audits/2026-10-08-stockkit-audit.md).
 
 The unused scaffold dependency `@tanstack/react-query` was removed after source, test and tooling reference checks. Server Components and Server Actions remain the data-fetching model, reducing unused install and maintenance overhead.
 
-The shared UI dependency is pinned to immutable commit 7b386558af36a1cbf008a9b4c4073c07ffc105ba, tagged `v0.34.2`, carrying the reviewed upload lifecycle, storage URL validation and safe money parsing fixes. Since `v0.32.1`, `Section` title tooltips and default-mode `InfoTooltip`s open on a tap as well as on hover and keyboard focus. Since `v0.32.2` every info icon also takes taps through a 44px touch area on touch devices. Since `v0.32.3` a long tooltip wraps inside the viewport. Since `v0.34.2` the shared action hook treats a Next.js `redirect()` as navigation rather than an error. pnpm 11.10 permits preparation only for that exact locked source URL; update the dependency and its build allowlist together.
+The shared UI dependency is pinned to immutable commit 378bd898514716d581a51442de217b78fdbc64b8, tagged `v0.54.0`, carrying the reviewed upload lifecycle, storage URL validation and safe money parsing fixes. Since `v0.32.1`, `Section` title tooltips and default-mode `InfoTooltip`s open on a tap as well as on hover and keyboard focus. Since `v0.32.2` every info icon also takes taps through a 44px touch area on touch devices. Since `v0.32.3` a long tooltip wraps inside the viewport. Since `v0.34.2` the shared action hook treats a Next.js `redirect()` as navigation rather than an error. pnpm 11.10 permits preparation only for that exact locked source URL; update the dependency and its build allowlist together.
 
 Component reuse decisions and preserved behavior are documented in [the cleanup spec](docs/meta/2026-10-10-component-reuse-spec.md). Stock reason labels and password fields are shared locally; product details expose the existing Pro CSV export action.
 
@@ -405,6 +405,6 @@ Signup, feedback, profile saves and `/api/merqo/*` are rate limited through `sto
 
 The dashboard layout owns page padding and the root layout sets a `%s | stockkit` title template; the overview links its attention rows to Products.
 
-`@merqo/ui` is pinned to v0.50.1 (commit `b1449ab`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
+`@merqo/ui` is pinned to v0.54.0 (commit `378bd898`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
