@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `@merqo/ui` moved from v0.51.0 (`aeed30b`) to v0.54.0 (`378bd898`). Adds a `--success` colour token for the shared `DeltaPill`.
+
 ### Security
 
 - `next` and `eslint-config-next` moved from 16.4.2 to 16.4.6, which clears GHSA-mfr8-8qww-v76h (information disclosure across root params through `use cache` and `unstable_cache`).
