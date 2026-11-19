@@ -50,4 +50,4 @@ Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
-`Nav` also takes `vendor` (`{name, avatarUrl}`, supplied by `(public)/layout.tsx`). Signed in, `end` shows a ghost Dashboard link and `landing-account-menu.tsx` (`LandingAccountMenu`, a client island around `@merqo/ui`'s `AccountMenu` with the same client-side sign-out as the dashboard); signed out it is unchanged. Feedback/Get-help adapters are shared with the dashboard via `src/components/account-menu-wiring.ts`.
+`Nav` also takes `vendor` (`{name, avatarUrl}`, supplied by `(public)/layout.tsx`). Signed in, `end` shows a ghost Dashboard link and `landing-account-menu.tsx` (`LandingAccountMenu`, a client island around `@merqo/ui`'s `AccountMenu` with the same server-action sign-out as the dashboard); signed out it is unchanged. Feedback/Get-help adapters are shared with the dashboard via `src/components/account-menu-wiring.ts`.

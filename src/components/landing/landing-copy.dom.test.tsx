@@ -2,10 +2,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/lib/supabase/client', () => ({ createClient: vi.fn() }));
+vi.mock('@/app/actions/auth', () => ({ signOutAction: vi.fn() }));
 vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
 vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
 
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Benefits } from './benefits';

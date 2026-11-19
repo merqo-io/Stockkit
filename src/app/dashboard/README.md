@@ -65,10 +65,9 @@ component-render tests, per this project's own convention.
 treatment (`@/components/widgets`) instead of a hand-rolled two-span
 split, matching the public nav and hero.
 
-`dashboard-nav.tsx`'s `signOutAction` throws on a returned Supabase error
-(`AccountMenu`'s sign-out contract shows the thrown message inline in the
-dropdown, not a toast) and otherwise pushes to `/login` + refreshes +
-awaits `navigatingAway()`.
+Sign out is the shared `signOutAction` server action (`src/app/actions/auth.ts`):
+it clears the session server-side and redirects to `/login`; a failure rejects,
+and `AccountMenu` shows the message inline in the dropdown, not a toast.
 
 `dashboard-nav.tsx` also passes `@merqo/ui`'s `switchKits` prop, populated via
 `getSwitchKits('stockkit')` (v0.14.1) rather than a locally hardcoded array
@@ -127,4 +126,4 @@ The layout renders `DashboardTour` with `renderTourExample()` markup (trusted co
 
 The layout owns the page's vertical padding (`px-5 py-7`); pages add none of their own. Page titles come from the root `%s | stockkit` template. The nav shows only two links and no vendor subtitle.
 
-`dashboard-nav.tsx` takes `getHelp` and `onFeedbackSubmit` from `@/components/account-menu-wiring`, shared with the landing account menu.
+`dashboard-nav.tsx` takes `signOutAction` (server action, redirects to `/login`), `getHelp` and `onFeedbackSubmit` from `@/components/account-menu-wiring`, shared with the landing account menu.

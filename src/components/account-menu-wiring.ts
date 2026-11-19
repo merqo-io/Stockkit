@@ -1,5 +1,6 @@
 import type { AccountMenuProps } from '@merqo/ui';
 
+import { signOutAction } from '@/app/actions/auth';
 import { submitFeedbackAction } from '@/app/actions/feedback';
 import { submitSupportMessageAction } from '@/app/actions/support';
 import { SUPPORT_CATEGORY_LABELS, type SupportMessageInput } from '@/lib/schemas';
@@ -13,6 +14,8 @@ const SUPPORT_CATEGORIES = (
 function isSupportCategory(value: string | undefined): value is SupportMessageInput['category'] {
   return !!value && Object.hasOwn(SUPPORT_CATEGORY_LABELS, value);
 }
+
+export { signOutAction };
 
 /** Throw-adapters shared by the dashboard and landing account menus:
  *  the server actions return `{success, error}` but `AccountMenu` needs a

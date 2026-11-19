@@ -3,17 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { pushMock, refreshMock, signOutMock } = vi.hoisted(() => ({
-  pushMock: vi.fn(),
-  refreshMock: vi.fn(),
-  signOutMock: vi.fn(),
-}));
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock, refresh: refreshMock }),
-}));
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({ auth: { signOut: signOutMock } }),
-}));
+const { signOutMock } = vi.hoisted(() => ({ signOutMock: vi.fn() }));
+vi.mock('@/app/actions/auth', () => ({ signOutAction: signOutMock }));
 vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
 vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
 
@@ -23,7 +14,7 @@ const vendor = { name: 'Ada Stall', avatarUrl: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
-  signOutMock.mockResolvedValue({ error: null });
+  signOutMock.mockResolvedValue(undefined);
 });
 
 describe('Nav', () => {
@@ -53,7 +44,7 @@ describe('Nav', () => {
     expect(await screen.findByRole('menuitem', { name: /Sign out/i })).toBeTruthy();
   });
 
-  it('signs out by touch, then goes to /login and refreshes', async () => {
+  it('signs out through the shared server action by touch', async () => {
     const user = userEvent.setup();
     render(<Nav authed vendor={vendor} />);
     await user.pointer({
@@ -64,13 +55,11 @@ describe('Nav', () => {
       keys: '[TouchA]',
       target: await screen.findByRole('menuitem', { name: /Sign out/i }),
     });
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/login'));
-    expect(signOutMock).toHaveBeenCalledTimes(1);
-    expect(refreshMock).toHaveBeenCalled();
+    await waitFor(() => expect(signOutMock).toHaveBeenCalledTimes(1));
   });
 
-  it('does not navigate when sign out fails', async () => {
-    signOutMock.mockResolvedValue({ error: { message: 'network down' } });
+  it('shows the error when sign out rejects', async () => {
+    signOutMock.mockRejectedValue(new Error('network down'));
     const user = userEvent.setup();
     render(<Nav authed vendor={vendor} />);
     await user.pointer({
@@ -82,7 +71,6 @@ describe('Nav', () => {
       target: await screen.findByRole('menuitem', { name: /Sign out/i }),
     });
     expect(await screen.findByText(/network down/i)).toBeTruthy();
-    expect(pushMock).not.toHaveBeenCalled();
   });
 
   it('links to the About page', () => {

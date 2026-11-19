@@ -11,11 +11,9 @@ import { DashboardNav } from './dashboard-nav';
 // a client is constructed — so isolate the client-side sign-out call the same
 // way profile-form.dom.test.tsx isolates its own server actions.
 const { signOutMock } = vi.hoisted(() => ({
-  signOutMock: vi.fn(async (): Promise<{ error: null | { message: string } }> => ({ error: null })),
+  signOutMock: vi.fn(async (): Promise<void> => undefined),
 }));
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({ auth: { signOut: signOutMock } }),
-}));
+vi.mock('@/app/actions/auth', () => ({ signOutAction: signOutMock }));
 
 const { submitFeedbackActionMock } = vi.hoisted(() => ({
   submitFeedbackActionMock: vi.fn(async (_input: unknown): Promise<ActionResult> => ({
@@ -47,7 +45,7 @@ vi.mock('next/navigation', () => ({
 
 afterEach(() => {
   signOutMock.mockReset();
-  signOutMock.mockResolvedValue({ error: null });
+  signOutMock.mockResolvedValue(undefined);
   submitFeedbackActionMock.mockReset();
   submitFeedbackActionMock.mockResolvedValue({ success: true });
   submitSupportMessageActionMock.mockReset();
@@ -116,19 +114,22 @@ describe('DashboardNav', () => {
     );
   });
 
-  it('signs out, and navigates to /login, on success', async () => {
+  it('signs out through the shared server action, opened and tapped by touch', async () => {
     const user = userEvent.setup();
     render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
-    await user.click(screen.getByRole('button', { name: /account menu/i }));
-    await user.click(screen.getByRole('menuitem', { name: /sign out/i }));
-
-    await waitFor(() => expect(signOutMock).toHaveBeenCalled());
-    expect(routerPushMock).toHaveBeenCalledWith('/login');
-    expect(routerRefreshMock).toHaveBeenCalledOnce();
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /account menu/i }),
+    });
+    await user.pointer({
+      keys: '[TouchA]',
+      target: await screen.findByRole('menuitem', { name: /sign out/i }),
+    });
+    await waitFor(() => expect(signOutMock).toHaveBeenCalledOnce());
   });
 
-  it('shows an inline error when sign-out returns a Supabase error', async () => {
-    signOutMock.mockResolvedValueOnce({ error: { message: 'Session already expired' } });
+  it('shows an inline error when the sign-out action rejects', async () => {
+    signOutMock.mockRejectedValueOnce(new Error('Session already expired'));
     const user = userEvent.setup();
     render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));

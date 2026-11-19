@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- Signed-in vendors on the public pages can now sign out: the landing nav shows a Dashboard link and the shared `AccountMenu` avatar (sign out, profile, help, feedback) instead of only a Dashboard button.
+- Signed-in vendors on the public pages can now sign out: the landing nav shows a Dashboard link and the shared `AccountMenu` avatar (sign out, profile, help, feedback) instead of only a Dashboard button. Sign out in both the landing and dashboard menus now runs as one shared server action that redirects to `/login`, instead of a client-side Supabase call.
 
 ### Security
 
