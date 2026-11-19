@@ -71,3 +71,5 @@ The server dashboard-tour adapter renders the canonical stock example once and p
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
 `password-fields.tsx` takes its label and error classes from `@merqo/ui`. `password-requirements-tip.tsx` is the tap `InfoTooltip` carrying `PASSWORD_REQUIREMENTS_HINT`, shown beside the new-password label here and on signup.
+
+`account-menu-wiring.ts` holds the `getHelp` and `onFeedbackSubmit` throw-adapters (server actions return `{success, error}`, `AccountMenu` needs a rejection) shared by `dashboard/dashboard-nav.tsx` and `landing/landing-account-menu.tsx`.

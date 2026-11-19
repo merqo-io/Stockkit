@@ -14,9 +14,22 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   } = await supabase.auth.getUser();
   const authed = !!user;
 
+  // A plain read, not resolveVendorName: that helper can create the shared
+  // profile row, which public pages must not do on every render.
+  const { data: row } = user
+    ? await supabase.from('vendors').select('name').eq('id', user.id).maybeSingle()
+    : { data: null };
+  const rawAvatarUrl = user?.user_metadata?.avatar_url;
+  const vendor = user
+    ? {
+        name: row?.name ?? user.email?.split('@')[0] ?? 'Your stall',
+        avatarUrl: typeof rawAvatarUrl === 'string' ? rawAvatarUrl : null,
+      }
+    : undefined;
+
   return (
     <div className="flex min-h-screen flex-col">
-      <Nav authed={authed} />
+      <Nav authed={authed} vendor={vendor} />
       <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter showSignIn={!authed} />
       <BackToTop />

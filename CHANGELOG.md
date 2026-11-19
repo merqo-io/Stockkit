@@ -6,6 +6,10 @@
 
 - `@merqo/ui` moved from v0.51.0 (`aeed30b`) to v0.54.0 (`378bd898`). Adds a `--success` colour token for the shared `DeltaPill`.
 
+### Fixed
+
+- Signed-in vendors on the public pages can now sign out: the landing nav shows a Dashboard link and the shared `AccountMenu` avatar (sign out, profile, help, feedback) instead of only a Dashboard button.
+
 ### Security
 
 - `next` and `eslint-config-next` moved from 16.4.2 to 16.4.6, which clears GHSA-mfr8-8qww-v76h (information disclosure across root params through `use cache` and `unstable_cache`).
