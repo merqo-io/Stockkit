@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `@merqo/ui` moved from v0.54.0 (`378bd898`) to v0.54.1 (`272bf23c`). The legal gate no longer caches failed legal-status checks and retries dropped idempotent requests once, which fixes the sign-in `/legal/accept` loop.
 - `@merqo/ui` moved from v0.51.0 (`aeed30b`) to v0.54.0 (`378bd898`). Adds a `--success` colour token for the shared `DeltaPill`.
 
 ### Security
