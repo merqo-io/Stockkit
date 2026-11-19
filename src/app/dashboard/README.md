@@ -126,3 +126,5 @@ Dashboard tests assert session and preference ownership in addition to navigatio
 The layout renders `DashboardTour` with `renderTourExample()` markup (trusted constant example markup using the stock indicator tokens) as `exampleIndicator`. The client tour retains lazy step construction and seen-state persistence.
 
 The layout owns the page's vertical padding (`px-5 py-7`); pages add none of their own. Page titles come from the root `%s | stockkit` template. The nav shows only two links and no vendor subtitle.
+
+`dashboard-nav.tsx` takes `getHelp` and `onFeedbackSubmit` from `@/components/account-menu-wiring`, shared with the landing account menu.

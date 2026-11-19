@@ -1,13 +1,18 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { pushMock, refreshMock, signOutMock } = vi.hoisted(() => ({
+  pushMock: vi.fn(),
+  refreshMock: vi.fn(),
+  signOutMock: vi.fn(),
+}));
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  useRouter: () => ({ push: pushMock, refresh: refreshMock }),
 }));
 vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({ auth: { signOut: vi.fn().mockResolvedValue({ error: null }) } }),
+  createClient: () => ({ auth: { signOut: signOutMock } }),
 }));
 vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
 vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
@@ -15,6 +20,11 @@ vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() })
 import { Nav } from './nav';
 
 const vendor = { name: 'Ada Stall', avatarUrl: null };
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  signOutMock.mockResolvedValue({ error: null });
+});
 
 describe('Nav', () => {
   it('shows Sign in and Join the waitlist when signed out', () => {
@@ -41,6 +51,38 @@ describe('Nav', () => {
       target: screen.getByRole('button', { name: /Ada Stall|account/i }),
     });
     expect(await screen.findByRole('menuitem', { name: /Sign out/i })).toBeTruthy();
+  });
+
+  it('signs out by touch, then goes to /login and refreshes', async () => {
+    const user = userEvent.setup();
+    render(<Nav authed vendor={vendor} />);
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /Ada Stall|account/i }),
+    });
+    await user.pointer({
+      keys: '[TouchA]',
+      target: await screen.findByRole('menuitem', { name: /Sign out/i }),
+    });
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/login'));
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(refreshMock).toHaveBeenCalled();
+  });
+
+  it('does not navigate when sign out fails', async () => {
+    signOutMock.mockResolvedValue({ error: { message: 'network down' } });
+    const user = userEvent.setup();
+    render(<Nav authed vendor={vendor} />);
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /Ada Stall|account/i }),
+    });
+    await user.pointer({
+      keys: '[TouchA]',
+      target: await screen.findByRole('menuitem', { name: /Sign out/i }),
+    });
+    expect(await screen.findByText(/network down/i)).toBeTruthy();
+    expect(pushMock).not.toHaveBeenCalled();
   });
 
   it('links to the About page', () => {

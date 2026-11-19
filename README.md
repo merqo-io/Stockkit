@@ -408,3 +408,5 @@ The dashboard layout owns page padding and the root layout sets a `%s | stockkit
 `@merqo/ui` is pinned to v0.54.0 (commit `378bd898`). It supplies `PageHeader`, `StatCard` and `ConfirmDialog`, so stockkit no longer keeps local copies of them.
 
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
+
+The landing nav now shows an account menu with Sign out for signed-in vendors (see `src/components/landing/README.md`).
