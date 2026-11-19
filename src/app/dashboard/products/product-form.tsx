@@ -1,6 +1,13 @@
 'use client';
 
-import { ConfirmDialog, FORM_LABEL_CLASS, FormError, InfoTooltip, MoneyInput } from '@merqo/ui';
+import {
+  AsyncSubmitButton,
+  FORM_LABEL_CLASS,
+  FormError,
+  InfoTooltip,
+  MoneyInput,
+  undoToast,
+} from '@merqo/ui';
 import { Archive, ArchiveRestore, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -19,13 +26,15 @@ import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
 import { cn, Input, Label, Popover, PopoverContent, PopoverTrigger } from '@merqo/ui/primitives';
 import { archiveProduct, saveProduct } from './actions';
+import {
+  cancelPendingArchive,
+  clearPendingArchive,
+  hasPendingArchive,
+  registerPendingArchive,
+  type PendingArchive,
+} from './pending-archives';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];
-
-function submitLabel(saving: boolean, isNew: boolean) {
-  if (saving) return 'Saving…';
-  return isNew ? 'Add product' : 'Save changes';
-}
 
 type FieldKey = 'name' | 'unit' | 'unit_cost_cents' | 'on_hand' | 'low_stock_threshold';
 
@@ -135,6 +144,9 @@ function savedProduct(existing: Product | undefined, input: ProductFormInput, id
 interface Props {
   product?: Product;
   onSaved: (product: Product) => void;
+  // Called when a deferred archive is undone or fails, to put the row back
+  // without replaying the archive-time snapshot over newer edits.
+  onArchiveRolledBack?: (productId: string) => void;
   onCancel?: () => void;
 }
 
@@ -151,7 +163,7 @@ function initialDraft(product: Product | undefined) {
 /** Create/edit form. Starting quantity is only editable when creating a new
  * product — once a product exists, its on_hand only ever moves through the
  * Log stock form (StockLogForm), never a direct edit. */
-export function ProductForm({ product, onSaved, onCancel }: Props) {
+export function ProductForm({ product, onSaved, onArchiveRolledBack, onCancel }: Props) {
   const isNew = !product;
   const initial = initialDraft(product);
   const [name, setName] = useState(initial.name);
@@ -161,7 +173,6 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
   const [lowStockThreshold, setLowStockThreshold] = useState(initial.lowStockThreshold);
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const { pending: saving, run: runSave } = useAsyncAction();
-  const { pending: archiving, run: runArchive } = useAsyncAction();
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -186,6 +197,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       return;
     }
     setErrors({});
+    if (product) cancelPendingArchive(product.id);
 
     return runSave(async () => {
       try {
@@ -202,21 +214,48 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
     });
   }
 
+  // Archive is applied to the UI at once and committed only when the Undo
+  // toast settles without Undo, so Undo never re-activates a product (which
+  // the Free plan's active-product cap could refuse). The pending archive lives
+  // in a module registry, so it survives this form unmounting, can be
+  // cancelled by Restore or Save, and is flushed when the page is hidden. A
+  // hard kill of the browser inside the toast window can still drop it.
   function onArchive() {
-    if (!product) return;
-    return runArchive(async () => {
-      try {
-        const result = await archiveProduct(product.id);
-        if (!result.success) {
+    if (!product || hasPendingArchive(product.id)) return;
+    const id = product.id;
+    const rollback = () => onArchiveRolledBack?.(id);
+    const entry: PendingArchive = {
+      cancelled: false,
+      settled: false,
+      dismiss: () => {},
+      commit: async () => {
+        if (entry.cancelled || entry.settled) return;
+        entry.settled = true;
+        clearPendingArchive(id);
+        try {
+          const result = await archiveProduct(id);
+          if (result.success) return;
           toast.error(result.error);
-          return;
+        } catch {
+          toast.error('Could not archive the product. Try again.');
         }
-        toast.success('Product archived');
-        onSaved({ ...product, is_active: false });
-      } catch {
-        toast.error('Could not archive the product. Try again.');
-      }
+        rollback();
+      },
+    };
+    onSaved({ ...product, is_active: false });
+    const handle = undoToast({
+      message: 'Product archived',
+      onUndo: () => {
+        entry.cancelled = true;
+        clearPendingArchive(id);
+        rollback();
+      },
+      onSettle: (reason) => {
+        if (reason !== 'undone') return entry.commit();
+      },
     });
+    entry.dismiss = handle.dismiss;
+    registerPendingArchive(id, entry);
   }
 
   return (
@@ -312,9 +351,9 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button type="submit" className="flex-1" disabled={saving}>
-          {submitLabel(saving, isNew)}
-        </Button>
+        <AsyncSubmitButton pending={saving} pendingChildren="Saving…" className="flex-1">
+          {isNew ? 'Add product' : 'Save changes'}
+        </AsyncSubmitButton>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
             Cancel
@@ -343,26 +382,16 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
           <p className="text-muted-foreground text-sm">
             Archiving keeps stock history and removes the product from active inventory.
           </p>
-          <ConfirmDialog
-            trigger={
-              <Button
-                type="button"
-                variant="outline"
-                className="border-destructive/40 text-destructive hover:bg-destructive hover:text-white"
-                disabled={archiving || saving}
-              >
-                <Archive className="size-4" />
-                {archiving ? 'Archiving…' : 'Archive product'}
-              </Button>
-            }
-            title={<>Archive &ldquo;{product?.name}&rdquo;?</>}
-            description="You can restore it later from its Edit tab. Its stock history stays available."
-            confirmLabel="Archive product"
-            cancelLabel="Keep product"
-            pendingLabel="Archiving…"
-            variant="destructive"
-            onConfirm={onArchive}
-          />
+          <Button
+            type="button"
+            variant="outline"
+            className="border-destructive/40 text-destructive hover:bg-destructive hover:text-white"
+            disabled={saving}
+            onClick={onArchive}
+          >
+            <Archive className="size-4" />
+            Archive product
+          </Button>
         </div>
       )}
     </form>

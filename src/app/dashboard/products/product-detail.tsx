@@ -18,6 +18,7 @@ interface Props {
   // ('stacked') can size spacing differently; both render the same tabs.
   layout: 'tabs' | 'stacked';
   onSaved: (product: Product) => void;
+  onArchiveRolledBack?: (productId: string) => void;
 }
 
 /**
@@ -25,7 +26,7 @@ interface Props {
  * stock, editing, and movement history. Shared between the mobile Dialog and
  * the desktop split-pane panel.
  */
-export function ProductDetail({ product, layout, onSaved }: Props) {
+export function ProductDetail({ product, layout, onSaved, onArchiveRolledBack }: Props) {
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [historyCapped, setHistoryCapped] = useState<boolean | null>(null);
   const status = productStatusFor(product);
@@ -65,7 +66,11 @@ export function ProductDetail({ product, layout, onSaved }: Props) {
           <StockLogForm product={product} onRecorded={onRecorded} />
         </TabsContent>
         <TabsContent value="edit" className="pt-4">
-          <ProductForm product={product} onSaved={onSaved} />
+          <ProductForm
+            product={product}
+            onSaved={onSaved}
+            onArchiveRolledBack={onArchiveRolledBack}
+          />
         </TabsContent>
         <TabsContent value="history" className="space-y-3 pt-4">
           <ExportHistoryButton productId={product.id} locked={historyCapped} />

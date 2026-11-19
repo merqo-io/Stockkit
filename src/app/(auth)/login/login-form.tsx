@@ -15,7 +15,7 @@ import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
-import { ElevatedCard, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
+import { AsyncSubmitButton, ElevatedCard, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
 import { Input, Label } from '@merqo/ui/primitives';
 
 import { GoogleMark } from '@merqo/ui';
@@ -24,11 +24,6 @@ import { completeSignup } from './actions';
 type Mode = 'signin' | 'signup';
 
 const GENERIC_ERROR = 'Something went wrong. Try again.';
-
-function submitLabel(loading: boolean, isSignin: boolean) {
-  if (loading) return 'Please wait…';
-  return isSignin ? 'Sign in' : 'Create account';
-}
 
 function ExpiredLinkNotice() {
   const searchParams = useSearchParams();
@@ -343,14 +338,13 @@ export function LoginForm() {
                   </p>
                 )}
               </div>
-              <Button
-                type="submit"
-                size="lg"
+              <AsyncSubmitButton
+                pending={loading}
+                pendingChildren="Please wait…"
                 className="h-12 w-full rounded-xl text-base font-semibold"
-                disabled={loading}
               >
-                {submitLabel(loading, isSignin)}
-              </Button>
+                {isSignin ? 'Sign in' : 'Create account'}
+              </AsyncSubmitButton>
             </form>
           </div>
 

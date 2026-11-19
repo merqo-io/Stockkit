@@ -9,9 +9,9 @@ vendors/products/stock_movements domain (no "programs" concept here).
 
 ## Contents
 
-- `admin-nav.tsx` — `AdminNav` client component: a Back to dashboard link and the Overview/Vendors/Activity tab bar, highlighting the active section by path.
+- `admin-frame.tsx` — `AdminFrame` client wrapper around `@merqo/ui`'s `AdminShell` (wordmark, Admin badge, Back to dashboard link and the Overview/Vendors/Activity tabs). It exists only to read `usePathname()` for the active tab; `admin-frame.dom.test.tsx` covers it.
 - `loading.tsx` — skeleton (header, stat tiles, rows; `role="status"`) shown while any `/admin` page loads; `loading.dom.test.tsx` covers it.
-- `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders the header (`BrandText` wordmark, Admin badge, sign-out) and `AdminNav`.
+- `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders `AdminFrame` with a sign-out form as its header action.
 - `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (in a flat bordered panel), and nothing else: pricing and plan changes live in merqo.
 - `vendors/`, vendor list with each vendor's plan badge (own README).
 - `activity/` — the `admin_audit` viewer, rendered via `@merqo/ui`'s shared
@@ -20,7 +20,7 @@ vendors/products/stock_movements domain (no "programs" concept here).
 ## Connectivity
 
 `vendors/` and `activity/` are the two admin sections linked from
-`admin-nav.tsx`'s tab bar besides the overview page itself; all three render
+`admin-frame.tsx`'s tab bar besides the overview page itself; all three render
 inside `layout.tsx`'s gated shell. This folder's own `page.tsx` reads
 `platformTotals()` and `recentActivity()` from `@/lib/admin-data`, rendering
 each total in an `@merqo/ui` `StatCard` (`font-mono` value per this app's ledger typographic convention). `vendors/page.tsx` reads
