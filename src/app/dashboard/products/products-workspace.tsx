@@ -1,19 +1,18 @@
 'use client';
 
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
-import { EmptyState, PageHeader, SegmentedControl } from '@merqo/ui';
+import { EmptyState, PageHeader, SearchField, SegmentedControl } from '@merqo/ui';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  Input,
 } from '@merqo/ui/primitives';
 import { ProductDetail } from './product-detail';
 import { ProductForm } from './product-form';
@@ -189,20 +188,13 @@ export function ProductsWorkspace({
               value={filter}
               onChange={setFilter}
             />
-            <div className="relative sm:w-64">
-              <Search
-                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                aria-label="Search products"
-                placeholder="Search products"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <SearchField
+              aria-label="Search products"
+              placeholder="Search products"
+              value={query}
+              onValueChange={setQuery}
+              wrapperClassName="sm:w-64"
+            />
           </div>
           {maxActiveProducts !== null && (
             <div>

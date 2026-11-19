@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ActionResult } from '@merqo/ui/kit-api';
 
-const { saveProductMock, archiveProductMock } = vi.hoisted(() => ({
+type UndoOptions = {
+  message: string;
+  onUndo: () => void;
+  onSettle?: (reason: 'undone' | 'expired' | 'dismissed') => void | Promise<void>;
+};
+
+const { saveProductMock, archiveProductMock, undoToastMock } = vi.hoisted(() => ({
+  undoToastMock: vi.fn<(options: UndoOptions) => void>(),
   saveProductMock: vi.fn(async (): Promise<ActionResult<{ productId: string }>> => ({
     success: true,
     productId: 'p1',
@@ -15,6 +22,11 @@ const { saveProductMock, archiveProductMock } = vi.hoisted(() => ({
 vi.mock('./actions', () => ({
   saveProduct: saveProductMock,
   archiveProduct: archiveProductMock,
+}));
+
+vi.mock('@merqo/ui', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@merqo/ui')>()),
+  undoToast: undoToastMock,
 }));
 
 vi.mock('sonner', () => ({
@@ -39,6 +51,8 @@ const product = {
 };
 
 afterEach(() => {
+  undoToastMock.mockReset();
+  vi.mocked(toast.error).mockClear();
   saveProductMock.mockReset();
   saveProductMock.mockResolvedValue({ success: true, productId: 'p1' });
   archiveProductMock.mockReset();
@@ -114,40 +128,69 @@ describe('ProductForm', () => {
     expect(toast.error).toHaveBeenCalledWith('Could not save the product. Try again.');
   });
 
-  it('shows a generic toast when deleting throws instead of returning an error', async () => {
-    archiveProductMock.mockRejectedValueOnce(new Error('network down'));
-    const user = userEvent.setup();
-    render(<ProductForm product={product} onSaved={vi.fn()} />);
-
-    await user.click(screen.getByRole('button', { name: /archive product/i }));
-    const dialog = await screen.findByRole('alertdialog');
-    await user.click(within(dialog).getByRole('button', { name: /archive product/i }));
-
-    expect(toast.error).toHaveBeenCalledWith('Could not archive the product. Try again.');
-  });
-
-  it('archives a product and calls onSaved', async () => {
-    const onSaved = vi.fn();
+  async function archive(onSaved = vi.fn()) {
     const user = userEvent.setup();
     render(<ProductForm product={product} onSaved={onSaved} />);
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /archive product/i }),
+    });
+    expect(undoToastMock).toHaveBeenCalledTimes(1);
+    return { onSaved, options: undoToastMock.mock.calls[0]![0] };
+  }
 
-    await user.click(screen.getByRole('button', { name: /archive product/i }));
-    const dialog = await screen.findByRole('alertdialog');
-    await user.click(within(dialog).getByRole('button', { name: /archive product/i }));
+  it('archives at once with an undo toast and commits nothing until it settles', async () => {
+    const { onSaved, options } = await archive();
 
+    expect(options.message).toBe('Product archived');
     expect(onSaved).toHaveBeenCalledWith({ ...product, is_active: false });
+    expect(archiveProductMock).not.toHaveBeenCalled();
   });
 
-  it('shows a toast when deleting returns a failure', async () => {
-    archiveProductMock.mockResolvedValueOnce({ success: false, error: 'Cannot archive' });
-    const user = userEvent.setup();
-    render(<ProductForm product={product} onSaved={vi.fn()} />);
+  it('Undo restores the product without calling archiveProduct', async () => {
+    const { onSaved, options } = await archive();
+    onSaved.mockClear();
 
-    await user.click(screen.getByRole('button', { name: /archive product/i }));
-    const dialog = await screen.findByRole('alertdialog');
-    await user.click(within(dialog).getByRole('button', { name: /archive product/i }));
+    options.onUndo();
+    await options.onSettle?.('undone');
+
+    expect(onSaved).toHaveBeenCalledWith(product);
+    expect(archiveProductMock).not.toHaveBeenCalled();
+  });
+
+  it.each(['expired', 'dismissed'] as const)(
+    'commits archiveProduct once when the toast is %s',
+    async (reason) => {
+      const { options } = await archive();
+
+      await options.onSettle?.(reason);
+
+      expect(archiveProductMock).toHaveBeenCalledTimes(1);
+      expect(archiveProductMock).toHaveBeenCalledWith('p1');
+      expect(toast.error).not.toHaveBeenCalled();
+    }
+  );
+
+  it('rolls the product back and toasts when the commit returns a failure', async () => {
+    archiveProductMock.mockResolvedValueOnce({ success: false, error: 'Cannot archive' });
+    const { onSaved, options } = await archive();
+    onSaved.mockClear();
+
+    await options.onSettle?.('expired');
 
     expect(toast.error).toHaveBeenCalledWith('Cannot archive');
+    expect(onSaved).toHaveBeenCalledWith(product);
+  });
+
+  it('rolls the product back with a generic toast when the commit throws', async () => {
+    archiveProductMock.mockRejectedValueOnce(new Error('network down'));
+    const { onSaved, options } = await archive();
+    onSaved.mockClear();
+
+    await options.onSettle?.('expired');
+
+    expect(toast.error).toHaveBeenCalledWith('Could not archive the product. Try again.');
+    expect(onSaved).toHaveBeenCalledWith(product);
   });
 
   it('picks a preset unit from the combobox', async () => {

@@ -137,6 +137,22 @@ describe('ProductsWorkspace filter and search', () => {
     expect(screen.getByText('No matching products')).toBeTruthy();
   });
 
+  it('clears the search with a touch tap on the clear button', async () => {
+    const user = userEvent.setup();
+    render(<ProductsWorkspace initialProducts={items} />);
+    const box = screen.getByRole('searchbox', { name: 'Search products' });
+
+    await user.type(box, 'zzz');
+    expect(screen.getByText('No matching products')).toBeTruthy();
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: 'Clear search' }),
+    });
+
+    expect(box).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Rice' })).toBeTruthy();
+  });
+
   it('shows the active-product meter only when a cap applies', () => {
     const { rerender } = render(
       <ProductsWorkspace initialProducts={items} maxActiveProducts={20} />

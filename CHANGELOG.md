@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Archiving a product now shows an Undo toast instead of a confirm dialog. The archive is saved when the toast closes without Undo, so Undo never counts against the Free plan's 20 active products.
+- The admin header and tabs use `AdminShell` from `@merqo/ui`; the local `AdminNav` is gone.
+- The product search box uses `SearchField` (with a clear button), the history export uses `DownloadButton`, and the sign-in and product form submit buttons use `AsyncSubmitButton`.
+
 - `@merqo/ui` moved from v0.51.0 (`aeed30b`) to v0.54.0 (`378bd898`). Adds a `--success` colour token for the shared `DeltaPill`.
 
 ### Security
