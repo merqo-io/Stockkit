@@ -26,6 +26,13 @@ import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
 import { cn, Input, Label, Popover, PopoverContent, PopoverTrigger } from '@merqo/ui/primitives';
 import { archiveProduct, saveProduct } from './actions';
+import {
+  cancelPendingArchive,
+  clearPendingArchive,
+  hasPendingArchive,
+  registerPendingArchive,
+  type PendingArchive,
+} from './pending-archives';
 
 const UNIT_PRESETS = ['unit', 'kg', 'g', 'L', 'mL', 'box', 'pack', 'case'];
 
@@ -137,6 +144,9 @@ function savedProduct(existing: Product | undefined, input: ProductFormInput, id
 interface Props {
   product?: Product;
   onSaved: (product: Product) => void;
+  // Called when a deferred archive is undone or fails, to put the row back
+  // without replaying the archive-time snapshot over newer edits.
+  onArchiveRolledBack?: (productId: string) => void;
   onCancel?: () => void;
 }
 
@@ -153,7 +163,7 @@ function initialDraft(product: Product | undefined) {
 /** Create/edit form. Starting quantity is only editable when creating a new
  * product — once a product exists, its on_hand only ever moves through the
  * Log stock form (StockLogForm), never a direct edit. */
-export function ProductForm({ product, onSaved, onCancel }: Props) {
+export function ProductForm({ product, onSaved, onArchiveRolledBack, onCancel }: Props) {
   const isNew = !product;
   const initial = initialDraft(product);
   const [name, setName] = useState(initial.name);
@@ -187,6 +197,7 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
       return;
     }
     setErrors({});
+    if (product) cancelPendingArchive(product.id);
 
     return runSave(async () => {
       try {
@@ -205,26 +216,46 @@ export function ProductForm({ product, onSaved, onCancel }: Props) {
 
   // Archive is applied to the UI at once and committed only when the Undo
   // toast settles without Undo, so Undo never re-activates a product (which
-  // the Free plan's active-product cap could refuse). The toast outlives this
-  // component, so the commit still runs if the user navigates away.
+  // the Free plan's active-product cap could refuse). The pending archive lives
+  // in a module registry, so it survives this form unmounting, can be
+  // cancelled by Restore or Save, and is flushed when the page is hidden. A
+  // hard kill of the browser inside the toast window can still drop it.
   function onArchive() {
-    if (!product) return;
-    onSaved({ ...product, is_active: false });
-    undoToast({
-      message: 'Product archived',
-      onUndo: () => onSaved(product),
-      onSettle: async (reason) => {
-        if (reason === 'undone') return;
+    if (!product || hasPendingArchive(product.id)) return;
+    const id = product.id;
+    const rollback = () => onArchiveRolledBack?.(id);
+    const entry: PendingArchive = {
+      cancelled: false,
+      settled: false,
+      dismiss: () => {},
+      commit: async () => {
+        if (entry.cancelled || entry.settled) return;
+        entry.settled = true;
+        clearPendingArchive(id);
         try {
-          const result = await archiveProduct(product.id);
+          const result = await archiveProduct(id);
           if (result.success) return;
           toast.error(result.error);
         } catch {
           toast.error('Could not archive the product. Try again.');
         }
-        onSaved(product);
+        rollback();
+      },
+    };
+    onSaved({ ...product, is_active: false });
+    const handle = undoToast({
+      message: 'Product archived',
+      onUndo: () => {
+        entry.cancelled = true;
+        clearPendingArchive(id);
+        rollback();
+      },
+      onSettle: (reason) => {
+        if (reason !== 'undone') return entry.commit();
       },
     });
+    entry.dismiss = handle.dismiss;
+    registerPendingArchive(id, entry);
   }
 
   return (

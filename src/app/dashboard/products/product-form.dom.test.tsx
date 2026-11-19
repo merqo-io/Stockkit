@@ -35,6 +35,7 @@ vi.mock('sonner', () => ({
 
 import { toast } from 'sonner';
 
+import { cancelPendingArchive } from './pending-archives';
 import { ProductForm } from './product-form';
 
 const product = {
@@ -51,6 +52,7 @@ const product = {
 };
 
 afterEach(() => {
+  cancelPendingArchive('p1');
   undoToastMock.mockReset();
   vi.mocked(toast.error).mockClear();
   saveProductMock.mockReset();
@@ -128,15 +130,21 @@ describe('ProductForm', () => {
     expect(toast.error).toHaveBeenCalledWith('Could not save the product. Try again.');
   });
 
-  async function archive(onSaved = vi.fn()) {
+  async function archive(onSaved = vi.fn(), onArchiveRolledBack = vi.fn(), target = product) {
+    undoToastMock.mockImplementation((options) => ({
+      id: 1,
+      dismiss: () => void options.onSettle?.('dismissed'),
+    }));
     const user = userEvent.setup();
-    render(<ProductForm product={product} onSaved={onSaved} />);
+    const view = render(
+      <ProductForm product={target} onSaved={onSaved} onArchiveRolledBack={onArchiveRolledBack} />
+    );
     await user.pointer({
       keys: '[TouchA]',
       target: screen.getByRole('button', { name: /archive product/i }),
     });
     expect(undoToastMock).toHaveBeenCalledTimes(1);
-    return { onSaved, options: undoToastMock.mock.calls[0]![0] };
+    return { onSaved, onArchiveRolledBack, view, user, options: undoToastMock.mock.calls[0]![0] };
   }
 
   it('archives at once with an undo toast and commits nothing until it settles', async () => {
@@ -147,14 +155,15 @@ describe('ProductForm', () => {
     expect(archiveProductMock).not.toHaveBeenCalled();
   });
 
-  it('Undo restores the product without calling archiveProduct', async () => {
-    const { onSaved, options } = await archive();
+  it('Undo rolls back through onArchiveRolledBack without calling archiveProduct', async () => {
+    const { onSaved, onArchiveRolledBack, options } = await archive();
     onSaved.mockClear();
 
     options.onUndo();
     await options.onSettle?.('undone');
 
-    expect(onSaved).toHaveBeenCalledWith(product);
+    expect(onArchiveRolledBack).toHaveBeenCalledWith('p1');
+    expect(onSaved).not.toHaveBeenCalled();
     expect(archiveProductMock).not.toHaveBeenCalled();
   });
 
@@ -164,6 +173,7 @@ describe('ProductForm', () => {
       const { options } = await archive();
 
       await options.onSettle?.(reason);
+      await options.onSettle?.(reason);
 
       expect(archiveProductMock).toHaveBeenCalledTimes(1);
       expect(archiveProductMock).toHaveBeenCalledWith('p1');
@@ -171,26 +181,79 @@ describe('ProductForm', () => {
     }
   );
 
-  it('rolls the product back and toasts when the commit returns a failure', async () => {
+  it('ignores a second archive of a product that already has one pending', async () => {
+    const { user } = await archive();
+
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /archive product/i }),
+    });
+
+    expect(undoToastMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('Restore during the window cancels the commit', async () => {
+    const uuidProduct = { ...product, id: '22222222-2222-4222-8222-222222222222' };
+    const { view, user, options, onSaved } = await archive(vi.fn(), vi.fn(), uuidProduct);
+    view.rerender(<ProductForm product={{ ...uuidProduct, is_active: false }} onSaved={onSaved} />);
+
+    await user.pointer({
+      keys: '[TouchA]',
+      target: screen.getByRole('button', { name: /restore product/i }),
+    });
+    await options.onSettle?.('expired');
+
+    expect(saveProductMock).toHaveBeenCalledWith(expect.objectContaining({ is_active: true }));
+    expect(archiveProductMock).not.toHaveBeenCalled();
+  });
+
+  it('flushes a pending archive once when the page becomes hidden', async () => {
+    const { options } = await archive();
+    const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+
+    document.dispatchEvent(new Event('visibilitychange'));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await options.onSettle?.('dismissed');
+    visibility.mockRestore();
+
+    expect(archiveProductMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('flushes a pending archive on pagehide', async () => {
+    await archive();
+
+    window.dispatchEvent(new Event('pagehide'));
+
+    expect(archiveProductMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('still commits once when the form unmounts before the toast settles', async () => {
+    const { view, options } = await archive();
+
+    view.unmount();
+    await options.onSettle?.('expired');
+
+    expect(archiveProductMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rolls back and toasts when the commit returns a failure', async () => {
     archiveProductMock.mockResolvedValueOnce({ success: false, error: 'Cannot archive' });
-    const { onSaved, options } = await archive();
-    onSaved.mockClear();
+    const { onArchiveRolledBack, options } = await archive();
 
     await options.onSettle?.('expired');
 
     expect(toast.error).toHaveBeenCalledWith('Cannot archive');
-    expect(onSaved).toHaveBeenCalledWith(product);
+    expect(onArchiveRolledBack).toHaveBeenCalledWith('p1');
   });
 
-  it('rolls the product back with a generic toast when the commit throws', async () => {
+  it('rolls back with a generic toast when the commit throws', async () => {
     archiveProductMock.mockRejectedValueOnce(new Error('network down'));
-    const { onSaved, options } = await archive();
-    onSaved.mockClear();
+    const { onArchiveRolledBack, options } = await archive();
 
     await options.onSettle?.('expired');
 
     expect(toast.error).toHaveBeenCalledWith('Could not archive the product. Try again.');
-    expect(onSaved).toHaveBeenCalledWith(product);
+    expect(onArchiveRolledBack).toHaveBeenCalledWith('p1');
   });
 
   it('picks a preset unit from the combobox', async () => {

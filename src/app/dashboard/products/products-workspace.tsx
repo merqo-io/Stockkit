@@ -99,6 +99,12 @@ export function ProductsWorkspace({
     setMobileDialog(null);
   }
 
+  // Only is_active is restored, on the current row, so edits made during the
+  // Undo window survive and selection and dialogs are left alone.
+  function onArchiveRolledBack(productId: string) {
+    setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, is_active: true } : p)));
+  }
+
   function selectProduct(productId: string) {
     setSelectedId(productId);
     setMode('view');
@@ -122,6 +128,7 @@ export function ProductsWorkspace({
           product={selected}
           layout="stacked"
           onSaved={onProductSaved}
+          onArchiveRolledBack={onArchiveRolledBack}
         />
       );
     }
@@ -255,6 +262,7 @@ export function ProductsWorkspace({
                 product={selected}
                 layout="tabs"
                 onSaved={onProductSaved}
+                onArchiveRolledBack={onArchiveRolledBack}
               />
             </>
           )}
