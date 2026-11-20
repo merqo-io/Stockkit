@@ -13,6 +13,7 @@
 
 ### Fixed
 
+- Signed-in visits to the landing pages no longer return a 500. The server-rendered landing nav passed `next/link` to the client `LandingAccountNav`, which React cannot serialize; the nav now uses the library's plain anchors.
 - Signed-in vendors on the public pages can now sign out: the landing nav shows a Dashboard link and the shared `AccountMenu` avatar (sign out, profile, help, feedback) instead of only a Dashboard button. Sign out in both the landing and dashboard menus now runs as one shared server action that redirects to `/login`, instead of a client-side Supabase call.
 
 ### Security

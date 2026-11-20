@@ -15,6 +15,8 @@ instead. Matches every other kit's
 `src/components/layout/navbar.tsx` exporting `Navbar`, the one structural
 outlier across the Merqo kit family, before this migration.
 
+`Nav` is a Server Component, so it must not pass `next/link` (a plain function there) as `LinkComponent` to the client `LandingAccountNav`; the shared nav falls back to `<a>`. `nav.server-boundary.dom.test.tsx` guards this.
+
 One component per landing-page section (`Hero`, `HowItWorks`, `Benefits`,
 `Faq`), composed by `src/app/(public)/page.tsx`. `Hero` takes an `authed`
 prop and routes an already-signed-in vendor straight to `/dashboard`

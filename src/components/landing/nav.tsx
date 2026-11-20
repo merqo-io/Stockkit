@@ -47,7 +47,6 @@ export function Nav({ user = null }: NavProps) {
                 submitFeedback: submitFeedbackAction,
               }}
               supportCategories={SUPPORT_CATEGORY_LABELS}
-              LinkComponent={Link}
             />
           ) : (
             <>
