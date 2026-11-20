@@ -93,7 +93,7 @@ declares one, for its sign-out/feedback/support action mock resets).
 `layout.test.tsx` — logic-only (`.test.tsx`, no DOM render): calls
 `DashboardLayout` directly and inspects the returned element tree,
 asserting `resolveVendorName`'s result — not the local `vendors.name`
-read — reaches `DashboardNav`'s `vendorName` prop, plus the `DashboardTour`
+read — reaches `DashboardNav`'s `accountLabel` prop (via `accountLabel()` from `@merqo/ui`, with the email local part as fallback), plus the `DashboardTour`
 `seen` prop and the durable tour-seen stamp described below (stamps when
 `tour_seen_at` is null/missing, doesn't re-stamp once it's already set).
 
@@ -126,4 +126,4 @@ The layout renders `DashboardTour` with `renderTourExample()` markup (trusted co
 
 The layout owns the page's vertical padding (`px-5 py-7`); pages add none of their own. Page titles come from the root `%s | stockkit` template. The nav shows only two links and no vendor subtitle.
 
-`dashboard-nav.tsx` takes `signOutAction` (server action, redirects to `/login`), `getHelp` and `onFeedbackSubmit` from `@/components/account-menu-wiring`, shared with the landing account menu.
+`dashboard-nav.tsx` takes a required `accountLabel` (shown as the account menu trigger label), `signOutAction` (server action, redirects to `/login`), `getHelp` and `onFeedbackSubmit` from `@/components/account-menu-wiring`, shared with the landing account menu.
