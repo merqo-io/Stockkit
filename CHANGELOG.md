@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `@merqo/ui` moved from v0.56.0 (`9705d396`) to v0.57.0 (`b496faa6`). The root layout mounts `AppLinkProvider` with `next/link`, so the shared client components (account menu, dashboard nav, sign-in and reset forms, landing account nav) navigate client-side without a `LinkComponent` prop; the landing nav's Dashboard link now uses `next/link` instead of a plain anchor.
 - `@merqo/ui` moved from v0.54.1 (`272bf23c`) to v0.56.0 (`9705d396`). The landing nav now uses the shared `LandingAccountNav` and `toNavUser`; the local `LandingAccountMenu` is gone. A signed-in vendor with no name now sees "Account" instead of "Your stall", and landing feedback is filed with source "vendor".
 - `@merqo/ui` moved from v0.54.0 (`378bd898`) to v0.54.1 (`272bf23c`). The legal gate no longer caches failed legal-status checks and retries dropped idempotent requests once, which fixes the sign-in `/legal/accept` loop.
 - Archiving a product now shows an Undo toast instead of a confirm dialog. The archive is saved when the toast closes without Undo, so Undo never counts against the Free plan's 20 active products.
