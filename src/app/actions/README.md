@@ -9,6 +9,7 @@ Server actions shared across routes rather than colocated with a single page —
 - `feedback.ts` — `submitFeedbackAction(input: FeedbackInput): Promise<ActionResult>`. Validates with `feedbackSchema`, requires a signed-in vendor, then inserts via `submitVendorFeedback` (`@/lib/merqo-vendor-feedback`) which calls the shared `merqo.submit_vendor_feedback` SECURITY DEFINER RPC — the RPC derives `vendor_id` from `auth.uid()` itself, never a passed-in value.
 - `feedback.test.ts` — covers the signed-in RPC-call path, schema rejection, the "please sign in" path, and RPC-failure handling.
 - `support.ts` — `submitSupportMessageAction(input: unknown): Promise<ActionResult>`. Validates with `supportMessageSchema`, requires a signed-in vendor, then files the message via `submitSupportMessage` (`@/lib/merqo-support`) into the shared `merqo.support_messages` inbox through `merqo.submit_support_message` (SECURITY DEFINER). Inline session check, not a shared vendor-auth guard — backs `@merqo/ui`'s `AccountMenu`-embedded `HelpSheet`, not a full page.
+- `support.ts` also exports `submitLandingSupportAction({category, message})`, an adapter that renames `message` to `body` for `LandingAccountNav`.
 - `support.test.ts` — covers the signed-in RPC-call path, schema rejection, the "please sign in" path, and RPC-failure handling.
 
 ## Connectivity
@@ -21,4 +22,4 @@ Each file is a `"use server"` module imported directly by the client component t
 
 Signup, feedback and profile saves are rate limited through `src/lib/rate-limit.ts` (a stockkit store over `@merqo/ui/kit-api`'s `rateLimitCheck`) and fail closed. `ActionResult` comes from `@merqo/ui/kit-api`.
 
-`auth.ts` — `signOutAction(): Promise<void>`. Server-side Supabase `signOut` (clears the auth cookies on the response), then `redirect('/login')` with a hardcoded path; throws a fixed message on failure so `AccountMenu` shows it inline. Shared by the dashboard and landing account menus through `@/components/account-menu-wiring`.
+`auth.ts` — `signOutAction(): Promise<void>`. Server-side Supabase `signOut` (clears the auth cookies on the response), then `redirect('/login')` with a hardcoded path; throws a fixed message on failure so `AccountMenu` shows it inline. Shared by the dashboard (through `@/components/account-menu-wiring`) and the landing nav.
