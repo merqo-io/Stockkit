@@ -410,3 +410,5 @@ The dashboard layout owns page padding and the root layout sets a `%s | stockkit
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
 
 The landing nav now shows an account menu with Sign out for signed-in vendors (see `src/components/landing/README.md`).
+
+`@merqo/ui` bumped to v0.56.0. The public nav's signed-in end is now the shared `LandingAccountNav`.

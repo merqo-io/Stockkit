@@ -76,3 +76,18 @@ describe('submitSupportMessageAction', () => {
     }
   });
 });
+
+describe('submitLandingSupportAction', () => {
+  it('maps the nav payload message onto the schema body', async () => {
+    const { submitLandingSupportAction } = await import('./support');
+    const result = await submitLandingSupportAction({
+      category: 'account',
+      message: 'Locked out.',
+    });
+    expect(result.success).toBe(true);
+    expect(rpcMock).toHaveBeenCalledWith(
+      'submit_support_message',
+      expect.objectContaining({ p_body: 'Locked out.' })
+    );
+  });
+});

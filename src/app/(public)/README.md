@@ -22,4 +22,4 @@ from `@merqo/ui`; it too inherits the chrome from this layout.
 
 The landing is waitlist-only: signed-out CTAs link to `WAITLIST_URL` (`src/lib/constants/routes.ts`) and no pricing is shown beyond the pilot notice in the FAQ.
 
-`layout.tsx` reads the signed-in vendor's `vendors.name` (fallback: email prefix) and avatar and passes them to `Nav` as `vendor`; it deliberately does not call `resolveVendorName`, which can create the shared profile row.
+`layout.tsx` reads the signed-in vendor's `vendors.name` and maps it with `toNavUser` (fallbacks: full name, email prefix, then "Account"; avatar kept only when https) and passes the result to `Nav` as `user`; it deliberately does not call `resolveVendorName`, which can create the shared profile row.

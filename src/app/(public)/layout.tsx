@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Nav } from '@/components/landing/nav';
 import { SiteFooter } from '@/components/layout';
 import { createServerClient } from '@/lib/supabase/server';
-import { BackToTop } from '@merqo/ui';
+import { BackToTop, toNavUser } from '@merqo/ui';
 
 export const revalidate = 0;
 
@@ -19,17 +19,11 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   const { data: row } = user
     ? await supabase.from('vendors').select('name').eq('id', user.id).maybeSingle()
     : { data: null };
-  const rawAvatarUrl = user?.user_metadata?.avatar_url;
-  const vendor = user
-    ? {
-        name: row?.name ?? user.email?.split('@')[0] ?? 'Your stall',
-        avatarUrl: typeof rawAvatarUrl === 'string' ? rawAvatarUrl : null,
-      }
-    : undefined;
+  const navUser = toNavUser(user, row?.name);
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Nav authed={authed} vendor={vendor} />
+      <Nav user={navUser} />
       <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter showSignIn={!authed} />
       <BackToTop />
