@@ -412,3 +412,5 @@ Source files, copy and the changelog are UTF-8; a regression test in `src/lib/sc
 The landing nav now shows an account menu with Sign out for signed-in vendors (see `src/components/landing/README.md`).
 
 `@merqo/ui` bumped to v0.56.0. The public nav's signed-in end is now the shared `LandingAccountNav`.
+
+The root layout mounts `@merqo/ui`'s `AppLinkProvider` with `next/link` (v0.57.0, via `src/components/app-link-provider.tsx`), so shared client components navigate client-side without a `LinkComponent` prop.

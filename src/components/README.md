@@ -73,3 +73,5 @@ UI primitives (badge, card, dialog, input, label, select, switch, textarea) and 
 `password-fields.tsx` takes its label and error classes from `@merqo/ui`. `password-requirements-tip.tsx` is the tap `InfoTooltip` carrying `PASSWORD_REQUIREMENTS_HINT`, shown beside the new-password label here and on signup.
 
 `account-menu-wiring.ts` holds the `signOutAction` re-export and the `getHelp` and `onFeedbackSubmit` throw-adapters (server actions return `{success, error}`, `AccountMenu` needs a rejection) used by `dashboard/dashboard-nav.tsx`; the landing nav uses `@merqo/ui`'s `LandingAccountNav` instead.
+
+`app-link-provider.tsx` exports `AppLinks`, a client wrapper that mounts `@merqo/ui`'s `AppLinkProvider` with `next/link`. The root layout renders it once so every `@merqo/ui` client export navigates client-side; Server Components must not pass `LinkComponent` to those exports.
