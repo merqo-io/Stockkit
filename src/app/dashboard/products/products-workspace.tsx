@@ -1,19 +1,18 @@
 'use client';
 
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
-import { EmptyState, PageHeader, SegmentedControl } from '@merqo/ui';
+import { EmptyState, PageHeader, SearchField, SegmentedControl } from '@merqo/ui';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  Input,
 } from '@merqo/ui/primitives';
 import { ProductDetail } from './product-detail';
 import { ProductForm } from './product-form';
@@ -100,6 +99,12 @@ export function ProductsWorkspace({
     setMobileDialog(null);
   }
 
+  // Only is_active is restored, on the current row, so edits made during the
+  // Undo window survive and selection and dialogs are left alone.
+  function onArchiveRolledBack(productId: string) {
+    setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, is_active: true } : p)));
+  }
+
   function selectProduct(productId: string) {
     setSelectedId(productId);
     setMode('view');
@@ -123,6 +128,7 @@ export function ProductsWorkspace({
           product={selected}
           layout="stacked"
           onSaved={onProductSaved}
+          onArchiveRolledBack={onArchiveRolledBack}
         />
       );
     }
@@ -189,20 +195,13 @@ export function ProductsWorkspace({
               value={filter}
               onChange={setFilter}
             />
-            <div className="relative sm:w-64">
-              <Search
-                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                aria-label="Search products"
-                placeholder="Search products"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <SearchField
+              aria-label="Search products"
+              placeholder="Search products"
+              value={query}
+              onValueChange={setQuery}
+              wrapperClassName="sm:w-64"
+            />
           </div>
           {maxActiveProducts !== null && (
             <div>
@@ -263,6 +262,7 @@ export function ProductsWorkspace({
                 product={selected}
                 layout="tabs"
                 onSaved={onProductSaved}
+                onArchiveRolledBack={onArchiveRolledBack}
               />
             </>
           )}

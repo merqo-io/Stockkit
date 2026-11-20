@@ -7,7 +7,7 @@ product's movement history.
 
 - `page.tsx` — server fetch of the vendor's products, renders
   `ProductsWorkspace`.
-- The Archive button on the Edit tab opens @merqo/ui's `ConfirmDialog`; it closes once the archive call settles (the handler toasts its own failures).
+- The Archive button on the Edit tab archives at once in the UI and shows @merqo/ui's `undoToast`. `archiveProduct` runs only when the toast settles without Undo (expiry or dismissal), so Undo never re-activates a product and never meets the Free plan's active-product cap. The pending archive is held in `pending-archives.ts`, a module-level registry keyed by product id: Restore and Save cancel it (the commit is then skipped), a second Archive on the same product is ignored, and hiding the page (`visibilitychange` to hidden, `pagehide`) commits every pending archive at once. A failed commit toasts the error and rolls back only `is_active` on the current row through `onArchiveRolledBack`. A hard kill of the browser or a dropped request inside the toast window can still lose the archive; the product then simply stays active. The Restore button on an archived product stays.
 - The "All" filter lists active products only; archived products appear under "Archived". The filter is `@merqo/ui`'s `SegmentedControl`, a radiogroup, so tests query `role="radio"` and `aria-checked`.
 - `page.tsx` also reads the vendor tier for the Free "N of 20 active" meter and the optional `?product=<id>` preselect (linked from the overview "Needs attention" rows).
 - `products-workspace.tsx` — client state/shell (PageHeader, All/Low/Out/Archived filter, name search, one Add button, one list for both breakpoints): holds the product list,
