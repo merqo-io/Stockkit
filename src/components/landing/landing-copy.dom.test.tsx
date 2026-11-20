@@ -1,6 +1,10 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/app/actions/auth', () => ({ signOutAction: vi.fn() }));
+vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
+vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
 
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Benefits } from './benefits';

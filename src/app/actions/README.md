@@ -20,3 +20,5 @@ Each file is a `"use server"` module imported directly by the client component t
 [app](../README.md)
 
 Signup, feedback and profile saves are rate limited through `src/lib/rate-limit.ts` (a stockkit store over `@merqo/ui/kit-api`'s `rateLimitCheck`) and fail closed. `ActionResult` comes from `@merqo/ui/kit-api`.
+
+`auth.ts` — `signOutAction(): Promise<void>`. Server-side Supabase `signOut` (clears the auth cookies on the response), then `redirect('/login')` with a hardcoded path; throws a fixed message on failure so `AccountMenu` shows it inline. Shared by the dashboard and landing account menus through `@/components/account-menu-wiring`.
