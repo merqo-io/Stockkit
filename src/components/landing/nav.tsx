@@ -13,12 +13,9 @@ interface NavProps {
   user?: NavUser | null;
 }
 
-// Public-marketing nav only — the dashboard uses its own DashboardNav
-// (vendor name + sign out), never this one, so this stays a plain server
-// component: logo plus one auth-aware primary action, no client JS needed.
-// The sticky/z-index/background/padding shape lives in @merqo/ui's
-// LandingNav shell (shared across all Merqo kits); this file only supplies
-// stockkit's wordmark and right-side content.
+// Server component: the shell shape lives in @merqo/ui's LandingNav, and the
+// signed-in end is the shared LandingAccountNav client island. The dashboard
+// uses its own DashboardNav.
 export function Nav({ user = null }: NavProps) {
   return (
     <LandingNav
