@@ -34,3 +34,12 @@ export async function submitSupportMessageAction(input: unknown): Promise<Action
   }
   return { success: true };
 }
+
+/** Adapter for `@merqo/ui`'s LandingAccountNav, whose support payload names the
+ *  text `message` where the shared schema calls it `body`. */
+export async function submitLandingSupportAction(input: {
+  category: string;
+  message: string;
+}): Promise<ActionResult> {
+  return submitSupportMessageAction({ category: input.category, body: input.message });
+}

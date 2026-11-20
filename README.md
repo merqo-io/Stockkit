@@ -47,7 +47,7 @@ spinner.
 
 The `/mfa` two-step sign-in form is the shared `MfaForm` from `@merqo/ui` behind a thin local adapter (`src/app/mfa/mfa-form.tsx`) that wires Supabase enrol and verify.
 
-Archiving a product shows an Undo toast and saves when it closes; the product search has a clear button. The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash.
+Archiving a product shows an Undo toast and saves when it closes; the product search has a clear button. The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash. Signed-in visits to the landing pages no longer return a 500.
 
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
@@ -410,3 +410,5 @@ The dashboard layout owns page padding and the root layout sets a `%s | stockkit
 Source files, copy and the changelog are UTF-8; a regression test in `src/lib/schemas.test.ts` guards against double-encoded characters.
 
 The landing nav now shows an account menu with Sign out for signed-in vendors (see `src/components/landing/README.md`).
+
+`@merqo/ui` bumped to v0.56.0. The public nav's signed-in end is now the shared `LandingAccountNav`.

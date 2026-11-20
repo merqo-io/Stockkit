@@ -11,7 +11,10 @@ const { getUserMock, maybeSingleMock, createServerClientMock } = vi.hoisted(() =
 vi.mock('@/lib/supabase/server', () => ({ createServerClient: createServerClientMock }));
 vi.mock('@/components/landing/nav', () => ({ Nav: () => null }));
 vi.mock('@/components/layout', () => ({ SiteFooter: () => null }));
-vi.mock('@merqo/ui', () => ({ BackToTop: () => null }));
+vi.mock('@merqo/ui', async (orig) => ({
+  ...(await orig<typeof import('@merqo/ui')>()),
+  BackToTop: () => null,
+}));
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -24,39 +27,39 @@ beforeEach(() => {
 // The layout returns a React element tree; Nav is the first child of the root div.
 async function navProps() {
   const tree = await PublicLayout({ children: null });
-  const [nav] = tree.props.children as { props: { authed: boolean; vendor?: unknown } }[];
+  const [nav] = tree.props.children as { props: { user: unknown } }[];
   return nav.props;
 }
 
-describe('PublicLayout vendor resolution', () => {
-  it('passes no vendor when signed out', async () => {
+describe('PublicLayout account resolution', () => {
+  it('passes no user when signed out', async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
-    const props = await navProps();
-    expect(props.authed).toBe(false);
-    expect(props.vendor).toBeUndefined();
+    expect((await navProps()).user).toBeNull();
     expect(maybeSingleMock).not.toHaveBeenCalled();
   });
 
-  it('uses the vendors.name and a string avatar when signed in', async () => {
+  it('uses the vendors.name and an https avatar when signed in', async () => {
     getUserMock.mockResolvedValue({
       data: {
         user: { id: 'u1', email: 'a@b.co', user_metadata: { avatar_url: 'https://x/y.png' } },
       },
     });
     maybeSingleMock.mockResolvedValue({ data: { name: 'Ada Stall' } });
-    const props = await navProps();
-    expect(props.authed).toBe(true);
-    expect(props.vendor).toEqual({ name: 'Ada Stall', avatarUrl: 'https://x/y.png' });
+    expect((await navProps()).user).toEqual({
+      name: 'Ada Stall',
+      email: 'a@b.co',
+      avatarUrl: 'https://x/y.png',
+    });
   });
 
-  it('falls back to the email prefix, then a default, and ignores a non-string avatar', async () => {
+  it('falls back to the email prefix, then Account, and drops a non-string avatar', async () => {
     getUserMock.mockResolvedValue({
       data: { user: { id: 'u1', email: 'ada@b.co', user_metadata: { avatar_url: 5 } } },
     });
     maybeSingleMock.mockResolvedValue({ data: null });
-    expect((await navProps()).vendor).toEqual({ name: 'ada', avatarUrl: null });
+    expect(await navProps()).toMatchObject({ user: { name: 'ada' } });
 
     getUserMock.mockResolvedValue({ data: { user: { id: 'u2', user_metadata: {} } } });
-    expect((await navProps()).vendor).toEqual({ name: 'Your stall', avatarUrl: null });
+    expect(await navProps()).toMatchObject({ user: { name: 'Account' } });
   });
 });

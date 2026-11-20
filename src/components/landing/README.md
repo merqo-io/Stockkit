@@ -15,6 +15,8 @@ instead. Matches every other kit's
 `src/components/layout/navbar.tsx` exporting `Navbar`, the one structural
 outlier across the Merqo kit family, before this migration.
 
+`Nav` is a Server Component, so it must not pass `next/link` (a plain function there) as `LinkComponent` to the client `LandingAccountNav`; the shared nav falls back to `<a>`. `nav.server-boundary.dom.test.tsx` guards this.
+
 One component per landing-page section (`Hero`, `HowItWorks`, `Benefits`,
 `Faq`), composed by `src/app/(public)/page.tsx`. `Hero` takes an `authed`
 prop and routes an already-signed-in vendor straight to `/dashboard`
@@ -50,4 +52,4 @@ Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
-`Nav` also takes `vendor` (`{name, avatarUrl}`, supplied by `(public)/layout.tsx`). Signed in, `end` shows a ghost Dashboard link and `landing-account-menu.tsx` (`LandingAccountMenu`, a client island around `@merqo/ui`'s `AccountMenu` with the same server-action sign-out as the dashboard); signed out it is unchanged. Feedback/Get-help adapters are shared with the dashboard via `src/components/account-menu-wiring.ts`.
+`Nav` also takes `user` (a `NavUser` from `toNavUser`, built by `(public)/layout.tsx`; `null` signed out). Signed in, `end` shows `@merqo/ui`'s `LandingAccountNav` (Dashboard link plus the account menu, wired to stockkit's sign-out, feedback and `submitLandingSupportAction` server actions); signed out it is unchanged. A missing name falls back to "Account".

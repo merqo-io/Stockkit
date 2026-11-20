@@ -6,11 +6,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { signOutMock } = vi.hoisted(() => ({ signOutMock: vi.fn() }));
 vi.mock('@/app/actions/auth', () => ({ signOutAction: signOutMock }));
 vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
-vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
+vi.mock('@/app/actions/support', () => ({ submitLandingSupportAction: vi.fn() }));
 
 import { Nav } from './nav';
 
-const vendor = { name: 'Ada Stall', avatarUrl: null };
+const navUser = { name: 'Ada Stall', email: 'ada@b.co' };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -28,7 +28,7 @@ describe('Nav', () => {
   });
 
   it('shows Dashboard and the account menu when signed in', () => {
-    render(<Nav authed vendor={vendor} />);
+    render(<Nav user={navUser} />);
     expect(screen.getByRole('link', { name: 'Dashboard' }).getAttribute('href')).toBe('/dashboard');
     expect(screen.queryByRole('link', { name: 'Sign in' })).toBeNull();
     expect(screen.getByRole('button', { name: /Ada Stall|account/i })).toBeTruthy();
@@ -36,7 +36,7 @@ describe('Nav', () => {
 
   it('opens the account menu by touch and offers Sign out', async () => {
     const user = userEvent.setup();
-    render(<Nav authed vendor={vendor} />);
+    render(<Nav user={navUser} />);
     await user.pointer({
       keys: '[TouchA]',
       target: screen.getByRole('button', { name: /Ada Stall|account/i }),
@@ -46,7 +46,7 @@ describe('Nav', () => {
 
   it('signs out through the shared server action by touch', async () => {
     const user = userEvent.setup();
-    render(<Nav authed vendor={vendor} />);
+    render(<Nav user={navUser} />);
     await user.pointer({
       keys: '[TouchA]',
       target: screen.getByRole('button', { name: /Ada Stall|account/i }),
@@ -61,7 +61,7 @@ describe('Nav', () => {
   it('shows the error when sign out rejects', async () => {
     signOutMock.mockRejectedValue(new Error('network down'));
     const user = userEvent.setup();
-    render(<Nav authed vendor={vendor} />);
+    render(<Nav user={navUser} />);
     await user.pointer({
       keys: '[TouchA]',
       target: screen.getByRole('button', { name: /Ada Stall|account/i }),
