@@ -28,14 +28,12 @@ export function Nav({ user = null }: NavProps) {
           <BrandText />
         </a>
       }
+      links={[
+        { label: 'About', href: '/about' },
+        { label: 'FAQ', href: '/faq' },
+      ]}
       end={
         <>
-          <Button asChild variant="ghost" size="sm" className="hidden rounded-lg sm:inline-flex">
-            <Link href="/about">About</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm" className="rounded-lg">
-            <Link href="/faq">FAQ</Link>
-          </Button>
           {user ? (
             <LandingAccountNav
               kit="stockkit"
