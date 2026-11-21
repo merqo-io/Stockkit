@@ -4,7 +4,7 @@
 
 ### Changed
 
-- The public landing nav collapses About and FAQ into a burger menu below the `sm` breakpoint, so the header stays on one line on phones. `@merqo/ui` moved from v0.58.0 (`716824ed`) to v0.59.0 (`c20c39b2`).
+- The public landing nav collapses About and FAQ into a burger menu below the `sm` breakpoint, so the header stays on one line on phones. `@merqo/ui` moved from v0.58.0 (`716824ed`) to v0.59.1 (`94eb4548`).
 - The dashboard account menu now shows the stall name through the shared `accountLabel` from `@merqo/ui`, so it matches the landing nav. A blank name falls back to the email local part, then "Account". `@merqo/ui` moved from v0.57.0 (`b496faa6`) to v0.58.0 (`716824ed`).
 - `@merqo/ui` moved from v0.56.0 (`9705d396`) to v0.57.0 (`b496faa6`). The root layout mounts `AppLinkProvider` with `next/link`, so the shared client components (account menu, dashboard nav, sign-in and reset forms, landing account nav) navigate client-side without a `LinkComponent` prop; the landing nav's Dashboard link now uses `next/link` instead of a plain anchor.
 - `@merqo/ui` moved from v0.54.1 (`272bf23c`) to v0.56.0 (`9705d396`). The landing nav now uses the shared `LandingAccountNav` and `toNavUser`; the local `LandingAccountMenu` is gone. A signed-in vendor with no name now sees "Account" instead of "Your stall", and landing feedback is filed with source "vendor".
