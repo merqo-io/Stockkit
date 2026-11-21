@@ -8,23 +8,30 @@ routes to it and, on `accept/`, records the vendor's acceptance with merqo.
 
 ## Contents
 
-- `terms/page.tsx` — `TermsPage`, a one-line Server Component rendering
-  `@merqo/ui`'s `<LegalDocument doc="terms" kit="stockkit" />` (the component
-  brings its own `mx-auto max-w-3xl` prose container, so there's no local
-  layout). The `kit` prop scopes the rendered Annex to stockkit's own
-  schedule only, not every sibling kit's.
-- `privacy/page.tsx` — `PrivacyPage`, the same for `<LegalDocument doc="privacy" />`.
+- `legal-page-client.tsx` — `LegalPageClient`, a `"use client"` wrapper that
+  renders `@merqo/ui`'s `LegalPage` with stockkit's `Wordmark` (linked home by
+  `LegalPage`) and `next/link`. It exists because the published `LegalPage`
+  bundle drops the `"use client"` boundary of the `LegalDocument` inside it,
+  which breaks rendering from a Server Component. Delete it once the package
+  keeps the boundary.
+- `terms/page.tsx` — `TermsPage`, a Server Component rendering
+  `<LegalPageClient doc="terms" kit="stockkit" />` and exporting
+  `legalPageMetadata("terms")`. The `kit` prop scopes the rendered Annex to
+  stockkit's own schedule only, not every sibling kit's.
+- `privacy/page.tsx` — `PrivacyPage`, the same for `doc="privacy"`.
 - `accept/page.tsx` — `LegalAcceptPage`. The interstitial
   `src/app/dashboard/layout.tsx`'s inline `requireCurrentLegalAcceptance` call
   (`@/lib/legal-gate`) redirects a signed-in vendor to when their accepted
   terms/privacy versions are behind `@merqo/ui`'s `LEGAL_VERSIONS`. Reads the
-  `next` search param (through `safeRedirectPath`, `@merqo/ui`) and
-  renders the client form. Deliberately runs **no** legal-gate check itself —
-  it is what the gate redirects to, so gating it would loop.
-- `accept/accept-form.tsx` — `AcceptForm`, a client component wrapping
-  `@merqo/ui`'s `TermsAcceptanceCheckbox` (just the agree checkbox — no
-  typed name); the submit button is disabled until it's checked. Posts to
-  `acceptLegalTerms`.
+  `next` search param (through `safeRedirectPath`, `@merqo/ui`) and renders
+  `AuthShell` around `AcceptTermsForm` (agree checkbox, submit disabled until
+  ticked, posts to `acceptLegalTerms`). A "Sign out" form in the shell footer
+  posts to `signOutAction`, the only exit for a vendor who declines;
+  `AcceptTermsPage` is not used because it has no slot for it. Deliberately
+  runs **no** legal-gate check itself — it is what the gate redirects to, so
+  gating it would loop.
+- `accept/page.dom.test.tsx` — covers the touch-gated submit, `next`
+  sanitising and the sign-out exit.
 - `accept/actions.ts` — `acceptLegalTerms` server action. Re-checks for a
   signed-in user (redirects to `/login` otherwise), reads the vendor's
   real `ip`/`user_agent` (via `headers()` and `clientIp` from
