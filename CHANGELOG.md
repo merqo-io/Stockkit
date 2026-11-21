@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The landing nav account label now shows the stall name the dashboard shows (the shared `merqo.vendor_profile` name) instead of the account's full name. It is read without creating a profile row, and a failed read falls back to the full name, email prefix or "Account".
+
 ### Changed
 
 - `/legal/terms`, `/legal/privacy` and `/legal/accept` now render the shared `LegalPage`, `legalPageMetadata`, `AuthShell` and `AcceptTermsForm` from `@merqo/ui`, with the stockkit wordmark linked home; the local `accept-form.tsx` is removed. `LegalPage` goes through a small client wrapper because the published bundle drops `LegalDocument`'s client boundary. The accept page keeps its sign-out exit (now a server-action form, so a failed sign-out no longer shows a toast) and drops the "Tick the box to continue." hint.
