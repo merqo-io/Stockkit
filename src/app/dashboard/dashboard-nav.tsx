@@ -9,7 +9,7 @@ import { BrandText } from '@/components/widgets';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 interface Props {
-  vendorName: string;
+  accountLabel: string;
   avatarUrl?: string | null;
 }
 
@@ -44,7 +44,7 @@ const WORDMARK = (
  * wiring: the shared sign-out action plus the shared Feedback/Get-help throw-adapters from
  * `@/components/account-menu-wiring`.
  */
-export function DashboardNav({ vendorName, avatarUrl = null }: Props) {
+export function DashboardNav({ accountLabel, avatarUrl = null }: Props) {
   const pathname = usePathname();
 
   return (
@@ -53,7 +53,7 @@ export function DashboardNav({ vendorName, avatarUrl = null }: Props) {
       navLinks={NAV_LINKS}
       isActiveHref={(href) => isActive(pathname, href)}
       tourAnchor={tourAnchor}
-      vendor={{ name: vendorName, avatarUrl: avatarUrl ?? undefined }}
+      vendor={{ name: accountLabel, subtitle: accountLabel, avatarUrl: avatarUrl ?? undefined }}
       signOutAction={signOutAction}
       switchKits={getSwitchKits('stockkit')}
       getHelp={getHelp}

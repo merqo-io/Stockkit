@@ -86,10 +86,25 @@ describe('DashboardLayout', () => {
 
     expect(resolveVendorNameMock).toHaveBeenCalledWith(expect.anything(), 'v1', 'Stale Local Name');
     const header = (
-      element.props.children as { props: { children: { props: { vendorName: string } } } }[]
+      element.props.children as { props: { children: { props: { accountLabel: string } } } }[]
     )[0];
     const dashboardNav = header.props.children;
-    expect(dashboardNav.props.vendorName).toBe('Ah Huat Chicken Rice');
+    expect(dashboardNav.props.accountLabel).toBe('Ah Huat Chicken Rice');
+  });
+
+  it('falls back to the email local part, never the full email, when the stall name is blank', async () => {
+    getUserMock.mockResolvedValue({
+      data: { user: { id: 'v1', email: 'huat@example.com', user_metadata: {} } },
+    });
+    mockVendorRow({ name: '  ' });
+    resolveVendorNameMock.mockResolvedValue('  ');
+
+    const element = await DashboardLayout({ children: null });
+
+    const header = (
+      element.props.children as { props: { children: { props: { accountLabel: string } } } }[]
+    )[0];
+    expect(header.props.children.props.accountLabel).toBe('huat');
   });
 
   it('passes seen=false to DashboardTour when tour_seen_at is null', async () => {

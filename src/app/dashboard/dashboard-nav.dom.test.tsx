@@ -61,7 +61,7 @@ describe('DashboardNav', () => {
     // dashboard layout used to wrap this component in its own <header>;
     // @merqo/ui's DashboardNav renders its own internal <header>, so a
     // second wrapping <header> would nest two and break `position: sticky`.
-    const { container } = render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    const { container } = render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     const headers = container.querySelectorAll('header');
     expect(headers).toHaveLength(1);
     expect(headers[0].className).toMatch(/sticky/);
@@ -69,13 +69,13 @@ describe('DashboardNav', () => {
   });
 
   it('shows the wordmark linking to /dashboard', () => {
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     const wordmark = screen.getByRole('link', { name: 'StockKit' });
     expect(wordmark).toHaveAttribute('href', '/dashboard');
   });
 
   it('shows inline Overview and Products nav links', () => {
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('href', '/dashboard');
     expect(screen.getByRole('link', { name: 'Products' })).toHaveAttribute(
       'href',
@@ -85,25 +85,25 @@ describe('DashboardNav', () => {
 
   it('highlights Products as active when on a products route', () => {
     pathnameMock.mockReturnValue('/dashboard/products');
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     const productsLink = screen.getByRole('link', { name: 'Products' });
     expect(productsLink.className).toMatch(/text-primary/);
   });
 
   it('marks the active link with aria-current, not colour alone', () => {
     pathnameMock.mockReturnValue('/dashboard/products');
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     expect(screen.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current');
   });
 
-  it('does not repeat the vendor name as a subtitle', () => {
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
-    expect(screen.queryByText('Ah Huat Chicken Rice')).toBeNull();
+  it('shows the account label on the account menu trigger', () => {
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
+    expect(screen.getAllByText('Ah Huat Chicken Rice').length).toBeGreaterThan(0);
   });
 
   it('has data-tour="nav-account" on the account trigger and "nav-menu" on the burger', () => {
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     expect(screen.getByRole('button', { name: /account menu/i })).toHaveAttribute(
       'data-tour',
       'nav-account'
@@ -116,7 +116,7 @@ describe('DashboardNav', () => {
 
   it('signs out through the shared server action, opened and tapped by touch', async () => {
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.pointer({
       keys: '[TouchA]',
       target: screen.getByRole('button', { name: /account menu/i }),
@@ -131,7 +131,7 @@ describe('DashboardNav', () => {
   it('shows an inline error when the sign-out action rejects', async () => {
     signOutMock.mockRejectedValueOnce(new Error('Session already expired'));
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));
     await user.click(screen.getByRole('menuitem', { name: /sign out/i }));
 
@@ -141,7 +141,7 @@ describe('DashboardNav', () => {
   it('submits feedback via submitFeedbackAction with {nps, message}, adapting the {success,error} result to a thrown error on failure', async () => {
     submitFeedbackActionMock.mockResolvedValueOnce({ success: false, error: 'Server error' });
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));
     await user.click(screen.getByRole('menuitem', { name: /feedback/i }));
 
@@ -157,7 +157,7 @@ describe('DashboardNav', () => {
 
   it('submits a support request via submitSupportMessageAction with {category, body}', async () => {
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));
     await user.click(screen.getByRole('menuitem', { name: /get help/i }));
 
@@ -175,7 +175,7 @@ describe('DashboardNav', () => {
 
   it('account menu has Switch products, Profile, Plan, Get help, Feedback, Theme, then Sign out', async () => {
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));
     const menuItems = screen.getAllByRole('menuitem');
     expect(menuItems.map((item) => item.textContent)).toEqual([
@@ -191,7 +191,7 @@ describe('DashboardNav', () => {
 
   it('passes switchKits through to the account menu, listing the other three live kits', async () => {
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /account menu/i }));
     await user.click(await screen.findByText(/switch products/i));
 
@@ -210,7 +210,7 @@ describe('DashboardNav', () => {
   });
 
   it('has a burger button hidden at sm and up', () => {
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     const burger = screen.getByRole('button', { name: /mobile navigation menu/i });
     expect(burger.className).toMatch(/sm:hidden/);
   });
@@ -218,7 +218,7 @@ describe('DashboardNav', () => {
   it('accepts an avatarUrl prop without crashing (jsdom cannot exercise the real image-load path)', () => {
     render(
       <DashboardNav
-        vendorName="Ah Huat Chicken Rice"
+        accountLabel="Ah Huat Chicken Rice"
         avatarUrl="https://x.supabase.co/avatar.png"
       />
     );
@@ -227,7 +227,7 @@ describe('DashboardNav', () => {
 
   it('opens the mobile links panel from the burger', async () => {
     const user = userEvent.setup();
-    render(<DashboardNav vendorName="Ah Huat Chicken Rice" />);
+    render(<DashboardNav accountLabel="Ah Huat Chicken Rice" />);
     await user.click(screen.getByRole('button', { name: /mobile navigation menu/i }));
     const links = screen.getAllByRole('link', { name: 'Products' });
     expect(links).toHaveLength(2);

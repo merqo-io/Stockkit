@@ -414,3 +414,5 @@ The landing nav now shows an account menu with Sign out for signed-in vendors (s
 `@merqo/ui` bumped to v0.56.0. The public nav's signed-in end is now the shared `LandingAccountNav`.
 
 The root layout mounts `@merqo/ui`'s `AppLinkProvider` with `next/link` (v0.57.0, via `src/components/app-link-provider.tsx`), so shared client components navigate client-side without a `LinkComponent` prop.
+
+`@merqo/ui` bumped to v0.58.0 (`716824ed`). The dashboard account menu label is the vendor stall name through the shared `accountLabel` (blank name falls back to the email local part, then "Account"), so it matches the landing nav.
