@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `/legal/terms`, `/legal/privacy` and `/legal/accept` now render the shared `LegalPage`, `legalPageMetadata`, `AuthShell` and `AcceptTermsForm` from `@merqo/ui`, with the stockkit wordmark linked home; the local `accept-form.tsx` is removed. `LegalPage` goes through a small client wrapper because the published bundle drops `LegalDocument`'s client boundary. The accept page keeps its sign-out exit (now a server-action form, so a failed sign-out no longer shows a toast) and drops the "Tick the box to continue." hint.
 - The dashboard account menu now shows the stall name through the shared `accountLabel` from `@merqo/ui`, so it matches the landing nav. A blank name falls back to the email local part, then "Account". `@merqo/ui` moved from v0.57.0 (`b496faa6`) to v0.58.0 (`716824ed`).
 - `@merqo/ui` moved from v0.56.0 (`9705d396`) to v0.57.0 (`b496faa6`). The root layout mounts `AppLinkProvider` with `next/link`, so the shared client components (account menu, dashboard nav, sign-in and reset forms, landing account nav) navigate client-side without a `LinkComponent` prop; the landing nav's Dashboard link now uses `next/link` instead of a plain anchor.
 - `@merqo/ui` moved from v0.54.1 (`272bf23c`) to v0.56.0 (`9705d396`). The landing nav now uses the shared `LandingAccountNav` and `toNavUser`; the local `LandingAccountMenu` is gone. A signed-in vendor with no name now sees "Account" instead of "Your stall", and landing feedback is filed with source "vendor".

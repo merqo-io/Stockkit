@@ -1,5 +1,8 @@
-import { PageHeader, safeRedirectPath } from '@merqo/ui';
-import { AcceptForm } from './accept-form';
+import { signOutAction } from '@/app/actions/auth';
+import { BrandText } from '@/components/widgets';
+import { AcceptTermsForm, AuthShell, safeRedirectPath, Wordmark } from '@merqo/ui';
+import { Button } from '@merqo/ui/primitives';
+import { acceptLegalTerms } from './actions';
 
 export const revalidate = 0;
 
@@ -8,6 +11,8 @@ export const revalidate = 0;
 // so gating it the same way is an infinite redirect loop. acceptLegalTerms
 // (actions.ts) re-checks for a signed-in user on submit and sends a
 // signed-out visitor to /login.
+// AcceptTermsPage has no slot for an exit, and a vendor who declines the
+// terms would be stuck here, so the shell and form are composed instead.
 export default async function LegalAcceptPage({
   searchParams,
 }: {
@@ -16,11 +21,23 @@ export default async function LegalAcceptPage({
   const { next } = await searchParams;
 
   return (
-    <div className="mx-auto max-w-md px-5 py-16">
-      <PageHeader eyebrow="Your account" title="Our terms have changed" className="mb-6">
-        Review the updated terms and privacy policy to keep using stockkit.
-      </PageHeader>
-      <AcceptForm next={safeRedirectPath(next, '/dashboard')} />
-    </div>
+    <AuthShell
+      wordmark={
+        <Wordmark size="lg">
+          <BrandText />
+        </Wordmark>
+      }
+      title="Our terms have changed"
+      subtitle="Review the updated terms and privacy policy to keep using stockkit."
+      footer={
+        <form action={signOutAction}>
+          <Button type="submit" variant="ghost" className="w-full">
+            Sign out
+          </Button>
+        </form>
+      }
+    >
+      <AcceptTermsForm action={acceptLegalTerms} next={safeRedirectPath(next, '/dashboard')} />
+    </AuthShell>
   );
 }
