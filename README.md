@@ -49,6 +49,10 @@ The `/mfa` two-step sign-in form is the shared `MfaForm` from `@merqo/ui` behind
 
 Archiving a product shows an Undo toast and saves when it closes; the product search has a clear button. The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash. Signed-in visits to the landing pages no longer return a 500.
 
+The public nav labels a signed-in account with the shared stall name the dashboard shows, read without creating a profile row.
+
+The signed-in account menu on the public landing pages shows the same shared stall name as the dashboard, read without creating a profile row.
+
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
 during `dashboard/layout.tsx`'s own server render (`src/lib/tour-prefs.ts`),
 not just fire-and-forget from the client — the tour's own nav-link step
@@ -116,7 +120,7 @@ consumer-facing change.
 
 `@merqo/ui` bumped again to v0.30.0 (2026-09-16). `/legal/terms` now
 renders only stockkit's own Annex schedule
-(`<LegalDocument doc="terms" kit="stockkit" />`), not every sibling kit's —
+(`<LegalPage doc="terms" kit="stockkit" />`), not every sibling kit's —
 previously every kit's `/legal/terms` page showed the full multi-kit annex
 since none passed kit context. `legal/accept/actions.ts`'s recorded
 `doc_sha256` hashes that same scoped content.
@@ -158,7 +162,7 @@ export is tracked in `../merqo-ui/docs/usage-matrix.md`.
 
 The public landing is waitlist-only and publishes no pricing; `/login` and `/dashboard` remain reachable directly. Prices appear only on `/dashboard/plan`, which renders the shared `PricingLadder` from merqo's public `GET /api/plans` catalog (fetched with `MERQO_BASE_URL`, authenticated with `MERQO_CUSTOMER_SECRET` as a bearer when set); stockkit stores no price, and shows a "Prices are unavailable right now" note if merqo is unreachable.
 
-`/legal/accept` has a ghost Sign out exit and a disabled-reason hint on Continue; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
+`/legal/accept` is the shared `AuthShell` and `AcceptTermsForm` with a ghost Sign out exit; the plan page and the accept page share a local `PageHeader` (eyebrow, display title, muted sentence), mirroring qkit. The profile page uses the same header, flat bordered sections, and "Business name" wording, with one filled button ("Save name") and action-specific failure toasts.
 
 Sign-in, sign-up, reset-password and MFA screens use plain sentence-case copy ("Business name" instead of stall/shop). Supabase auth errors go through `authErrorMessage` (`src/lib/auth-error-message.ts`) to fixed friendly messages; the raw error text is never shown. A weak password on sign-up, reset or profile change-password names the rule it failed (length, missing character types, known breach), and a tap requirements hint sits beside the password label on sign-up, reset and profile.
 
@@ -412,3 +416,7 @@ Source files, copy and the changelog are UTF-8; a regression test in `src/lib/sc
 The landing nav now shows an account menu with Sign out for signed-in vendors (see `src/components/landing/README.md`).
 
 `@merqo/ui` bumped to v0.56.0. The public nav's signed-in end is now the shared `LandingAccountNav`.
+
+The root layout mounts `@merqo/ui`'s `AppLinkProvider` with `next/link` (v0.57.0, via `src/components/app-link-provider.tsx`), so shared client components navigate client-side without a `LinkComponent` prop.
+
+`@merqo/ui` bumped to v0.58.0 (`716824ed`). The dashboard account menu label is the vendor stall name through the shared `accountLabel` (blank name falls back to the email local part, then "Account"), so it matches the landing nav.

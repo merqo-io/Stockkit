@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { AppLinks } from '@/components/app-link-provider';
 import { Providers } from '@merqo/ui';
 import type { Metadata } from 'next';
 import { Fraunces, Geist_Mono, Lato } from 'next/font/google';
@@ -49,7 +50,9 @@ export default function RootLayout({
             AccountMenu (v0.18.0+), persisted via next-themes' own
             localStorage key and shared across every route under this one
             provider. */}
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppLinks>{children}</AppLinks>
+        </Providers>
       </body>
     </html>
   );

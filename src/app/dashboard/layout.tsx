@@ -1,3 +1,4 @@
+import { accountLabel } from '@merqo/ui';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -57,7 +58,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           element here would give the nested header no room in its containing
           block to shift, breaking `position: sticky`). */}
       <div className="contents print:hidden">
-        <DashboardNav vendorName={vendorName} avatarUrl={avatarUrl} />
+        <DashboardNav accountLabel={accountLabel(user, vendorName)} avatarUrl={avatarUrl} />
       </div>
       <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-7">{children}</main>
       <SiteFooter />

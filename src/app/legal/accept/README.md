@@ -10,18 +10,15 @@ folder's job is entirely to collect the vendor's consent and forward it.
 ## Contents
 
 - `page.tsx` — `LegalAcceptPage`. Reads the `next` search param (through
-  `safeRedirectPath`, `@merqo/ui`) and renders the client form.
-  Deliberately runs no legal-gate check itself — it is what the gate
-  redirects to, so gating it would loop.
-- `accept-form.tsx` — `AcceptForm`, a client component wrapping `@merqo/ui`'s
-  `TermsAcceptanceCheckbox` (just the agree checkbox — no typed name); the
-  submit button is disabled until it's checked, with a "Tick the box to
-  continue." hint tied to it by `aria-describedby`. Posts to
-  `acceptLegalTerms`. A ghost "Sign out" button (browser Supabase client, then
-  `/login`) is the only exit, since this page is where the legal gate sends
-  the vendor.
-- `accept-form.dom.test.tsx` — covers the hint and the sign-out success and
-  failure paths.
+  `safeRedirectPath`, `@merqo/ui`, default `/dashboard`) and renders
+  `@merqo/ui`'s `AuthShell` around its `AcceptTermsForm` (agree checkbox,
+  submit disabled until ticked, posts to `acceptLegalTerms`). A "Sign out"
+  form in the shell footer posts to `signOutAction` (`@/app/actions/auth`),
+  the only exit for a vendor who declines; `AcceptTermsPage` is not used
+  because it has no slot for it. Deliberately runs no legal-gate check
+  itself — it is what the gate redirects to, so gating it would loop.
+- `page.dom.test.tsx` — covers the touch-gated submit, `next` sanitising and
+  the sign-out exit.
 - `actions.ts` — `acceptLegalTerms` server action (merqo base URL from `@/lib/merqo-base-url`). Re-checks for a signed-in
   user (redirects to `/login` otherwise), reads the vendor's real
   `ip`/`user_agent`, then `POST`s `/api/merqo/legal-accept` on merqo once

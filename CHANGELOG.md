@@ -2,8 +2,15 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The landing nav account label now shows the stall name the dashboard shows (the shared `merqo.vendor_profile` name) instead of the account's full name. It is read without creating a profile row, and a failed read falls back to the full name, email prefix or "Account".
+
 ### Changed
 
+- `/legal/terms`, `/legal/privacy` and `/legal/accept` now render the shared `LegalPage`, `legalPageMetadata`, `AuthShell` and `AcceptTermsForm` from `@merqo/ui`, with the stockkit wordmark linked home; the local `accept-form.tsx` is removed. `LegalPage` goes through a small client wrapper because the published bundle drops `LegalDocument`'s client boundary. The accept page keeps its sign-out exit (now a server-action form, so a failed sign-out no longer shows a toast) and drops the "Tick the box to continue." hint.
+- The dashboard account menu now shows the stall name through the shared `accountLabel` from `@merqo/ui`, so it matches the landing nav. A blank name falls back to the email local part, then "Account". `@merqo/ui` moved from v0.57.0 (`b496faa6`) to v0.58.0 (`716824ed`).
+- `@merqo/ui` moved from v0.56.0 (`9705d396`) to v0.57.0 (`b496faa6`). The root layout mounts `AppLinkProvider` with `next/link`, so the shared client components (account menu, dashboard nav, sign-in and reset forms, landing account nav) navigate client-side without a `LinkComponent` prop; the landing nav's Dashboard link now uses `next/link` instead of a plain anchor.
 - `@merqo/ui` moved from v0.54.1 (`272bf23c`) to v0.56.0 (`9705d396`). The landing nav now uses the shared `LandingAccountNav` and `toNavUser`; the local `LandingAccountMenu` is gone. A signed-in vendor with no name now sees "Account" instead of "Your stall", and landing feedback is filed with source "vendor".
 - `@merqo/ui` moved from v0.54.0 (`378bd898`) to v0.54.1 (`272bf23c`). The legal gate no longer caches failed legal-status checks and retries dropped idempotent requests once, which fixes the sign-in `/legal/accept` loop.
 - Archiving a product now shows an Undo toast instead of a confirm dialog. The archive is saved when the toast closes without Undo, so Undo never counts against the Free plan's 20 active products.
