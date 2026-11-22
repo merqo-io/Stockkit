@@ -49,6 +49,8 @@ The `/mfa` two-step sign-in form is the shared `MfaForm` from `@merqo/ui` behind
 
 Archiving a product shows an Undo toast and saves when it closes; the product search has a clear button. The admin console now has a "Back to dashboard" link in its nav, uses the shared page header, and shows flat bordered panels and tiles; a vendor with no waste ratio shows "None" instead of a dash. Signed-in visits to the landing pages no longer return a 500.
 
+The public nav labels a signed-in account with the shared stall name the dashboard shows, read without creating a profile row.
+
 The signed-in account menu on the public landing pages shows the same shared stall name as the dashboard, read without creating a profile row.
 
 The dashboard onboarding tour's "seen" flag is now stamped synchronously
