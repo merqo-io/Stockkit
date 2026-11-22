@@ -7,6 +7,9 @@ import { publicEnv } from '@/lib/supabase/env';
 // src/app/admin/layout.tsx (a Server Component, which cannot write cookies),
 // so routing it through the session refresh here is what lets an /admin visit
 // rotate its cookies like a /dashboard visit does.
+// The public layout reads the user in a Server Component, which cannot write
+// cookies, so only this proxy can rotate an expired access token. Skipping the
+// refresh on public routes renders "/" signed out for a vendor who is signed in.
 const PROTECTED_PREFIXES = ['/dashboard', '/admin'] as const;
 
 export function updateSession(request: NextRequest) {
@@ -16,5 +19,6 @@ export function updateSession(request: NextRequest) {
     schema: 'stockkit',
     cookieDomain: process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN,
     protectedPrefixes: PROTECTED_PREFIXES,
+    refreshPublicRoutes: true,
   });
 }

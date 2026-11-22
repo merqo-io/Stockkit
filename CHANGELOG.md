@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- The landing page no longer renders signed out for a vendor who is signed in. The session refresh now runs on public routes too (`refreshPublicRoutes`), so an expired access token is rotated by the proxy instead of the public layout seeing no user, as loopkit and merqo already do.
 - The landing nav account label now shows the stall name the dashboard shows (the shared `merqo.vendor_profile` name) instead of the account's full name. It is read without creating a profile row, and a failed read falls back to the full name, email prefix or "Account".
 
 ### Changed
