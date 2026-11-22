@@ -147,6 +147,10 @@ resolve to "not current". `requireCurrentLegalAcceptance` is the
 has no shared `requireVendor`-style gate helper (unlike qkit/loopkit/paykit),
 so the layout is the one real entry point. `safeRedirectPath` comes from `@merqo/ui` and rejects unsafe redirect targets before legal acceptance redirects.
 
+`vendor-stall-name.ts` — `readVendorStallName(vendorId)`: the same shared
+stall name, read-only (service client, no create-on-miss) and null on a
+missing row or failed read; backs the public landing nav label.
+
 `vendor-name.ts` — `resolveVendorName(supabase, vendorId, localName)`: the
 signed-in vendor's stall name, sourced from the shared
 `merqo.vendor_profile.stall_name` via `merqo-vendor-profile.ts`'s
