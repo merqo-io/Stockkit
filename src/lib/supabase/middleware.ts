@@ -16,5 +16,9 @@ export function updateSession(request: NextRequest) {
     schema: 'stockkit',
     cookieDomain: process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN,
     protectedPrefixes: PROTECTED_PREFIXES,
+    // The public layout reads the user in a Server Component, which cannot write
+    // cookies, so only this proxy can rotate an expired access token. Skipping the
+    // refresh on public routes renders "/" signed out for a vendor who is signed in.
+    refreshPublicRoutes: true,
   });
 }

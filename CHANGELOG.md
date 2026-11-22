@@ -4,10 +4,12 @@
 
 ### Fixed
 
+- The landing page no longer renders signed out for a vendor who is signed in. The session refresh now runs on public routes too (`refreshPublicRoutes`), so an expired access token is rotated by the proxy instead of the public layout seeing no user, as loopkit and merqo already do.
 - The landing nav account label now shows the stall name the dashboard shows (the shared `merqo.vendor_profile` name) instead of the account's full name. It is read without creating a profile row, and a failed read falls back to the full name, email prefix or "Account".
 
 ### Changed
 
+- The public landing nav collapses About and FAQ into a burger menu below the `sm` breakpoint, so the header stays on one line on phones. `@merqo/ui` moved from v0.58.0 (`716824ed`) to v0.59.1 (`94eb4548`).
 - `/legal/terms`, `/legal/privacy` and `/legal/accept` now render the shared `LegalPage`, `legalPageMetadata`, `AuthShell` and `AcceptTermsForm` from `@merqo/ui`, with the stockkit wordmark linked home; the local `accept-form.tsx` is removed. `LegalPage` goes through a small client wrapper because the published bundle drops `LegalDocument`'s client boundary. The accept page keeps its sign-out exit (now a server-action form, so a failed sign-out no longer shows a toast) and drops the "Tick the box to continue." hint.
 - The dashboard account menu now shows the stall name through the shared `accountLabel` from `@merqo/ui`, so it matches the landing nav. A blank name falls back to the email local part, then "Account". `@merqo/ui` moved from v0.57.0 (`b496faa6`) to v0.58.0 (`716824ed`).
 - `@merqo/ui` moved from v0.56.0 (`9705d396`) to v0.57.0 (`b496faa6`). The root layout mounts `AppLinkProvider` with `next/link`, so the shared client components (account menu, dashboard nav, sign-in and reset forms, landing account nav) navigate client-side without a `LinkComponent` prop; the landing nav's Dashboard link now uses `next/link` instead of a plain anchor.

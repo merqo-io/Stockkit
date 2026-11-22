@@ -67,7 +67,7 @@ hand copy had drifted into showing the wrong color — see
 `../docs/superpowers/specs/2026-08-25-tour-example-badge-drift-fix-design.md`
 (workspace root, cross-kit spec)), and its copy no longer uses em dashes.
 
-The Supabase session-refresh middleware now covers `/admin` requests, not
+The Supabase session-refresh middleware also runs on public routes (`refreshPublicRoutes`), so the landing page keeps a signed-in vendor's session instead of rendering signed out once the access token expires. It now covers `/admin` requests, not
 just `/dashboard` (it previously skipped cookie-refresh for admin visits).
 The dashboard is now built on the shared `@merqo/ui` component package
 (v0.24.0, `package.json`; `useAsyncAction`, `Section`, `ImageUploader`, `DashboardTour`,
@@ -372,7 +372,7 @@ transaction). See `AGENTS.md` for full conventions.
 policies it depends on, applied via the Supabase CLI or the SQL Editor. `test/` holds the
 API-route logging tests; colocated `src/**/*.test.ts` and `src/**/*.dom.test.tsx` files cover authentication, dashboard behavior, business logic and components. `pnpm test:ci` enforces at least 80% statements, branches, functions and lines.
 
-Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.54.1 commit.
+Source lives in the `merqo-io` GitHub organization (`github.com/merqo-io/stockkit`); `@merqo/ui` installs from `github:merqo-io/merqo-ui`, pinned to the v0.59.1 commit (`94eb4548`).
 
 Products are archived with is_active=false so identity and ledger remain
 available. Migration 0018 blocks deletion of products/vendors/accounts with
@@ -420,3 +420,5 @@ The landing nav now shows an account menu with Sign out for signed-in vendors (s
 The root layout mounts `@merqo/ui`'s `AppLinkProvider` with `next/link` (v0.57.0, via `src/components/app-link-provider.tsx`), so shared client components navigate client-side without a `LinkComponent` prop.
 
 `@merqo/ui` bumped to v0.58.0 (`716824ed`). The dashboard account menu label is the vendor stall name through the shared `accountLabel` (blank name falls back to the email local part, then "Account"), so it matches the landing nav.
+
+`@merqo/ui` bumped to v0.59.1 (`94eb4548`). The landing nav passes About and FAQ through `LandingNav`'s `links` prop, which collapses them into a burger menu below `sm`.
