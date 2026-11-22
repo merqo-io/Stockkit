@@ -19,8 +19,9 @@ middleware helper that `src/proxy.ts` calls on every request.
 - `env.ts` — fail-fast validation of `NEXT_PUBLIC_SUPABASE_*` env vars.
 - `middleware.ts` — `updateSession()`: refreshes the Supabase session cookie
   and redirects unauthenticated requests. `isProtectedPath()` matches both
-  `/dashboard` and `/admin` — a request outside either path skips the
-  refresh entirely (public pages, static assets).
+  `/dashboard` and `/admin` gate on a session, while every other path
+  (public pages included) only refreshes it (`refreshPublicRoutes`), so the public
+  layout, which cannot write cookies, never sees an expired token.
 - `middleware.test.ts` — covers public paths, `/dashboard`, `/admin`
   (including nested paths), and the auth-unreachable degrade-to-redirect case.
 

@@ -67,7 +67,7 @@ hand copy had drifted into showing the wrong color — see
 `../docs/superpowers/specs/2026-08-25-tour-example-badge-drift-fix-design.md`
 (workspace root, cross-kit spec)), and its copy no longer uses em dashes.
 
-The Supabase session-refresh middleware now covers `/admin` requests, not
+The Supabase session-refresh middleware also runs on public routes (`refreshPublicRoutes`), so the landing page keeps a signed-in vendor's session instead of rendering signed out once the access token expires. It now covers `/admin` requests, not
 just `/dashboard` (it previously skipped cookie-refresh for admin visits).
 The dashboard is now built on the shared `@merqo/ui` component package
 (v0.24.0, `package.json`; `useAsyncAction`, `Section`, `ImageUploader`, `DashboardTour`,

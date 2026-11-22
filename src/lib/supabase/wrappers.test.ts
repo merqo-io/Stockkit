@@ -58,7 +58,7 @@ describe('Supabase wrappers bind the stockkit schema and shared cookie domain', 
     });
   });
 
-  it('protects /dashboard and /admin in the session refresh', () => {
+  it('protects /dashboard and /admin and refreshes the session on public routes', () => {
     vi.stubEnv('NEXT_PUBLIC_AUTH_COOKIE_DOMAIN', '');
     const request = new NextRequest('https://stockkit.merqo.io/admin');
     updateSession(request);
@@ -68,6 +68,7 @@ describe('Supabase wrappers bind the stockkit schema and shared cookie domain', 
       schema: 'stockkit',
       cookieDomain: '',
       protectedPrefixes: ['/dashboard', '/admin'],
+      refreshPublicRoutes: true,
     });
   });
 });
