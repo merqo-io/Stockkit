@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 
 import { Nav } from '@/components/landing/nav';
 import { SiteFooter } from '@/components/layout';
+import { resolveLandingNavUser } from '@/lib/landing-nav-user';
 import { createServerClient } from '@/lib/supabase/server';
-import { BackToTop, toNavUser } from '@merqo/ui';
+import { BackToTop } from '@merqo/ui';
 
 export const revalidate = 0;
 
@@ -14,12 +15,10 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   } = await supabase.auth.getUser();
   const authed = !!user;
 
-  // A plain read, not resolveVendorName: that helper can create the shared
-  // profile row, which public pages must not do on every render.
-  const { data: row } = user
-    ? await supabase.from('vendors').select('name').eq('id', user.id).maybeSingle()
-    : { data: null };
-  const navUser = toNavUser(user, row?.name);
+  const navUser = await resolveLandingNavUser(supabase, user, async (id) => {
+    const { data } = await supabase.from('vendors').select('name').eq('id', id).maybeSingle();
+    return data;
+  });
 
   return (
     <div className="flex min-h-screen flex-col">

@@ -52,4 +52,4 @@ Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
-`Nav` also takes `user` (a `NavUser` from `toNavUser`, built by `(public)/layout.tsx`; `null` signed out). Signed in, `end` shows `@merqo/ui`'s `LandingAccountNav` (Dashboard link plus the account menu, wired to stockkit's sign-out, feedback and `submitLandingSupportAction` server actions); signed out it is unchanged. A missing name falls back to "Account".
+`Nav` also takes `user` (a `NavUser` from `toNavUser`, built by `(public)/layout.tsx` via `resolveLandingNavUser` (`src/lib/landing-nav-user.ts`), which labels the menu with the shared merqo profile `stall_name` like the dashboard and falls back to the local `vendors.name`; `null` signed out). Signed in, `end` shows `@merqo/ui`'s `LandingAccountNav` (Dashboard link plus the account menu, wired to stockkit's sign-out, feedback and `submitLandingSupportAction` server actions); signed out it is unchanged. A missing name falls back to "Account".
