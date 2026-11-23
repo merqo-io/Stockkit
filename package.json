@@ -1,6 +1,6 @@
 {
   "name": "stockkit",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.10.0",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.0",
-    "@merqo/ui": "github:merqo-io/merqo-ui#94eb4548e99b044bd241a72283795789311e42a0",
+    "@merqo/ui": "github:merqo-io/merqo-ui#d9ba206c56e982b59e0cd089a96a5876645dcbbc",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "2.110.7",
     "class-variance-authority": "^0.7.1",
