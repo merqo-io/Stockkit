@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.5.1]
+
 ### Fixed
 
 - The landing page no longer renders signed out for a vendor who is signed in. The session refresh now runs on public routes too (`refreshPublicRoutes`), so an expired access token is rotated by the proxy instead of the public layout seeing no user, as loopkit and merqo already do.
@@ -9,6 +11,7 @@
 
 ### Changed
 
+- `@merqo/ui` moved from v0.59.1 (`94eb4548`) to v0.60.0 (`d9ba206c`). The Terms "Fees and billing" section changed and the legal version date was bumped, so vendors are asked to accept the updated Terms.
 - The public landing nav collapses About and FAQ into a burger menu below the `sm` breakpoint, so the header stays on one line on phones. `@merqo/ui` moved from v0.58.0 (`716824ed`) to v0.59.1 (`94eb4548`).
 - `/legal/terms`, `/legal/privacy` and `/legal/accept` now render the shared `LegalPage`, `legalPageMetadata`, `AuthShell` and `AcceptTermsForm` from `@merqo/ui`, with the stockkit wordmark linked home; the local `accept-form.tsx` is removed. `LegalPage` goes through a small client wrapper because the published bundle drops `LegalDocument`'s client boundary. The accept page keeps its sign-out exit (now a server-action form, so a failed sign-out no longer shows a toast) and drops the "Tick the box to continue." hint.
 - The dashboard account menu now shows the stall name through the shared `accountLabel` from `@merqo/ui`, so it matches the landing nav. A blank name falls back to the email local part, then "Account". `@merqo/ui` moved from v0.57.0 (`b496faa6`) to v0.58.0 (`716824ed`).
