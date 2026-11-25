@@ -1,5 +1,6 @@
 'use client';
 
+import { Timestamp } from '@merqo/ui';
 import { useEffect, useState } from 'react';
 
 import { stockMovementReasonLabel } from '@/lib/stock';
@@ -77,7 +78,7 @@ export function MovementHistory({ productId, refreshKey, onCappedChange }: Props
           <div className="min-w-0">
             <p className="text-sm font-medium">{stockMovementReasonLabel(m.reason)}</p>
             <p className="text-muted-foreground truncate text-xs">
-              {new Date(m.created_at).toLocaleString()}
+              <Timestamp value={m.created_at} variant="datetime" />
               {m.note ? ` · ${m.note}` : ''}
             </p>
           </div>

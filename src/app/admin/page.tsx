@@ -1,7 +1,7 @@
 import { requireAdmin } from '@/lib/admin';
 import { platformTotals, recentActivity } from '@/lib/admin-data';
 import { stockMovementReasonLabel } from '@/lib/stock';
-import { PageHeader, StatCard } from '@merqo/ui';
+import { PageHeader, StatCard, Timestamp } from '@merqo/ui';
 import { cn } from '@merqo/ui/primitives';
 
 export const revalidate = 0;
@@ -71,7 +71,7 @@ export default async function AdminOverviewPage() {
                       {event.delta}
                     </span>
                     <span className="text-muted-foreground font-mono text-xs">
-                      {new Date(event.created_at).toLocaleString()}
+                      <Timestamp value={event.created_at} variant="datetime" />
                     </span>
                   </span>
                 </li>

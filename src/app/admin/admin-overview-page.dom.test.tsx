@@ -46,6 +46,11 @@ describe('AdminOverviewPage', () => {
     expect(screen.getByText('-2')).toBeInTheDocument();
   });
 
+  it('renders activity times through the shared Timestamp, not the browser locale', async () => {
+    const { container } = render(await AdminOverviewPage());
+    expect(container.querySelectorAll('time').length).toBeGreaterThanOrEqual(2);
+  });
+
   it('shows an empty state when there is no activity yet', async () => {
     const { recentActivity } = await import('@/lib/admin-data');
     vi.mocked(recentActivity).mockResolvedValueOnce([]);
