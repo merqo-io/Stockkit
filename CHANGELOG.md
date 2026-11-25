@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Repinned `@merqo/ui` to v0.61.1 and adopted its data shapes. Inventory value now renders with `formatMoney` ("S$30.00", was "$30.00"); the local `formatPrice` helper is removed.
+- Admin activity, vendor joined dates and product movement history now use `Timestamp` and render in Singapore time instead of the browser locale. The Products column on the vendors table is right-aligned via the column `align` option.
+- The root global error screen heading is now the kit default, "Could not load the app" (was "Something went wrong").
+
 ## [0.5.1]
 
 ### Fixed

@@ -116,3 +116,5 @@ The page sets `metadata.title` "Products" (rendered through the root `%s | stock
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
 Field errors render through `@merqo/ui`'s `FormError`, and the "No products yet" and "No matching products" lists use its `EmptyState`.
+
+Movement history times render via `@merqo/ui` `Timestamp` (Singapore time).

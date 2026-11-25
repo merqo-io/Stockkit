@@ -71,7 +71,7 @@ describe('inventory overview', () => {
       ],
     });
     const html = renderToStaticMarkup(await Page());
-    expect(html).toContain('30.00');
+    expect(html).toContain('S$30.00');
     expect(html).toContain('Needs attention');
     expect(html.indexOf('Empty tea')).toBeLessThan(html.indexOf('Low coffee'));
     expect(html).not.toContain('Healthy milk');

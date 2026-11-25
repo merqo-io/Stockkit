@@ -1,6 +1,6 @@
 'use client';
 
-import { DataTable, type DataTableColumn } from '@merqo/ui';
+import { DataTable, Timestamp, type DataTableColumn } from '@merqo/ui';
 
 import { VendorStatusBadge } from '@/app/admin/vendors/vendor-status-badge';
 import type { VendorRow } from '@/lib/admin-data';
@@ -19,11 +19,12 @@ const columns: DataTableColumn<VendorRow>[] = [
   {
     header: 'Products',
     cell: (v) => v.product_count,
-    className: 'text-right font-mono tabular-nums',
+    align: 'end',
+    className: 'font-mono tabular-nums',
   },
   {
     header: 'Joined',
-    cell: (v) => new Date(v.created_at).toLocaleDateString(),
+    cell: (v) => <Timestamp value={v.created_at} variant="date" />,
     className: 'text-muted-foreground font-mono',
   },
 ];
