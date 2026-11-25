@@ -424,3 +424,5 @@ The root layout mounts `@merqo/ui`'s `AppLinkProvider` with `next/link` (v0.57.0
 `@merqo/ui` bumped to v0.59.1 (`94eb4548`). The landing nav passes About and FAQ through `LandingNav`'s `links` prop, which collapses them into a burger menu below `sm`.
 
 `@merqo/ui` bumped to v0.60.0 (`d9ba206c`). The shared Terms "Fees and billing" section changed and the legal version date was bumped.
+
+Money and time display use `@merqo/ui` (v0.61.1): `formatMoney` for the inventory value ("S$30.00") and `Timestamp` for admin activity, vendor joined dates and movement history, all in Singapore time.

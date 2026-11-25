@@ -63,3 +63,5 @@ jest-dom matchers instead of declaring their own per-file `afterEach`.
 `mfa/` is the TOTP enrol/verify page that `requireAdmin()` redirects password-only admins to. `robots.ts` disallows crawling except on production. `(auth)/layout.tsx` forces per-request rendering so the nonce reaches the login and reset-password scripts.
 
 `layout.tsx` wraps the tree in `AppLinks` (`src/components/app-link-provider.tsx`) so `@merqo/ui` client exports get `next/link` from context.
+
+Dates and times on the admin and product-history pages render via `@merqo/ui` `Timestamp` (Singapore time), not the browser locale.
