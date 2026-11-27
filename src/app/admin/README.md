@@ -40,3 +40,5 @@ Movement reason labels use `stockMovementReasonLabel` from `@/lib/stock`, includ
 Every page and action is gated by `requireAdmin()`, which needs `aal2`; a password-only session is redirected to `/mfa`. Service-client imports carry an eslint-disable reason.
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
+
+Times in the activity feed render via `@merqo/ui` `Timestamp` (Singapore time).

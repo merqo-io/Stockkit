@@ -1,4 +1,4 @@
-import { Benefits } from '@/components/landing/benefits';
+import { Closing } from '@/components/landing/closing';
 import { Faq } from '@/components/landing/faq';
 import { Hero } from '@/components/landing/hero';
 import { HowItWorks } from '@/components/landing/how-it-works';
@@ -17,8 +17,8 @@ export default async function Home() {
     <div id="top">
       <Hero authed={authed} />
       <HowItWorks />
-      <Benefits />
       <Faq />
+      <Closing authed={authed} />
     </div>
   );
 }

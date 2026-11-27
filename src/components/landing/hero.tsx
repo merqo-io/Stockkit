@@ -1,9 +1,11 @@
 import Link from 'next/link';
 
-import { LedgerCardPreview } from '@/components/landing/ledger-card-preview';
 import { Button } from '@/components/ui/button';
 import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
+import { PhoneFrame } from '@merqo/ui';
 import { Badge } from '@merqo/ui/primitives';
+
+import { OverviewScreen } from './stock-screen';
 
 interface HeroProps {
   authed?: boolean;
@@ -21,7 +23,7 @@ export function Hero({ authed = false }: HeroProps) {
           <span className="text-muted-foreground text-sm">Built, not yet tried with vendors.</span>
         </div>
         <h1 className="font-display mt-3 text-4xl font-bold tracking-tight lg:text-6xl">
-          Track stock in and out, and know what every product actually costs you.
+          See what your stock is worth, and what is running low.
         </h1>
         <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
           <Button asChild size="lg">
@@ -37,7 +39,9 @@ export function Hero({ authed = false }: HeroProps) {
         </div>
       </div>
       <div className="flex justify-center lg:justify-end">
-        <LedgerCardPreview />
+        <PhoneFrame label="Overview screen" size="large">
+          <OverviewScreen low />
+        </PhoneFrame>
       </div>
     </div>
   );

@@ -77,11 +77,6 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type ProductFormInput = z.infer<typeof productFormSchema>;
 export type StockMovementFormInput = z.infer<typeof stockMovementFormSchema>;
 
-/** Cents → a locale-formatted currency string (e.g. "$1,234.50") for read-only display. */
-export function formatPrice(cents: number): string {
-  return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(cents / 100);
-}
-
 export const profileNameSchema = z.object({
   name: z.string().trim().min(1, 'Enter your business name').max(100),
 });

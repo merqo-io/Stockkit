@@ -7,7 +7,7 @@ vi.mock('@/app/actions/feedback', () => ({ submitFeedbackAction: vi.fn() }));
 vi.mock('@/app/actions/support', () => ({ submitSupportMessageAction: vi.fn() }));
 
 import { SiteFooter } from '@/components/layout/site-footer';
-import { Benefits } from './benefits';
+import { Closing } from './closing';
 import { Faq, PRICING_LINE } from './faq';
 import { Hero } from './hero';
 import { HowItWorks } from './how-it-works';
@@ -29,8 +29,8 @@ function renderLanding() {
       <Nav />
       <Hero />
       <HowItWorks />
-      <Benefits />
       <Faq />
+      <Closing />
       <SiteFooter />
     </>
   );
@@ -40,7 +40,13 @@ describe('landing copy guardrails', () => {
   it('has no prices, em dashes or banned words', () => {
     const { container } = renderLanding();
     const text = container.textContent ?? '';
-    expect(text).not.toContain('$');
+    // The phone mock-ups show app strings such as "Unit cost ($)" and money
+    // values; only copy outside them must stay free of prices.
+    const prose = Array.from(container.querySelectorAll('[role="group"]')).reduce(
+      (acc, el) => acc.replace(el.textContent ?? '', ''),
+      text
+    );
+    expect(prose).not.toContain('$');
     expect(text).not.toContain('—');
     expect(text).not.toMatch(/\/month|\bPro\b|free plan/i);
     expect(text).not.toMatch(/own your data/i);
@@ -66,7 +72,7 @@ describe('landing copy guardrails', () => {
   it('sends every signup CTA to the waitlist', () => {
     renderLanding();
     const ctas = screen.getAllByRole('link', { name: 'Join the waitlist' });
-    expect(ctas).toHaveLength(2);
+    expect(ctas).toHaveLength(3);
     for (const cta of ctas) {
       expect(cta.getAttribute('href')).toBe('https://merqo.io/waitlist?kit=stockkit');
     }

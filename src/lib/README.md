@@ -1,8 +1,8 @@
 # src/lib
 
 Shared utilities and business logic. `schemas.ts` — Zod schemas for forms
-and server actions, plus `formatPrice` (locale-formatted currency string,
-`en-SG`/SGD, for read-only display). Editable $-amount fields use
+and server actions. Read-only money display comes from `@merqo/ui`'s
+`formatMoney` (SGD, "S$12.50"). Editable $-amount fields use
 `@merqo/ui`'s `MoneyInput`, which owns the dollars-to-cents parsing, so
 this file keeps no input-side money helpers. `unit_cost_cents` fields are
 capped at `MAX_MONEY_CENTS` ($10k), matching qkit's fat-finger guard rail;

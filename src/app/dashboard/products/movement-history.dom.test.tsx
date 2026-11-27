@@ -62,6 +62,7 @@ describe('MovementHistory', () => {
     expect(screen.getByText('Waste')).toBeTruthy();
     expect(screen.getByText('-2')).toBeTruthy();
     expect(screen.getByText(/spoiled/i)).toBeTruthy();
+    expect(document.querySelectorAll('time')).toHaveLength(2);
   });
 
   it('shows a returned error and retries without claiming the ledger is empty', async () => {

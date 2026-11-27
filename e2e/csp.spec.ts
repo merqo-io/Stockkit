@@ -36,7 +36,7 @@ test.describe('CSP', () => {
       /script-src 'self' 'unsafe-inline'/
     );
     await expect(
-      page.getByRole('heading', { level: 1, name: /Track stock in and out/ })
+      page.getByRole('heading', { level: 1, name: /See what your stock is worth/ })
     ).toBeVisible();
     expect(problems).toEqual([]);
   });

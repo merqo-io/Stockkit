@@ -30,6 +30,11 @@ vi.mock('@/lib/admin-data', () => ({
 import AdminVendorsPage from './page';
 
 describe('AdminVendorsPage', () => {
+  it('renders the joined date through the shared Timestamp', async () => {
+    const { container } = render(await AdminVendorsPage());
+    expect(container.querySelectorAll('time')).toHaveLength(2);
+  });
+
   it('renders vendors with their plan badges and product counts', async () => {
     render(await AdminVendorsPage());
     expect(screen.getByText('Vendors')).toBeInTheDocument();
