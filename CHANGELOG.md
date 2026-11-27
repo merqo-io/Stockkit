@@ -4,6 +4,7 @@
 
 ### Changed
 
+- The landing page is rebuilt as a journey on the shared `@merqo/ui` pieces: a phone-framed overview in the hero, a three-step journey (add a product, restock, see low stock), three FAQ rows and a closing call. The three-card steps grid and the benefits list are gone. The H1 is now "See what your stock is worth, and what is running low."; the old one claimed cost tracking the app does not do (it only multiplies on-hand by unit cost). Every label in the mock-ups is a string from the app, listed in `stock-labels.ts`.
 - Repinned `@merqo/ui` to v0.61.1 and adopted its data shapes. Inventory value now renders with `formatMoney` ("S$30.00", was "$30.00"); the local `formatPrice` helper is removed.
 - Admin activity, vendor joined dates and product movement history now use `Timestamp` and render in Singapore time instead of the browser locale. The Products column on the vendors table is right-aligned via the column `align` option.
 - The root global error screen heading is now the kit default, "Could not load the app" (was "Something went wrong").

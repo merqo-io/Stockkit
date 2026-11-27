@@ -16,38 +16,20 @@ outlier across the Merqo kit family, before this migration.
 
 `Nav` is a Server Component, so it must not pass `next/link` (a plain function there) as `LinkComponent` to the client `LandingAccountNav`; the shared nav falls back to `<a>`. `nav.server-boundary.dom.test.tsx` guards this.
 
-One component per landing-page section (`Hero`, `HowItWorks`, `Benefits`,
-`Faq`), composed by `src/app/(public)/page.tsx`. `Hero` takes an `authed`
-prop and routes an already-signed-in vendor straight to `/dashboard`
-instead of back through `/login`. There is deliberately no bottom
-call-to-action band above the footer — removed to match qkit, which never
-had one; `SiteFooter` itself (`src/components/layout/`) now matches qkit's
-landing footer exactly.
+The landing page is `Hero`, `HowItWorks` (client, a three-step `Journey`), `Faq` (three `FaqRows`) and `Closing` (`ClosingCall`), composed by `src/app/(public)/page.tsx`. `Hero` takes an `authed` prop and routes an already-signed-in vendor straight to `/dashboard`. The pieces come from `@merqo/ui` (`Journey`, `JourneyStep`, `PhoneFrame`, `PressButton`, `FaqRows`, `ClosingCall`, `useScrollPlay`) in the same shape as loopkit and paykit.
 
-`Hero`'s `<h1>` is the value-prop sentence, not the wordmark — the
-`StockKit` name is a small `font-mono uppercase` kicker above it, so it
-doesn't just restate the sticky nav's logotype one line below. That
-logotype (`BrandText`, from `@/components/widgets`) is otherwise used
-as-is everywhere a wordmark appears (`nav.tsx`, `dashboard/dashboard-nav.tsx`)
-so the gradient "Stock"/flat "Kit" treatment never renders two different
-ways on the same page.
+`Hero`'s `<h1>` ("See what your stock is worth, and what is running low.") claims only what the overview does: it adds up `on_hand x unit_cost` and counts products at or under their low-stock threshold. There is no per-product cost tracking, so the page must not claim it. The `stockkit` name is a small mono kicker above it.
 
-`ledger-card-preview.tsx` is `Hero`'s illustration: a mock product card
-(name, stock-status dot, on-hand count) with two sample movement rows. It is
-static; nothing cycles, because no product event is behind it. `HowItWorks`
-renders its three steps as `bg-card rounded-lg border` cards with `01/02/03`
-numbering, since they are an actual sequence. Landing surfaces carry no shadow,
-no hover lift and no entrance animation, per the shared public-page rules
-(see root `DESIGN.md`). `Benefits` is deliberately a different shape — a bordered
-horizontal list (icon left, text right, divider rows) — since its three
-items have no such order and shouldn't look like they do.
+The phone mock-ups (`stock-screen.tsx`) only use strings the signed-in app renders; `stock-labels.ts` lists each one with its source file. Change a label in the app and change it there. Step 1 (add a product) and step 3 (overview) are scroll-played and rewind on the way up; step 2 (restock) is the visitor's to press, and scrolling never presses it. Under reduced motion every step shows its finished state, and step 2 gets a Replay button. The sample product ("Oat milk") is illustrative, not a vendor's data. The hero phone is static: nothing moves there because no product event is behind it.
+
+Landing surfaces carry no shadow, no hover lift and no entrance animation, per the shared public-page rules (see root `DESIGN.md`).
 
 Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL
 `cleanup()` instead of declaring its own per-file `afterEach`.
 
 `BackToTop` comes from `@merqo/ui` and is rendered beside `SiteFooter` in the public layout.
 
-`landing-copy.dom.test.tsx` renders the real `Nav`, `Hero`, `HowItWorks`, `Benefits` and `Faq` together and guards the public copy: no `$`, em dash or banned words, the "In build" badge, the exact pilot pricing line, and every signup CTA pointing at `WAITLIST_URL`. Signed-out CTAs read "Join the waitlist"; `/login` and `/dashboard` stay reachable by direct URL and the nav "Sign in" link. `Hero` shows an "In build" badge with "Built, not yet tried with vendors."; the low-stock step says the dashboard shows what is running low, because nothing is sent to the vendor.
+`landing-copy.dom.test.tsx` renders the real `Nav`, `Hero`, `HowItWorks`, `Faq` and `Closing` together and guards the public copy: no `$` outside the phone mock-ups, no em dash or banned words, the "In build" badge, the exact pilot pricing line, and every signup CTA pointing at `WAITLIST_URL`. Signed-out CTAs read "Join the waitlist"; `/login` and `/dashboard` stay reachable by direct URL and the nav "Sign in" link. `Hero` shows an "In build" badge with "Built, not yet tried with vendors."; the low-stock step says the overview lists what is running low and that it sends no alerts.
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
