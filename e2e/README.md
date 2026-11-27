@@ -7,8 +7,8 @@ Playwright end-to-end smoke tests. They need only `pnpm dev` and
 
 ## Contents
 
-- `smoke.spec.ts` — public smoke: the landing page renders its "Track stock
-  in and out" hero heading, and `/login` renders its "Continue with Google"
+- `smoke.spec.ts` — public smoke: the landing page renders its "See what your stock is
+  worth" hero heading, and `/login` renders its "Continue with Google"
   button.
 - `auth-guard.spec.ts` — signed-out route protection: `/dashboard`,
   `/dashboard/products` and `/admin` redirect to `/login`. `src/proxy.ts`
