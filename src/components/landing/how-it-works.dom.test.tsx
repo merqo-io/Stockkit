@@ -47,6 +47,8 @@ describe('HowItWorks', () => {
     render(<HowItWorks />);
     expect(screen.getByText('Restock logged')).toBeTruthy();
     expect(screen.getByText('Needs attention')).toBeTruthy();
-    expect(screen.getByText('Low at 6 L')).toBeTruthy();
+    expect(
+      screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Low at 6 L')
+    ).toBeTruthy();
   });
 });

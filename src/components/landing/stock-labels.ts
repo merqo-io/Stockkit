@@ -31,10 +31,8 @@ export function restockButton(quantity: number, unit: string): string {
   return `Log restock of ${quantity} ${unit}`;
 }
 
-/** app/dashboard/(overview)/page.tsx: "Low at {threshold} {unit}". */
-export function lowAt(threshold: number, unit: string): string {
-  return `Low at ${threshold} ${unit}`;
-}
+/** app/dashboard/(overview)/page.tsx: "Low at {threshold} {unit}"; the number is rendered separately in font-mono. */
+export const LOW_AT = 'Low at';
 
 /** app/dashboard/products/product-detail.tsx: "{unit} on hand". */
 export function onHand(unit: string): string {
