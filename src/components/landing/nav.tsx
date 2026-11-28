@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { signOutAction } from '@/app/actions/auth';
 import { submitFeedbackAction } from '@/app/actions/feedback';
 import { submitLandingSupportAction } from '@/app/actions/support';
-import { Button } from '@/components/ui/button';
 import { BrandText } from '@/components/widgets';
 import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
 import { SUPPORT_CATEGORY_LABELS } from '@/lib/schemas';
+import { Button } from '@merqo/ui/primitives';
 
 interface NavProps {
   user?: NavUser | null;

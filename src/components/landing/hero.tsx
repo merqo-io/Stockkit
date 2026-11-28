@@ -1,9 +1,8 @@
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
 import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
 import { PhoneFrame } from '@merqo/ui';
-import { Badge } from '@merqo/ui/primitives';
+import { Badge, Button } from '@merqo/ui/primitives';
 
 import { OverviewScreen } from './stock-screen';
 

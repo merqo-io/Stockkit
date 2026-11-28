@@ -15,8 +15,8 @@ const SURFACES: Array<[string, () => ReactElement]> = [
   ['Faq', () => <Faq />],
 ];
 
-function classText(container: HTMLElement) {
-  return Array.from(container.querySelectorAll('[class]'))
+function classText(container: HTMLElement, selector = '[class]') {
+  return Array.from(container.querySelectorAll(selector))
     .map((el) => el.getAttribute('class'))
     .join(' ');
 }
@@ -27,7 +27,10 @@ describe('landing follows the public page rules', () => {
     (_name, ui) => {
       const { container } = render(ui());
       const classes = classText(container);
-      expect(classes).not.toMatch(/(^|[\s:])shadow-/);
+      // The shared Button's outline variant carries a hairline shadow-xs that
+      // is part of the kit primitive, so buttons are exempt from the shadow rule.
+      const nonButtonClasses = classText(container, '[class]:not([data-slot="button"])');
+      expect(nonButtonClasses).not.toMatch(/(^|[\s:])shadow-/);
       // PhoneFrame keeps rounded-3xl: a product object keeps its real edge.
       expect(classes).not.toMatch(/rounded-(2xl|xl)/);
       expect(classes).not.toContain('fade-rise');

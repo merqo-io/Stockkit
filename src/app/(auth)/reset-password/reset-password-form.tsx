@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import { navigatingAway, useAsyncAction } from '@/hooks';
 import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { passwordChangeSchema } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
 import { ElevatedCard } from '@merqo/ui';
+import { Button } from '@merqo/ui/primitives';
 
 type SessionState = 'checking' | 'ready' | 'no-session' | 'failed';
 

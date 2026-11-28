@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
 import { PAGE_ROUTES, WAITLIST_URL } from '@/lib/constants/routes';
 import { ClosingCall } from '@merqo/ui';
+import { Button } from '@merqo/ui/primitives';
 
 export function Closing({ authed = false }: { authed?: boolean }) {
   return (

@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { PasswordRequirementsTip } from '@/components/password-requirements-tip';
-import { Button } from '@/components/ui/button';
 import { BrandText } from '@/components/widgets';
 import { navigatingAway, useAsyncAction } from '@/hooks';
 import { authErrorMessage } from '@/lib/auth-error-message';
@@ -16,7 +15,7 @@ import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
 import { AsyncSubmitButton, ElevatedCard, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
-import { Input, Label } from '@merqo/ui/primitives';
+import { Button, Input, Label } from '@merqo/ui/primitives';
 
 import { GoogleMark } from '@merqo/ui';
 import { completeSignup } from './actions';
