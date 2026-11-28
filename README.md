@@ -125,6 +125,8 @@ previously every kit's `/legal/terms` page showed the full multi-kit annex
 since none passed kit context. `legal/accept/actions.ts`'s recorded
 `doc_sha256` hashes that same scoped content.
 
+`@merqo/ui` bumped to v0.62.1: the shared `AboutMerqo` kit copy is corrected and the shared footer and landing nav links reach 44px tap targets.
+
 Shared UI boundaries are defined per entry module. For exports marked
 `"use client"`, Server Components pass serializable data; callbacks and
 render functions belong in a client adapter. Do not infer the boundary

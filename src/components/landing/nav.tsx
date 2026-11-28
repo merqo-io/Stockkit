@@ -48,10 +48,10 @@ export function Nav({ user = null }: NavProps) {
             />
           ) : (
             <>
-              <Button asChild variant="ghost" className="h-10 rounded-lg px-4">
+              <Button asChild variant="ghost" className="min-h-11 rounded-lg px-4">
                 <Link href={PAGE_ROUTES.LOGIN}>Sign in</Link>
               </Button>
-              <Button asChild size="sm" className="font-semibold">
+              <Button asChild size="sm" className="min-h-11 font-semibold">
                 <a href={WAITLIST_URL}>Join the waitlist</a>
               </Button>
             </>
