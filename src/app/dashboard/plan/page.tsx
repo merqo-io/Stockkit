@@ -1,9 +1,9 @@
 import { PAGE_ROUTES } from '@/lib/constants/routes';
-import { merqoBaseUrl } from '@/lib/merqo-base-url';
 import { ENTITLEMENTS, resolvePlanView } from '@/lib/plan';
 import { createServerClient } from '@/lib/supabase/server';
 import { readVendorTier } from '@/lib/vendor-entitlement';
 import { BackButton, fetchPlanCatalog, PageHeader, PricingLadder } from '@merqo/ui';
+import { merqoBaseUrl } from '@merqo/ui/kit-api';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';

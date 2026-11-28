@@ -53,8 +53,8 @@ once by the persistent layout, so without an explicit refresh it would
 keep showing stale data until a hard reload even though the underlying
 write succeeded.
 
-`loading.tsx` — a page-shaped skeleton (header, three stat tiles, list rows;
-`role="status"`, pulse off under reduced motion) shown while this segment (and
+`loading.tsx` — a page-shaped skeleton (header, three `StatTileSkeleton` tiles, `ListSkeleton` rows from
+`@merqo/ui`; `role="status"`, pulse off under reduced motion) shown while this segment (and
 every nested page below it — overview, products, profile, all
 `revalidate = 0`) is loading, matching qkit's `dashboard/loading.tsx`
 pattern. Its test is

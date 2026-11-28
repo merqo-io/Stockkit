@@ -28,7 +28,7 @@ const config = [
     },
   },
   ...merqoEslintPreset({ sonarjsPlugin: sonarjs.configs.recommended.plugins.sonarjs, tsPlugin }),
-  // The allow list covers files that import the kit wrappers (supabase, legal-gate, rate-limit, dashboard-tour) and the kept button and tabs primitives, which merqoNoLocalCopies would otherwise flag.
+  // The allow list covers files that import the kit wrappers (supabase, legal-gate, rate-limit, dashboard-tour).
   ...merqoNoLocalCopies({
     allow: [
       'supabase-client',
@@ -37,8 +37,6 @@ const config = [
       'legal-gate',
       'rate-limit',
       'dashboard-tour',
-      'components/ui/button',
-      'components/ui/tabs',
     ],
   }),
   {

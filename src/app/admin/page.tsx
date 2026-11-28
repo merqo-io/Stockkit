@@ -1,7 +1,7 @@
 import { requireAdmin } from '@/lib/admin';
 import { platformTotals, recentActivity } from '@/lib/admin-data';
 import { stockMovementReasonLabel } from '@/lib/stock';
-import { PageHeader, StatCard, Timestamp } from '@merqo/ui';
+import { EmptyState, PageHeader, StatCard, Timestamp } from '@merqo/ui';
 import { cn } from '@merqo/ui/primitives';
 
 export const revalidate = 0;
@@ -77,7 +77,9 @@ export default async function AdminOverviewPage() {
                 </li>
               ))
             ) : (
-              <li className="text-muted-foreground text-sm">No activity yet.</li>
+              <li>
+                <EmptyState size="compact" title="No activity yet." />
+              </li>
             )}
           </ul>
         </div>

@@ -3,10 +3,10 @@
 import { useState } from 'react';
 
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
 import { LEDGER_MD_CLASS } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@merqo/ui/primitives';
 import { ExportHistoryButton } from './export-history-button';
 import { MovementHistory } from './movement-history';
 import { ProductForm } from './product-form';

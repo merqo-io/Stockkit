@@ -7,11 +7,7 @@ section components.
 
 The products filter uses `@merqo/ui`'s `SegmentedControl` (a radiogroup of pills); there is no local copy.
 
-`section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the
-per-field-group shell: icon chip + eyebrow + title + description),
-used by the profile page's five sections, per
-`docs/business/2026-07-21-profile-settings-page-standard.md` §2.1.
-Wraps the content in a flat bordered card (`rounded-2xl border`, no shadow) via `Section`'s `wrapper` render-prop, replacing the shared default shell.
+The profile page's field groups use `@merqo/ui`'s `Section` directly; there is no local copy.
 `ElevatedCard` is also used directly (not via `Section`) on the public auth
 pages, `/admin`, `/error`, and `/not-found`.
 
@@ -70,7 +66,7 @@ The server dashboard-tour adapter renders the canonical stock example once and p
 
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
-`password-fields.tsx` takes its label and error classes from `@merqo/ui`. `password-requirements-tip.tsx` is the tap `InfoTooltip` carrying `PASSWORD_REQUIREMENTS_HINT`, shown beside the new-password label here and on signup.
+`password-fields.tsx` takes its label and error classes from `@merqo/ui`. `password-requirements-tip.tsx` is the tap `InfoTooltip` carrying the shared `PASSWORD_REQUIREMENTS_HINT` from `@merqo/ui`, shown beside the new-password label here and on signup.
 
 `account-menu-wiring.ts` holds the `signOutAction` re-export and the `getHelp` and `onFeedbackSubmit` throw-adapters (server actions return `{success, error}`, `AccountMenu` needs a rejection) used by `dashboard/dashboard-nav.tsx`; the landing nav uses `@merqo/ui`'s `LandingAccountNav` instead.
 

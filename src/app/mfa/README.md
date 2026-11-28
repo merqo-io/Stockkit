@@ -12,7 +12,7 @@ password alone.
   `/admin` so the `aal2` gate cannot loop back), forwards an `aal2` session to
   `/admin`, otherwise passes the verified TOTP factor (or stale unverified ones)
   to the form.
-- `loading.tsx` — card skeleton (`role="status"`) shown while the page's admin and factor lookups run; `loading.dom.test.tsx` covers it.
+- `loading.tsx` — card skeleton built from the shared `Skeleton` (`role="status"`) shown while the page's admin and factor lookups run; `loading.dom.test.tsx` covers it.
 - `mfa-form.tsx` — thin adapter over `MfaForm` from `@merqo/ui`: wires Supabase
   enrol (QR plus manual key) and `challengeAndVerify`, then enters `/admin`.
 - `mfa-form.dom.test.tsx` — verify, wrong code, rate limit, enrol failure, enrol-then-verify, touch, bad input.

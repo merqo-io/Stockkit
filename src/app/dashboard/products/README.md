@@ -120,3 +120,5 @@ Field errors render through `@merqo/ui`'s `FormError`, and the "No products yet"
 Movement history times render via `@merqo/ui` `Timestamp` (Singapore time).
 
 Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.
+
+Tabs on the product detail page come from `@merqo/ui/primitives`, not a local copy.

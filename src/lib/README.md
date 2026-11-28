@@ -80,7 +80,7 @@ hand-written mirror of merqo's cross-schema `submit_vendor_feedback` RPC
 contract, generic over the caller's own `Database`/schema; `merqo-support.ts`
 — `submitSupportMessage`: hand-written mirror of merqo's cross-schema
 `submit_support_message` RPC contract;
-`merqo-base-url.ts` — `merqoBaseUrl()`: `MERQO_BASE_URL` or `https://www.merqo.io`, shared by the plan page and legal acceptance.
+`merqoBaseUrl` comes from `@merqo/ui/kit-api`; there is no local copy.
 
 `merqo-auth.ts` — `bearerOk`/`provisionBearerOk`: constant-time bearer
 checks against `MERQO_METRICS_SECRET`/`MERQO_PROVISION_SECRET` (two
@@ -190,6 +190,6 @@ via the `*.merqo.io` cookie). Logs and swallows errors.
 
 ## Auth error copy
 
-`auth-error-message.ts` exports `authErrorMessage(error, fallback)`, which maps Supabase auth errors (by `code`, else message match) to plain next-step copy and never returns the raw message. `weak_password` errors (by code or message text) go through the exported `weakPasswordMessage({ reasons, message })`, which names the failed rule and reads policy numbers from the server message. `PASSWORD_REQUIREMENTS_HINT` is the single statement of the password policy shown in the UI.
+Auth error copy and the password policy hint come from `@merqo/ui` (`authErrorMessage`, `PASSWORD_REQUIREMENTS_HINT`); there is no local copy.
 
 `schemas.ts` is UTF-8 and its user-facing messages must keep real characters (em dash, ellipsis); `schemas.test.ts` fails on double-encoded text.

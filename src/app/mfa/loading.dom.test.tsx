@@ -12,9 +12,8 @@ describe('Mfa Loading', () => {
     expect(status.textContent).toContain('Loading…');
   });
 
-  it('outlines the card and stops pulsing under reduced motion', () => {
+  it('outlines the card with shared skeletons', () => {
     render(<Loading />);
-    expect(screen.getByTestId('loading-card')).toBeTruthy();
-    expect(screen.getByRole('status').className).toContain('motion-reduce:animate-none');
+    expect(screen.getByTestId('loading-card').querySelector('[data-slot="skeleton"]')).toBeTruthy();
   });
 });

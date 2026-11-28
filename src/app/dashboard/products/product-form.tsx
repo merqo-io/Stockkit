@@ -392,7 +392,7 @@ export function ProductForm({ product, onSaved, onArchiveRolledBack, onCancel }:
           <Button
             type="button"
             variant="outline"
-            className="border-destructive/40 text-destructive hover:bg-destructive hover:text-white"
+            className="border-destructive/40 text-destructive hover:bg-destructive hover:text-background"
             disabled={saving}
             onClick={onArchive}
           >

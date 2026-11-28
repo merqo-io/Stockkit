@@ -19,7 +19,7 @@ folder's job is entirely to collect the vendor's consent and forward it.
   itself — it is what the gate redirects to, so gating it would loop.
 - `page.dom.test.tsx` — covers the touch-gated submit, `next` sanitising and
   the sign-out exit.
-- `actions.ts` — `acceptLegalTerms` server action (merqo base URL from `@/lib/merqo-base-url`). Re-checks for a signed-in
+- `actions.ts` — `acceptLegalTerms` server action (posts through `createMerqoClient`, hashes with `digest` and reads the base URL with `merqoBaseUrl`, all from `@merqo/ui/kit-api`). Re-checks for a signed-in
   user (redirects to `/login` otherwise), reads the vendor's real
   `ip`/`user_agent`, then `POST`s `/api/merqo/legal-accept` on merqo once
   per doc type (`terms`, `privacy`), each independent so a
@@ -42,3 +42,5 @@ The `next` form field is length-checked by Zod before `safeRedirectPath` runs.
 The request IP recorded for the acceptance comes from `clientIp` in `src/lib/rate-limit.ts` (`x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first).
 
 The page heading is `@merqo/ui`'s `PageHeader`.
+
+`MERQO_BASE_URL` must be the canonical host: the shared client sets `redirect: "error"`, so a host that redirects (for example apex to www) fails the acceptance. In development (`NODE_ENV` not `production`) an `http://localhost` base URL is allowed.

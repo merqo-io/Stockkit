@@ -10,11 +10,16 @@ import { toast } from 'sonner';
 import { PasswordRequirementsTip } from '@/components/password-requirements-tip';
 import { BrandText } from '@/components/widgets';
 import { navigatingAway, useAsyncAction } from '@/hooks';
-import { authErrorMessage } from '@/lib/auth-error-message';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { loginSchema, vendorSchema, type LoginInput } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
-import { AsyncSubmitButton, ElevatedCard, FORM_ERROR_CLASS, FORM_LABEL_CLASS } from '@merqo/ui';
+import {
+  AsyncSubmitButton,
+  authErrorMessage,
+  ElevatedCard,
+  FORM_ERROR_CLASS,
+  FORM_LABEL_CLASS,
+} from '@merqo/ui';
 import { Button, Input, Label } from '@merqo/ui/primitives';
 
 import { GoogleMark } from '@merqo/ui';
@@ -138,8 +143,7 @@ export function LoginForm() {
             queryParams: { hl: 'en' },
           },
         });
-        if (error)
-          toast.error(authErrorMessage(error, 'Could not sign in with Google. Try again.'));
+        if (error) toast.error(authErrorMessage(error, 'oauth'));
       } catch {
         toast.error(GENERIC_ERROR);
       }
@@ -167,7 +171,7 @@ export function LoginForm() {
             options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
           });
           if (error) {
-            toast.error(authErrorMessage(error, 'Could not create your account. Try again.'));
+            toast.error(authErrorMessage(error, 'signup'));
             return;
           }
           if (!result.session) {
@@ -184,7 +188,7 @@ export function LoginForm() {
 
         const { error } = await supabase.auth.signInWithPassword(data);
         if (error) {
-          toast.error(authErrorMessage(error, 'Could not sign in. Try again.'));
+          toast.error(authErrorMessage(error, 'signin'));
           return;
         }
         router.push(PAGE_ROUTES.DASHBOARD);
@@ -209,7 +213,7 @@ export function LoginForm() {
           redirectTo: `${window.location.origin}/auth/callback?next=${PAGE_ROUTES.RESET_PASSWORD}`,
         });
         if (error) {
-          toast.error(authErrorMessage(error, 'Could not send the reset link. Try again.'));
+          toast.error(authErrorMessage(error, 'reset'));
           return;
         }
         setSent({ email, kind: 'reset' });

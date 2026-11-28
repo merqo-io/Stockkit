@@ -35,7 +35,7 @@ function formData(next?: string): FormData {
 }
 
 function okFetch() {
-  return vi.fn().mockResolvedValue({ ok: true, status: 200 });
+  return vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
 }
 
 beforeEach(() => {
@@ -73,7 +73,7 @@ describe('acceptLegalTerms', () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(2);
     for (const call of fetchSpy.mock.calls) {
-      expect(call[0]).toBe('https://merqo.example.com/api/merqo/legal-accept');
+      expect(String(call[0])).toBe('https://merqo.example.com/api/merqo/legal-accept');
       expect(call[1].headers.Authorization).toBe('Bearer test-secret');
     }
     const bodies = fetchSpy.mock.calls.map((c) => JSON.parse(c[1].body));
@@ -128,9 +128,29 @@ describe('acceptLegalTerms', () => {
     getUserMock.mockResolvedValue({
       data: { user: { id: 'u1', email: 'vendor@business.sg' } },
     });
-    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as never;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }) as never;
 
     await expect(acceptLegalTerms(formData('/dashboard'))).rejects.toThrow(/legal-accept/);
+    expect(redirectMock).not.toHaveBeenCalled();
+  });
+
+  it('throws when merqo answers 2xx with a body that is not JSON (no redirect)', async () => {
+    getUserMock.mockResolvedValue({
+      data: { user: { id: 'u1', email: 'vendor@business.sg' } },
+    });
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => {
+        throw new SyntaxError('Unexpected end of JSON input');
+      },
+    }) as never;
+
+    await expect(acceptLegalTerms(formData('/dashboard'))).rejects.toThrow(
+      'legal-accept (terms) failed: merqo responded 200'
+    );
     expect(redirectMock).not.toHaveBeenCalled();
   });
 

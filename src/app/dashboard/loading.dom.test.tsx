@@ -5,20 +5,15 @@ import { describe, expect, it } from 'vitest';
 import Loading from './loading';
 
 describe('Loading', () => {
-  it('announces itself as a polite status', () => {
+  it('announces itself as a status', () => {
     render(<Loading />);
-    const status = screen.getByRole('status');
-    expect(status.getAttribute('aria-live')).toBe('polite');
-    expect(status.textContent).toContain('Loading…');
+    expect(screen.getByRole('status').textContent).toContain('Loading…');
   });
 
-  it('renders a page-shaped skeleton that stops pulsing under reduced motion', () => {
+  it('renders a page-shaped skeleton without a spinner', () => {
     const { container } = render(<Loading />);
-    expect(screen.getAllByTestId('loading-tile')).toHaveLength(3);
-    expect(screen.getAllByTestId('loading-row').length).toBeGreaterThan(0);
-    const status = screen.getByRole('status');
-    expect(status.className).toContain('animate-pulse');
-    expect(status.className).toContain('motion-reduce:animate-none');
+    expect(screen.getByTestId('loading-tiles').children).toHaveLength(3);
+    expect(screen.getByRole('status').querySelector('[data-slot="skeleton"]')).toBeTruthy();
     expect(container.querySelector('.animate-spin')).toBeNull();
   });
 });

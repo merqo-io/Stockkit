@@ -26,7 +26,7 @@ name/password), per
   across the Server → Client boundary, which Next rejects at render.
 - `profile-form.tsx` — `ProfileForm({ vendorId, stallName, socialLinks,
 displayName, email, avatarUrl })`, client component, five independently
-  saved `@/components/section.tsx` `Section`s laid out via `@merqo/ui`'s
+  saved `@merqo/ui` `Section`s laid out via `@merqo/ui`'s
   `TwoColumnSections` (two independent `flex flex-col` stacks, never a CSS
   grid — see the standard's §2.3). Column 1: business name, profile icon
   (`@merqo/ui`'s `ImageUploader`, backed by `@/lib/image-upload-adapter.ts`'s
@@ -64,7 +64,7 @@ The avatar save handler deletes the image it orphans: after a successful save, t
 
 Shared name and social-link writes use field-specific patch_vendor_profile updates, preserving the other column under concurrent saves. Missing rows are provisioned atomically; empty social links explicitly clear links.
 
-A change-password rejection goes through `authErrorMessage`, so a weak password shows the specific failed rule, and the requirements tooltip comes from the shared fields. Controlled password fields share markup with the recovery form while this page retains its vendor-session save flow. The shared back button uses Next.js `Link`.
+A change-password rejection goes through `authErrorMessage` from `@merqo/ui` (context `update`), so a weak password shows the specific failed rule, and the requirements tooltip comes from the shared fields. Controlled password fields share markup with the recovery form while this page retains its vendor-session save flow. The shared back button uses Next.js `Link`.
 
 `updateStallName` and `updateSocialLinks` share a 10 per hour per user rate limit and fail closed. Avatar uploads go straight to Storage; the `vendor-avatars` bucket caps (5 MB, jpeg/png/webp) are the server-side enforcement.
 

@@ -185,7 +185,7 @@ describe('LoginForm', () => {
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
-        'Password needs a lowercase letter, an uppercase letter, a number and a symbol.'
+        'Password must include a lowercase letter, an uppercase letter, a number and a symbol.'
       )
     );
   });
@@ -281,7 +281,7 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Forgot password?' }));
 
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Too many tries. Wait a minute and try again.')
+      expect(toast.error).toHaveBeenCalledWith('Too many attempts. Wait a minute and try again.')
     );
     expect(screen.queryByText('Check your email')).toBeNull();
   });
