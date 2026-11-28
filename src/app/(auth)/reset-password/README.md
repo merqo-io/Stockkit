@@ -20,3 +20,5 @@ The policy is stated once, in the shared `PasswordRequirementsHint` beside the l
 Reset-password copy keeps real UTF-8 characters (ellipsis).
 
 Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.
+
+Tests cover the inline `role="alert"` submit error and the submit button staying pending after success until navigation lands (`navigatingAway`).
