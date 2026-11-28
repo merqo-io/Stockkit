@@ -30,4 +30,11 @@ describe('Hero', () => {
     const cta = screen.getByRole('link', { name: 'Go to dashboard' });
     expect(cta.getAttribute('href')).toBe('/dashboard');
   });
+
+  it('keeps every call to action at least 44px tall', () => {
+    render(<Hero />);
+    for (const name of ['Join the waitlist', 'See how it works']) {
+      expect(screen.getByRole('link', { name }).className).toContain('min-h-11');
+    }
+  });
 });

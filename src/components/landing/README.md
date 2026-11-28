@@ -22,6 +22,8 @@ The landing page is `Hero`, `HowItWorks` (client, a three-step `Journey`), `Faq`
 
 The phone mock-ups (`stock-screen.tsx`) only use strings the signed-in app renders; `stock-labels.ts` lists each one with its source file. Change a label in the app and change it there. Step 1 (add a product) and step 3 (overview) are scroll-played and rewind on the way up; step 2 (restock) is the visitor's to press, and scrolling never presses it. Under reduced motion every step shows its finished state, and step 2 gets a Replay button. The sample product ("Oat milk") is illustrative, not a vendor's data. The hero phone is static: nothing moves there because no product event is behind it.
 
+Every real control on the landing is at least 44px tall (`min-h-11`) at 390px: the nav Sign in and waitlist buttons, the hero and closing CTAs, and the interactive restock button. Decorative `aria-hidden` mock buttons are exempt. Set it at the call site; the shared `Button` variants stay untouched.
+
 Landing surfaces carry no shadow, no hover lift and no entrance animation, per the shared public-page rules (see root `DESIGN.md`).
 
 Every `.dom.test.tsx` file here relies on `test/setup.ts`'s global RTL

@@ -26,14 +26,14 @@ export function Hero({ authed = false }: HeroProps) {
           See what your stock is worth, and what is running low.
         </h1>
         <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="min-h-11">
             {authed ? (
               <Link href={PAGE_ROUTES.DASHBOARD}>Go to dashboard</Link>
             ) : (
               <a href={WAITLIST_URL}>Join the waitlist</a>
             )}
           </Button>
-          <Button asChild size="lg" variant="outline">
+          <Button asChild size="lg" variant="outline" className="min-h-11">
             <a href="#how">See how it works</a>
           </Button>
         </div>

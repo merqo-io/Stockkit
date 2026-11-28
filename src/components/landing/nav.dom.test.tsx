@@ -27,6 +27,13 @@ describe('Nav', () => {
     expect(screen.queryByRole('button', { name: /account/i })).toBeNull();
   });
 
+  it('keeps the signed-out actions at least 44px tall', () => {
+    render(<Nav />);
+    for (const name of ['Sign in', 'Join the waitlist']) {
+      expect(screen.getByRole('link', { name }).className).toContain('min-h-11');
+    }
+  });
+
   it('shows Dashboard and the account menu when signed in', () => {
     render(<Nav user={navUser} />);
     expect(screen.getByRole('link', { name: 'Dashboard' }).getAttribute('href')).toBe('/dashboard');
