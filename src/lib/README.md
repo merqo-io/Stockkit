@@ -80,7 +80,7 @@ hand-written mirror of merqo's cross-schema `submit_vendor_feedback` RPC
 contract, generic over the caller's own `Database`/schema; `merqo-support.ts`
 — `submitSupportMessage`: hand-written mirror of merqo's cross-schema
 `submit_support_message` RPC contract;
-`merqo-base-url.ts` — `merqoBaseUrl()`: `MERQO_BASE_URL` or `https://www.merqo.io`, shared by the plan page and legal acceptance.
+`merqoBaseUrl` comes from `@merqo/ui/kit-api`; there is no local copy.
 
 `merqo-auth.ts` — `bearerOk`/`provisionBearerOk`: constant-time bearer
 checks against `MERQO_METRICS_SECRET`/`MERQO_PROVISION_SECRET` (two

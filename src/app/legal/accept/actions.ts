@@ -1,21 +1,16 @@
 'use server';
 
-import { merqoBaseUrl } from '@/lib/merqo-base-url';
 import { clientIp } from '@/lib/rate-limit';
 // eslint-disable-next-line no-restricted-imports -- RLS has no client policy for this write; the caller is verified first
 import { createServerClient, createServiceClient } from '@/lib/supabase/server';
 import { safeRedirectPath } from '@merqo/ui';
+import { createMerqoClient, digest, merqoBaseUrl } from '@merqo/ui/kit-api';
 import { getLegalDocSource, LEGAL_VERSIONS } from '@merqo/ui/legal';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
 const DOC_TYPES = ['terms', 'privacy'] as const;
-
-function sha256(input: string): string {
-  return createHash('sha256').update(input).digest('hex');
-}
 
 /**
  * Records the signed-in vendor's terms + privacy acceptance with merqo (the
@@ -55,27 +50,22 @@ export async function acceptLegalTerms(formData: FormData): Promise<void> {
   const ip = clientIp(reqHeaders) ?? 'unknown';
   const userAgent = reqHeaders.get('user-agent') || 'unknown';
 
+  const merqo = createMerqoClient({ secret, baseUrl: merqoBaseUrl() });
   for (const docType of DOC_TYPES) {
-    const res = await fetch(`${merqoBaseUrl()}/api/merqo/legal-accept`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${secret}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        vendor_email: email,
-        auth_uid: user.id,
-        doc_type: docType,
-        doc_version: LEGAL_VERSIONS[docType],
-        doc_sha256: sha256(getLegalDocSource(docType, 'stockkit')),
-        kit_slug: 'stockkit',
-        ip,
-        user_agent: userAgent,
-      }),
-      signal: AbortSignal.timeout(5000),
+    const res = await merqo.post('/api/merqo/legal-accept', {
+      vendor_email: email,
+      auth_uid: user.id,
+      doc_type: docType,
+      doc_version: LEGAL_VERSIONS[docType],
+      doc_sha256: digest(getLegalDocSource(docType, 'stockkit')),
+      kit_slug: 'stockkit',
+      ip,
+      user_agent: userAgent,
     });
     if (!res.ok) {
-      throw new Error(`legal-accept (${docType}) failed: merqo responded ${res.status}`);
+      throw new Error(
+        `legal-accept (${docType}) failed: merqo responded ${res.status || res.error}`
+      );
     }
   }
 
