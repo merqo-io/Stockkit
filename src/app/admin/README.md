@@ -42,3 +42,5 @@ Every page and action is gated by `requireAdmin()`, which needs `aal2`; a passwo
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies.
 
 Times in the activity feed render via `@merqo/ui` `Timestamp` (Singapore time).
+
+Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.

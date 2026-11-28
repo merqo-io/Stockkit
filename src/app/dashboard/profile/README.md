@@ -73,3 +73,5 @@ The page uses `@merqo/ui`'s `PageHeader` (eyebrow "Your account", display-font h
 UI primitives (badge, card, dialog, input, label, select, switch, textarea) and `cn` used here come from `@merqo/ui/primitives`, not local copies. The actions return `ActionResult` from `@merqo/ui/kit-api`.
 
 Label and error classes (`FORM_LABEL_CLASS`, `FORM_ERROR_CLASS`) come from `@merqo/ui`.
+
+Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.

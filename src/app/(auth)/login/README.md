@@ -30,3 +30,5 @@ UI primitives (badge, card, dialog, input, label, select, switch, textarea) and 
 The form label and error classes used by the login form come from `@merqo/ui`.
 
 The sign-in and create-account submit button is `@merqo/ui`'s `AsyncSubmitButton`: it shows "Please wait…" with a spinner and is disabled and `aria-busy` while the request runs.
+
+Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.

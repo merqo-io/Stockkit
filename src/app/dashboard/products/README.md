@@ -118,3 +118,5 @@ UI primitives (badge, card, dialog, input, label, select, switch, textarea) and 
 Field errors render through `@merqo/ui`'s `FormError`, and the "No products yet" and "No matching products" lists use its `EmptyState`.
 
 Movement history times render via `@merqo/ui` `Timestamp` (Singapore time).
+
+Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.
