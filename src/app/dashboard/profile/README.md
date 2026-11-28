@@ -26,7 +26,7 @@ name/password), per
   across the Server → Client boundary, which Next rejects at render.
 - `profile-form.tsx` — `ProfileForm({ vendorId, stallName, socialLinks,
 displayName, email, avatarUrl })`, client component, five independently
-  saved `@/components/section.tsx` `Section`s laid out via `@merqo/ui`'s
+  saved `@merqo/ui` `Section`s laid out via `@merqo/ui`'s
   `TwoColumnSections` (two independent `flex flex-col` stacks, never a CSS
   grid — see the standard's §2.3). Column 1: business name, profile icon
   (`@merqo/ui`'s `ImageUploader`, backed by `@/lib/image-upload-adapter.ts`'s

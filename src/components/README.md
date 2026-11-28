@@ -7,11 +7,7 @@ section components.
 
 The products filter uses `@merqo/ui`'s `SegmentedControl` (a radiogroup of pills); there is no local copy.
 
-`section.tsx` — thin adapter over `@merqo/ui`'s `Section` (the
-per-field-group shell: icon chip + eyebrow + title + description),
-used by the profile page's five sections, per
-`docs/business/2026-07-21-profile-settings-page-standard.md` §2.1.
-Wraps the content in a flat bordered card (`rounded-2xl border`, no shadow) via `Section`'s `wrapper` render-prop, replacing the shared default shell.
+The profile page's field groups use `@merqo/ui`'s `Section` directly; there is no local copy.
 `ElevatedCard` is also used directly (not via `Section`) on the public auth
 pages, `/admin`, `/error`, and `/not-found`.
 

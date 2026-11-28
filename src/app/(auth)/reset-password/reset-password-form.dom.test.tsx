@@ -69,6 +69,38 @@ describe('ResetPasswordForm', () => {
     expect(routerRefresh).toHaveBeenCalled();
   });
 
+  it('shows the update error inline with role="alert" and keeps the form usable', async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    updateUserMock.mockResolvedValue({ error: { message: 'boom', status: 500 } });
+    const user = userEvent.setup();
+    render(<ResetPasswordForm />);
+    await screen.findByLabelText('New password');
+    await user.type(screen.getByLabelText('New password'), 'hunter22');
+    await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
+    await user.click(screen.getByRole('button', { name: 'Update password' }));
+
+    expect(await screen.findByRole('alert')).toBeTruthy();
+    expect(routerPush).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Update password' })).toHaveProperty(
+      'disabled',
+      false
+    );
+  });
+
+  it('keeps the submit button pending after success until the redirect lands', async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    const user = userEvent.setup();
+    render(<ResetPasswordForm />);
+    await screen.findByLabelText('New password');
+    await user.type(screen.getByLabelText('New password'), 'hunter22');
+    await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
+    await user.click(screen.getByRole('button', { name: 'Update password' }));
+
+    await waitFor(() => expect(routerPush).toHaveBeenCalledWith('/dashboard'));
+    const button = screen.getByRole('button', { name: /Updating/ });
+    expect(button).toHaveProperty('disabled', true);
+  });
+
   it('shows the password requirements hint trigger next to the new-password label', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
     render(<ResetPasswordForm />);

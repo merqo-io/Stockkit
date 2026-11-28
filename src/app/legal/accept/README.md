@@ -42,3 +42,5 @@ The `next` form field is length-checked by Zod before `safeRedirectPath` runs.
 The request IP recorded for the acceptance comes from `clientIp` in `src/lib/rate-limit.ts` (`x-vercel-forwarded-for`, then `x-real-ip`, then the last `x-forwarded-for` hop, never the first).
 
 The page heading is `@merqo/ui`'s `PageHeader`.
+
+`MERQO_BASE_URL` must be the canonical host: the shared client sets `redirect: "error"`, so a host that redirects (for example apex to www) fails the acceptance. In development (`NODE_ENV` not `production`) an `http://localhost` base URL is allowed.

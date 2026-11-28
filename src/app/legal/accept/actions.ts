@@ -50,7 +50,11 @@ export async function acceptLegalTerms(formData: FormData): Promise<void> {
   const ip = clientIp(reqHeaders) ?? 'unknown';
   const userAgent = reqHeaders.get('user-agent') || 'unknown';
 
-  const merqo = createMerqoClient({ secret, baseUrl: merqoBaseUrl() });
+  const merqo = createMerqoClient({
+    secret,
+    baseUrl: merqoBaseUrl(),
+    development: process.env.NODE_ENV !== 'production',
+  });
   for (const docType of DOC_TYPES) {
     const res = await merqo.post('/api/merqo/legal-accept', {
       vendor_email: email,

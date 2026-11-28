@@ -4,6 +4,7 @@
 
 ### Changed
 
+- The profile page uses `@merqo/ui`'s `Section` directly (rounded-xl flat card); the local `section.tsx` adapter and its test are removed. The legal-acceptance client passes `development` outside production so an `http://localhost` `MERQO_BASE_URL` works in dev. The archive button hover text uses `text-background` (no destructive-foreground token exists).
 - Tabs, auth error copy, the reset-password form and loading skeletons now come from `@merqo/ui`; the local `tabs.tsx`, `auth-error-message.ts` and hand-built skeleton divs are removed. Tabs and reset-password controls reach 44px on touch. Reset-password errors now show inline under the form instead of a toast, and some auth error wording follows the shared copy ("Too many attempts", "Password must include ...").
 - `merqoBaseUrl` and the legal-acceptance POST (client, timeout, sha256) now come from `@merqo/ui/kit-api`; the local `merqo-base-url.ts` is removed. The archive button's hover text uses `text-primary-foreground` instead of a literal white.
 - The admin overview empty activity list uses the shared compact `EmptyState`.

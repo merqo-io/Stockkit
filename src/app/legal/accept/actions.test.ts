@@ -136,6 +136,24 @@ describe('acceptLegalTerms', () => {
     expect(redirectMock).not.toHaveBeenCalled();
   });
 
+  it('throws when merqo answers 2xx with a body that is not JSON (no redirect)', async () => {
+    getUserMock.mockResolvedValue({
+      data: { user: { id: 'u1', email: 'vendor@business.sg' } },
+    });
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => {
+        throw new SyntaxError('Unexpected end of JSON input');
+      },
+    }) as never;
+
+    await expect(acceptLegalTerms(formData('/dashboard'))).rejects.toThrow(
+      'legal-accept (terms) failed: merqo responded 200'
+    );
+    expect(redirectMock).not.toHaveBeenCalled();
+  });
+
   it('throws when MERQO_CUSTOMER_SECRET is unset', async () => {
     delete process.env.MERQO_CUSTOMER_SECRET;
     getUserMock.mockResolvedValue({

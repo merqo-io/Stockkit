@@ -5,11 +5,11 @@ import {
   FORM_ERROR_CLASS,
   FORM_LABEL_CLASS,
   ImageUploader,
+  Section,
   SocialLinksFields,
   TwoColumnSections,
 } from '@merqo/ui';
 
-import { Section } from '@/components/section';
 import { useAsyncAction } from '@/hooks';
 import { removeReplacedAvatar, uploadVendorAvatar } from '@/lib/image-upload-adapter';
 import {
