@@ -22,3 +22,5 @@ The controlled password inputs use `@/components/password-fields`; this page ret
 Update failures are mapped through `authErrorMessage` rather than showing Supabase's raw text.
 
 Reset-password copy keeps real UTF-8 characters (ellipsis).
+
+Buttons here come from `@merqo/ui/primitives` (the shared `Button`), not a local copy.

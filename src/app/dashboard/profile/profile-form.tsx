@@ -10,7 +10,6 @@ import {
 } from '@merqo/ui';
 
 import { Section } from '@/components/section';
-import { Button } from '@/components/ui/button';
 import { useAsyncAction } from '@/hooks';
 import { authErrorMessage } from '@/lib/auth-error-message';
 import { removeReplacedAvatar, uploadVendorAvatar } from '@/lib/image-upload-adapter';
@@ -23,7 +22,7 @@ import {
 } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
 import { resizeToWebp } from '@merqo/ui';
-import { Input, Label } from '@merqo/ui/primitives';
+import { Button, Input, Label } from '@merqo/ui/primitives';
 import { IdCard, KeyRound, Share2, Store, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

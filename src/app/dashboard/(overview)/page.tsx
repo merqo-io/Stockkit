@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { StockStatusIndicator } from '@/components/stock-status-indicator';
-import { Button } from '@/components/ui/button';
 import { PRODUCT_COLUMNS } from '@/lib/columns';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { stockStatusFor } from '@/lib/stock';
 import { createServerClient } from '@/lib/supabase/server';
 import { LEDGER_LG_CLASS } from '@/lib/utils';
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,

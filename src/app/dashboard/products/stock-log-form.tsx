@@ -7,11 +7,11 @@ import { Minus, Plus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import { useAsyncAction } from '@/hooks';
 import { stockMovementFormSchema } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
 import {
+  Button,
   cn,
   Input,
   Label,

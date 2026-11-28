@@ -3,11 +3,11 @@
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { productStatusFor } from '@/lib/stock';
 import type { Product } from '@/lib/types';
 import { EmptyState, PageHeader, SearchField, SegmentedControl } from '@merqo/ui';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,

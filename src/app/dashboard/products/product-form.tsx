@@ -12,7 +12,6 @@ import { Archive, ArchiveRestore, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -24,7 +23,15 @@ import {
 import { useAsyncAction } from '@/hooks';
 import { productFormSchema, type ProductFormInput } from '@/lib/schemas';
 import type { Product } from '@/lib/types';
-import { cn, Input, Label, Popover, PopoverContent, PopoverTrigger } from '@merqo/ui/primitives';
+import {
+  Button,
+  cn,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@merqo/ui/primitives';
 import { archiveProduct, saveProduct } from './actions';
 import {
   cancelPendingArchive,

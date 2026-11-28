@@ -2,9 +2,9 @@ import { LogOut } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 import { AdminFrame } from '@/app/admin/admin-frame';
-import { Button } from '@/components/ui/button';
 import { requireAdmin } from '@/lib/admin';
 import { createServerClient } from '@/lib/supabase/server';
+import { Button } from '@merqo/ui/primitives';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Gate every /admin route: non-admins get a 404 from requireAdmin.
