@@ -1,6 +1,5 @@
 'use client';
-import { PASSWORD_REQUIREMENTS_HINT } from '@/lib/auth-error-message';
-import { InfoTooltip } from '@merqo/ui';
+import { InfoTooltip, PASSWORD_REQUIREMENTS_HINT } from '@merqo/ui';
 
 export function PasswordRequirementsTip() {
   return (

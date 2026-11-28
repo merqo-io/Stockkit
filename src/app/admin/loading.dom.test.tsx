@@ -5,17 +5,14 @@ import { describe, expect, it } from 'vitest';
 import Loading from './loading';
 
 describe('Admin Loading', () => {
-  it('announces itself as a polite status', () => {
+  it('announces itself as a status', () => {
     render(<Loading />);
-    const status = screen.getByRole('status');
-    expect(status.getAttribute('aria-live')).toBe('polite');
-    expect(status.textContent).toContain('Loading…');
+    expect(screen.getByRole('status').textContent).toContain('Loading…');
   });
 
-  it('outlines tiles and rows and stops pulsing under reduced motion', () => {
+  it('outlines tiles and rows with the shared skeletons', () => {
     render(<Loading />);
-    expect(screen.getAllByTestId('loading-tile')).toHaveLength(6);
-    expect(screen.getAllByTestId('loading-row').length).toBeGreaterThan(0);
-    expect(screen.getByRole('status').className).toContain('motion-reduce:animate-none');
+    expect(screen.getByTestId('loading-tiles').children).toHaveLength(6);
+    expect(screen.getByRole('status').querySelector('[data-slot="skeleton"]')).toBeTruthy();
   });
 });

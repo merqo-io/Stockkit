@@ -85,7 +85,7 @@ it('shows the rate-limit copy when Supabase throttles the verify', async () => {
   render(<MfaForm verifiedFactorId="f1" staleFactorIds={[]} />);
   await user.type(screen.getByLabelText('6-digit code'), '123456');
   await user.click(screen.getByRole('button', { name: 'Verify' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('Too many tries');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Too many attempts');
   expect(mocks.replace).not.toHaveBeenCalled();
 });
 
@@ -124,7 +124,7 @@ it('matches on the message when the verify error code is not in the table', asyn
   render(<MfaForm verifiedFactorId="f1" staleFactorIds={[]} />);
   await user.type(screen.getByLabelText('6-digit code'), '123456');
   await user.click(screen.getByRole('button', { name: 'Verify' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('Too many tries');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Too many attempts');
 });
 
 it('verifies a pasted code with spaces as six digits', async () => {

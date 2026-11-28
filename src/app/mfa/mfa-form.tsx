@@ -1,8 +1,7 @@
 'use client';
 
-import { authErrorMessage } from '@/lib/auth-error-message';
 import { createClient } from '@/lib/supabase/client';
-import { MfaForm as SharedMfaForm, navigatingAway } from '@merqo/ui';
+import { authErrorMessage, navigatingAway, MfaForm as SharedMfaForm } from '@merqo/ui';
 import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 
@@ -28,7 +27,8 @@ export function MfaForm({ verifiedFactorId, staleFactorIds }: Props) {
     if (raw === NO_FACTOR) return 'Enter the 6-digit code from your authenticator app.';
     return authErrorMessage(
       raw === VERIFY_FAILED ? verifyError.current : { code: raw, message: raw },
-      "That code didn't work. Enter the latest code from your app."
+      'signin',
+      { fallback: "That code didn't work. Enter the latest code from your app." }
     );
   }
 

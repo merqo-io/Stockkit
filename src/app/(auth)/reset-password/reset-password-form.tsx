@@ -1,18 +1,18 @@
 'use client';
-import { PasswordFields } from '@/components/password-fields';
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { navigatingAway, useAsyncAction } from '@/hooks';
-import { authErrorMessage } from '@/lib/auth-error-message';
+import { navigatingAway } from '@/hooks';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
-import { passwordChangeSchema } from '@/lib/schemas';
 import { createClient } from '@/lib/supabase/client';
-import { ElevatedCard } from '@merqo/ui';
-import { Button } from '@merqo/ui/primitives';
+import {
+  authErrorMessage,
+  ElevatedCard,
+  PasswordRequirementsHint,
+  ResetPasswordForm as SharedResetPasswordForm,
+} from '@merqo/ui';
 
 type SessionState = 'checking' | 'ready' | 'no-session' | 'failed';
 
@@ -25,10 +25,6 @@ export function ResetPasswordForm() {
   const [supabase] = useState(() => createClient());
   const [retryKey, setRetryKey] = useState(0);
   const [state, setState] = useState<SessionState>('checking');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const { pending, run } = useAsyncAction();
 
   useEffect(() => {
     let active = true;
@@ -50,98 +46,34 @@ export function ResetPasswordForm() {
     };
   }, [supabase, retryKey]);
 
-  function submit() {
-    const parsed = passwordChangeSchema.safeParse({ password, confirm });
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? 'Check your password');
-      return;
-    }
-    setError(null);
-    return run(async () => {
-      try {
-        const { error: updateError } = await supabase.auth.updateUser({
-          password: parsed.data.password,
-        });
-        if (updateError) {
-          toast.error(authErrorMessage(updateError, 'Could not update your password. Try again.'));
-          return;
-        }
-        toast.success('Password updated');
-        router.push(PAGE_ROUTES.DASHBOARD);
-        router.refresh();
-        await navigatingAway();
-      } catch {
-        toast.error('Something went wrong. Try again.');
-      }
-    });
-  }
-
-  if (state === 'failed') {
-    return (
-      <ElevatedCard className="px-7 py-8">
-        <p role="alert">Could not check your reset link. Try again.</p>
-        <Button
-          type="button"
-          className="mt-4"
-          onClick={() => {
-            setState('checking');
-            setRetryKey((key) => key + 1);
-          }}
-        >
-          Try again
-        </Button>
-      </ElevatedCard>
-    );
-  }
-  if (state === 'checking') {
-    return (
-      <ElevatedCard className="px-7 py-8">
-        <p className="text-muted-foreground text-center text-sm">Checking your reset link…</p>
-      </ElevatedCard>
-    );
-  }
-
-  if (state === 'no-session') {
-    return (
-      <ElevatedCard className="px-7 py-8">
-        <h1 className="text-2xl leading-tight font-semibold">This link has expired</h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          Reset links work once and expire quickly. Request a new one from the sign-in page.
-        </p>
-        <Button asChild variant="outline" className="mt-6 w-full rounded-xl">
-          <Link href={PAGE_ROUTES.LOGIN}>Back to sign in</Link>
-        </Button>
-      </ElevatedCard>
-    );
-  }
-
   return (
     <ElevatedCard className="px-7 py-8">
-      <h1 className="text-2xl leading-tight font-semibold">Set a new password</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
+      <SharedResetPasswordForm
+        state={state === 'no-session' ? 'expired' : state}
+        onRetry={() => {
+          setState('checking');
+          setRetryKey((key) => key + 1);
         }}
-        className="mt-6 space-y-5"
-      >
-        <PasswordFields
-          password={password}
-          confirm={confirm}
-          onPasswordChange={setPassword}
-          onConfirmChange={setConfirm}
-          error={error}
-          inputClassName="h-11 rounded-xl"
-        />
-        <Button
-          type="submit"
-          size="lg"
-          disabled={pending || !password || !confirm}
-          className="h-12 w-full rounded-xl text-base font-semibold"
-        >
-          {pending ? 'Updating…' : 'Update password'}
-        </Button>
-      </form>
+        title="Set a new password"
+        confirmLabel="Confirm new password"
+        submitLabel="Update password"
+        expiredTitle="This link has expired"
+        expiredBody="Reset links work once and expire quickly. Request a new one from the sign-in page."
+        failedTitle="Could not check your reset link"
+        failedBody="Check your connection and try again."
+        signInHref={PAGE_ROUTES.LOGIN}
+        LinkComponent={Link}
+        passwordLabelSlot={<PasswordRequirementsHint />}
+        mapErrorObject={(error) => authErrorMessage(error, 'update')}
+        onSubmit={async (password) => {
+          const { error: updateError } = await supabase.auth.updateUser({ password });
+          if (updateError) return { error: updateError };
+          toast.success('Password updated');
+          router.push(PAGE_ROUTES.DASHBOARD);
+          router.refresh();
+          await navigatingAway();
+        }}
+      />
     </ElevatedCard>
   );
 }

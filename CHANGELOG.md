@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Tabs, auth error copy, the reset-password form and loading skeletons now come from `@merqo/ui`; the local `tabs.tsx`, `auth-error-message.ts` and hand-built skeleton divs are removed. Tabs and reset-password controls reach 44px on touch. Reset-password errors now show inline under the form instead of a toast, and some auth error wording follows the shared copy ("Too many attempts", "Password must include ...").
+- The admin overview empty activity list uses the shared compact `EmptyState`.
 - Buttons now come from the shared `@merqo/ui` `Button` and the local `src/components/ui/button.tsx` copy is removed. Every button keeps its compact size with a mouse and reaches at least 44px (48px for `lg`) on touch screens.
 - Repinned `@merqo/ui` to v0.62.1: the About page kit copy is corrected (qkit "running in a pilot", the other kits "In build", printkit listed, the one-sign-in sentence dropped) and the shared footer and landing nav links reach 44px tap targets. The landing header, hero and closing buttons and the restock mock-up button are now at least 44px tall (`min-h-11`).
 - The landing page is rebuilt as a journey on the shared `@merqo/ui` pieces: a phone-framed overview in the hero, a three-step journey (add a product, restock, see low stock), three FAQ rows and a closing call. The three-card steps grid and the benefits list are gone. The H1 is now "See what your stock is worth, and what is running low."; the old one claimed cost tracking the app does not do (it only multiplies on-hand by unit cost). Every label in the mock-ups is a string from the app, listed in `stock-labels.ts`.

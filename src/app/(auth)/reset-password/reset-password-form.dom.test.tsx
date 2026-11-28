@@ -22,8 +22,6 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { toast } from 'sonner';
-
 import { ResetPasswordForm } from './reset-password-form';
 
 describe('ResetPasswordForm', () => {
@@ -53,8 +51,7 @@ describe('ResetPasswordForm', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'different');
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveProperty('textContent', 'Passwords do not match');
+    expect(await screen.findByText('Passwords do not match.')).toBeTruthy();
     expect(updateUserMock).not.toHaveBeenCalled();
   });
 
@@ -79,7 +76,7 @@ describe('ResetPasswordForm', () => {
     expect(screen.getByRole('button', { name: 'Password requirements' })).toBeTruthy();
   });
 
-  it('shows a specific toast when updateUser rejects a weak password', async () => {
+  it('shows a specific inline error when updateUser rejects a weak password', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
     updateUserMock.mockResolvedValueOnce({
       error: {
@@ -96,13 +93,13 @@ describe('ResetPasswordForm', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
-    await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Password is too short. Use at least 10 characters.')
-    );
+    expect(
+      await screen.findByText('Password is too short. Use at least 10 characters.')
+    ).toBeTruthy();
     expect(routerPush).not.toHaveBeenCalled();
   });
 
-  it('shows a generic toast when updateUser throws instead of returning an error', async () => {
+  it('shows the fallback error when updateUser throws instead of returning an error', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
     updateUserMock.mockRejectedValueOnce(new Error('network down'));
     const user = userEvent.setup();
@@ -112,9 +109,7 @@ describe('ResetPasswordForm', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'hunter22');
     await user.click(screen.getByRole('button', { name: 'Update password' }));
 
-    await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Try again.')
-    );
+    expect(await screen.findByText('Could not update your password. Try again.')).toBeTruthy();
     expect(routerPush).not.toHaveBeenCalled();
   });
 });
@@ -127,7 +122,7 @@ it.each(['returned', 'rejected'])(
     else getUserMock.mockRejectedValueOnce(new Error('offline'));
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } }, error: null });
     render(<ResetPasswordForm />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('Could not check your reset link');
+    expect(await screen.findByText('Could not check your reset link')).toBeTruthy();
     expect(screen.queryByText('This link has expired')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByLabelText('New password')).toBeInTheDocument();

@@ -10,7 +10,7 @@ vendors/products/stock_movements domain (no "programs" concept here).
 ## Contents
 
 - `admin-frame.tsx` — `AdminFrame` client wrapper around `@merqo/ui`'s `AdminShell` (wordmark, Admin badge, Back to dashboard link and the Overview/Vendors/Activity tabs). It exists only to read `usePathname()` for the active tab; `admin-frame.dom.test.tsx` covers it.
-- `loading.tsx` — skeleton (header, stat tiles, rows; `role="status"`) shown while any `/admin` page loads; `loading.dom.test.tsx` covers it.
+- `loading.tsx` — shared-skeleton outline (header, `StatTileSkeleton` tiles, `ListSkeleton` rows) shown while any `/admin` page loads; `loading.dom.test.tsx` covers it.
 - `layout.tsx` — `AdminLayout`: gates every `/admin` route with `requireAdmin()`, renders `AdminFrame` with a sign-out form as its header action.
 - `page.tsx`, `AdminOverviewPage`: platform-wide totals (vendors by plan, products, active products, stock movements recorded), a recent cross-vendor activity feed (in a flat bordered panel), and nothing else: pricing and plan changes live in merqo.
 - `vendors/`, vendor list with each vendor's plan badge (own README).
