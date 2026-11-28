@@ -77,7 +77,7 @@ function RestockStage() {
           done={done}
           action={
             done ? undefined : (
-              <PressButton onClick={() => setPressed(true)} className="h-10 text-sm">
+              <PressButton onClick={() => setPressed(true)} className="min-h-11 text-sm">
                 {restockButton(SAMPLE.restockQuantity, SAMPLE.unit)}
               </PressButton>
             )

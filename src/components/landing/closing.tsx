@@ -11,7 +11,7 @@ export function Closing({ authed = false }: { authed?: boolean }) {
         heading="Know what is on your shelf."
         line="Log what comes in and what goes out."
         action={
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="min-h-11">
             {authed ? (
               <Link href={PAGE_ROUTES.DASHBOARD}>Go to dashboard</Link>
             ) : (
